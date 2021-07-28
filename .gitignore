@@ -1,0 +1,7 @@
+Meta
+doc
+*.o
+*.so
+*.dll
+.Rproj.user
+.Rhistory
