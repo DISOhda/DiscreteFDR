@@ -1,5 +1,5 @@
 ## Test environments
-* local Windows 10 21H1 install, R 4.1.0
+* local Windows 10 21H1 install, R 4.1.1
 * win-builder (release, oldrelease, devel)
 * R-hub (configurations: "with sanitizers", "with valgrind" and "check for CRAN")
 
