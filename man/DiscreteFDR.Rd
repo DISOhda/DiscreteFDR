@@ -48,8 +48,8 @@ Döhler, S., Durand, G., & Roquain, E. (2018). New FDR bounds for discrete and h
 \seealso{
 Useful links:
 \itemize{
-  \item \url{http://github.com/DISOhda/DiscreteFDR}
-  \item Report bugs at \url{http://github.com/DISOhda/DiscreteFDR/issues}
+  \item \url{https://github.com/DISOhda/DiscreteFDR}
+  \item Report bugs at \url{https://github.com/DISOhda/DiscreteFDR/issues}
 }
 
 }

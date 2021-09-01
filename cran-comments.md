@@ -24,11 +24,15 @@
 The cause is unknown; none of the mentioned functions is used.
 
 ### R-hub
-0 errors | 0 warnings | 3 notes
+0 errors | 0 warnings | 1 note
 
-* NOTE: Package unavailable to check Rd xrefs: 'discreteMTP'
+* NOTE: Found the following (possibly) invalid DOIs:
+    Status: Internal Server Error
+    From: DESCRIPTION
+  DOI: 10.1214/18-EJS1441
+    Message: 500
 
-This note seems to be related to the check configuration on R-hub.
+Works perfectly here, so the cause is unknown as well.
 
 ### win-builder
 
