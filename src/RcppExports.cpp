@@ -5,6 +5,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // kernel_DBH_fast
 NumericVector kernel_DBH_fast(const List& pCDFlist, const NumericVector& pvalues, const bool stepUp, const double alpha, const NumericVector& support);
 RcppExport SEXP _DiscreteFDR_kernel_DBH_fast(SEXP pCDFlistSEXP, SEXP pvaluesSEXP, SEXP stepUpSEXP, SEXP alphaSEXP, SEXP supportSEXP) {

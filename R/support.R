@@ -150,7 +150,7 @@ fisher.pvalues.support <- function(counts, alternative = "greater", input = "noa
 			       # pmin/pmax below is to account for machine rounding issues
              pCDFlist[[i]] <- pmax(0, pmin(1, phyper(x-1, A1.[i], A2.[i], n[i], lower.tail = FALSE)))
              # the "+1" below is because vectors start with index 1 in R: x[A11[i]+1]=A11[i]
-             raw.pvalues[i] <- pCDFlist[[i]][A11[i] + 1]
+             raw.pvalues[i] <- pCDFlist[[i]][A11[i] - l[i] + 1]
              # we want to have pCDFlist[[i]] in increasing order:
              pCDFlist[[i]] <- rev(pCDFlist[[i]])
            },
@@ -160,7 +160,7 @@ fisher.pvalues.support <- function(counts, alternative = "greater", input = "noa
 			       # pmin/pmax below is to account for machine rounding issues
              pCDFlist[[i]] <- pmax(0, pmin(1, phyper(x, A1.[i], A2.[i], n[i], lower.tail = TRUE)))
              # the "+1" below is because vectors start with index 1 in R: x[A11[i]+1]=A11[i]
-             raw.pvalues[i] <- pCDFlist[[i]][A11[i]+1]
+             raw.pvalues[i] <- pCDFlist[[i]][A11[i] - l[i] + 1]
            },
          two.sided =
            for (i in 1:number.items){
@@ -177,7 +177,7 @@ fisher.pvalues.support <- function(counts, alternative = "greater", input = "noa
 			       # pmin/pmax below is to account for machine rounding issues
              pCDFlist[[i]] <- pmax(0, pmin(1, sapply(x, function(nu){sum(atoms[which(atoms <= atoms[nu + 1 - l[i]])])})))
              # the "+1" above and below is because vectors start with index 1 in R: x[A11[i]+1]=A11[i]
-             raw.pvalues[i] <- pCDFlist[[i]][A11[i] + 1]
+             raw.pvalues[i] <- pCDFlist[[i]][A11[i] - l[i] + 1]
              # we want to have pCDFlist[[i]] in increasing order:
              pCDFlist[[i]] <- sort(pCDFlist[[i]])
            }

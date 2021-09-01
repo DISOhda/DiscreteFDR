@@ -1,3 +1,10 @@
+# DiscreteFDR 1.3.6
+
+* Fixed a problem with `fisher.pvalues.support` that could cause p-values to 
+be wrong or NA (Tanks to Iqraa Meah).
+* Added GitHub.
+
+
 # DiscreteFDR 1.3.5
 
 * Fixed a problem with `fisher.pvalues.support` that could cause an infinite
