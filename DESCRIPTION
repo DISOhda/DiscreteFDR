@@ -14,5 +14,5 @@ Suggests: R.rsp, knitr, rmarkdown, discreteMTP
 VignetteBuilder: R.rsp, knitr
 Imports: Rcpp (>= 1.0.1), methods
 LinkingTo: Rcpp
-URL: http://github.com/DISOhda/DiscreteFDR
-BugReports: http://github.com/DISOhda/DiscreteFDR/issues
+URL: https://github.com/DISOhda/DiscreteFDR
+BugReports: https://github.com/DISOhda/DiscreteFDR/issues
