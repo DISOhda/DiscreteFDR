@@ -1,7 +1,7 @@
 # DiscreteFDR 1.3.6
 
 * Fixed a problem with `fisher.pvalues.support` that could cause p-values to 
-be wrong or NA (Tanks to Iqraa Meah).
+be wrong or NA (Thanks to Iqraa Meah).
 * Added GitHub.
 
 
