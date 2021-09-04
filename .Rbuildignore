@@ -4,3 +4,4 @@
 ^cran-comments\.md$
 ^.*\src-i386$
 ^.*\src-x64$
+^CRAN-RELEASE$
