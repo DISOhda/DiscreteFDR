@@ -10,7 +10,7 @@
 # DiscreteFDR 1.3.6
 
 * Fixed a problem with `fisher.pvalues.support` that could cause p-values to 
-be wrong or NA (Tanks to Iqraa Meah).
+be wrong or NA (Thanks to Iqraa Meah).
 * Added GitHub.
 
 
@@ -25,4 +25,8 @@ loop when using `alternative = two.sided` (Thanks to Lukas Jansen).
 
 * Added a `NEWS.md` file to track changes to the package.
 * Corrected a bug in `plot.DiscreteFDR` function that produced a false legend.
+<<<<<<< HEAD
 * Added argument plausibility checks to `discrete.BH` and `DBR` functions.
+=======
+* Added argument plausability checks to `discrete.BH` and `DBR` functions.
+>>>>>>> 90ca49d53654a403be54d52bcbe40b815fa31c45
