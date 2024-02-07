@@ -9,14 +9,14 @@
 \arguments{
 \item{x}{an object of class "\code{DiscreteFDR}".}
 
-\item{breaks}{as in \code{\link{hist}}; here, the Friedman-Diaconis
+\item{breaks}{as in \link{hist}; here, the Friedman-Diaconis
 algorithm(\code{"FD"}) is used as default.}
 
-\item{plot}{a boolean If \code{TRUE} (the default), a histogram is
-plotted, otherwise a list of breaks and counts is returned.}
+\item{plot}{a boolean If \code{TRUE} (the default), a histogram is plotted,
+otherwise a list of breaks and counts is returned.}
 
-\item{...}{further arguments to \code{\link{hist}} or
-\code{\link{plot.histogram}}, respectively.}
+\item{...}{further arguments to \link{hist} or \link{plot.histogram},
+respectively.}
 }
 \value{
 An object of class \code{histogram}.
@@ -25,8 +25,7 @@ An object of class \code{histogram}.
 Computes a histogram of the raw p-values of a \code{DiscreteFDR} object.
 }
 \details{
-This method simply calls \code{\link{hist}} and passes the raw p-values of
-the object.
+This method simply calls \link{hist} and passes the raw p-values of the object.
 }
 \examples{
 X1 <- c(4, 2, 2, 14, 6, 9, 4, 0, 1)

@@ -24,9 +24,9 @@ when \code{NULL}, \code{getOption("max.print")} is used.}
 \code{summary.DiscreteFDR} computes and returns a list that includes all the
 data of an input \code{DiscreteFDR}, plus
 \item{Table}{a \code{data.frame}, sorted by the raw p-values, that contains
-            the indices, that raw p-values themselves, their respective
-            critical values (if present), their adjusted p-values (if
-            present) and a logical column to indicate rejection.}
+the indices, that raw p-values themselves, their respective
+critical values (if present), their adjusted p-values (if
+present) and a logical column to indicate rejection.}
 }
 \description{
 \code{summary} method for class "\code{DiscreteFDR}"
@@ -56,7 +56,8 @@ df.formatted <- fisher.pvalues.support(counts = df, input = "noassoc")
 raw.pvalues <- df.formatted$raw
 pCDFlist <- df.formatted$support
 
-DBH.sd.crit <- DBH(raw.pvalues, pCDFlist, direction = "sd", ret.crit.consts = TRUE)
+DBH.sd.crit <- DBH(raw.pvalues, pCDFlist, direction = "sd",
+                   ret.crit.consts = TRUE)
 summary(DBH.sd.crit)
 
 }

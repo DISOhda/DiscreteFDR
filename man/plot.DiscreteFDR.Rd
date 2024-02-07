@@ -19,31 +19,30 @@
 
 \item{col}{a numeric or character vector of length 3 indicating the
 colors of the \enumerate{
-  \item rejected p-values
-  \item accepted p-values
-  \item critical values (if present).
+\item rejected p-values
+\item accepted p-values
+\item critical values (if present).
 }}
 
 \item{pch}{a numeric or character vector of length 3 indicating the
 point characters of the \enumerate{
-  \item rejected p-values
-  \item accepted p-values
-  \item critical values (if present and \code{type.crit}
-        is a plot type like \code{'p'}, \code{'b'} etc.).
+\item rejected p-values
+\item accepted p-values
+\item critical values (if present and \code{type.crit}
+is a plot type like \code{'p'}, \code{'b'} etc.).
 }}
 
 \item{lwd}{a numeric vector of length 3 indicating the thickness of
 the points and lines.}
 
 \item{type.crit}{1-character string giving the type of plot desired for the
-critical values (e.g.: \code{'p'}, \code{'l'} etc; see
-\code{\link{plot}}).}
+critical values (e.g.: \code{'p'}, \code{'l'} etc; see \link{plot}).}
 
 \item{legend}{if NULL, no legend is plotted; otherwise expecting a
 character string like "topleft" etc. or a numeric vector
 of two elements indicating (x, y) coordinates.}
 
-\item{...}{further arguments to \code{\link{plot.default}}.}
+\item{...}{further arguments to \link{plot.default}.}
 }
 \description{
 Plots raw p-values of a \code{DiscreteFDR} object and highlights rejected and

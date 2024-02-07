@@ -1,68 +1,73 @@
-#'@title [HSU], [HSD], [AHSU] and [AHSD] procedures
+#' @title
+#' \[HSU\], \[HSD\], \[AHSU\] and \[AHSD\] procedures
+#' 
+#' @description
+#' Apply the \[HSU\], \[HSD\], \[AHSU\] and \[AHSD\] procedures, with or without
+#' computing the critical constants, to a set of p-values and their discrete
+#' support.
+#' 
+#' @details
+#' `DBH` and `ADBH` are wrapper functions for `discrete.BH`. `DBH` simply passes
+#' all its parameters to `discrete.BH` with `adaptive = FALSE`. `ADBH` does the
+#' same with `adaptive = TRUE`.
+#' 
+#' @seealso
+#' [fast.Discrete], [DBR]
+#' 
+#' @templateVar pvalues FALSE
+#' @templateVar stepUp FALSE
+#' @templateVar alpha TRUE
+#' @templateVar sorted_pv FALSE
+#' @templateVar support FALSE
+#' @templateVar raw.pvalues TRUE
+#' @templateVar pCDFlist TRUE
+#' @templateVar direction TRUE
+#' @templateVar ret.crit.consts TRUE
+#' @templateVar lambda FALSE
+#' @templateVar adaptive TRUE
+#' @template param 
+#' 
+#' @references
+#' Döhler, S., Durand, G., & Roquain, E. (2018). New FDR bounds for discrete
+#'   and heterogeneous tests. *Electronic Journal of Statistics*, *12*(1),
+#'   pp. 1867-1900. \doi{10.1214/18-EJS1441}
+#'   
+#' @template example
+#' @examples 
+#' DBH.su.fast <- DBH(raw.pvalues, pCDFlist)
+#' summary(DBH.su.fast)
+#' DBH.sd.fast <- DBH(raw.pvalues, pCDFlist, direction = "sd")
+#' DBH.sd.fast$Adjusted
+#' summary(DBH.sd.fast)
+#' 
+#' DBH.su.crit <- DBH(raw.pvalues, pCDFlist, ret.crit.consts = TRUE)
+#' summary(DBH.su.crit)
+#' DBH.sd.crit <- DBH(raw.pvalues, pCDFlist, direction = "sd",
+#'                    ret.crit.consts = TRUE)
+#' DBH.sd.crit$Adjusted
+#' summary(DBH.sd.crit)
+#' 
+#' ADBH.su.fast <- ADBH(raw.pvalues, pCDFlist)
+#' summary(ADBH.su.fast)
+#' ADBH.sd.fast <- ADBH(raw.pvalues, pCDFlist, direction = "sd")
+#' ADBH.sd.fast$Adjusted
+#' summary(ADBH.sd.fast)
 #'
-#'@description
-#'Apply the [HSU], [HSD], [AHSU] and [AHSD] procedures,
-#'with or without computing the critical constants,
-#'to a set of p-values and their discrete support.
-#'
-#'@details
-#'\code{DBH} and \code{ADBH} are wrapper functions for \code{discrete.BH}. 
-#'\code{DBH} simply passes all its parameters to \code{discrete.BH} with \code{adaptive = FALSE}. 
-#'\code{ADBH} does the same with \code{adaptive = TRUE}.
-#'
-#'This version: 2019-06-18.
-#'
-#'@seealso
-#'\code{\link{kernel}}, \code{\link{DiscreteFDR}}, \code{\link{DBR}}
-#'
-#'@templateVar pvalues FALSE
-#'@templateVar stepUp FALSE
-#'@templateVar alpha TRUE
-#'@templateVar sorted_pv FALSE
-#'@templateVar support FALSE
-#'@templateVar raw.pvalues TRUE
-#'@templateVar pCDFlist TRUE
-#'@templateVar direction TRUE
-#'@templateVar ret.crit.consts TRUE
-#'@templateVar lambda FALSE
-#'@templateVar adaptive TRUE
-#'@template param 
-#'
-#'@template example
-#'@examples
-#'
-#'DBH.su.fast <- DBH(raw.pvalues, pCDFlist)
-#'summary(DBH.su.fast)
-#'DBH.sd.fast <- DBH(raw.pvalues, pCDFlist, direction = "sd")
-#'DBH.sd.fast$Adjusted
-#'summary(DBH.sd.fast)
-#'
-#'DBH.su.crit <- DBH(raw.pvalues, pCDFlist, ret.crit.consts = TRUE)
-#'summary(DBH.su.crit)
-#'DBH.sd.crit <- DBH(raw.pvalues, pCDFlist, direction = "sd", ret.crit.consts = TRUE)
-#'DBH.sd.crit$Adjusted
-#'summary(DBH.sd.crit)
-#'
-#'ADBH.su.fast <- ADBH(raw.pvalues, pCDFlist)
-#'summary(ADBH.su.fast)
-#'ADBH.sd.fast <- ADBH(raw.pvalues, pCDFlist, direction = "sd")
-#'ADBH.sd.fast$Adjusted
-#'summary(ADBH.sd.fast)
-#'
-#'ADBH.su.crit <- ADBH(raw.pvalues, pCDFlist, ret.crit.consts = TRUE)
-#'summary(ADBH.su.crit)
-#'ADBH.sd.crit <- ADBH(raw.pvalues, pCDFlist, direction = "sd", ret.crit.consts = TRUE)
-#'ADBH.sd.crit$Adjusted
-#'summary(ADBH.sd.crit)
-#'
-#'@templateVar DBR FALSE
-#'@template return
-#'
-#'@name discrete.BH
+#' ADBH.su.crit <- ADBH(raw.pvalues, pCDFlist, ret.crit.consts = TRUE)
+#' summary(ADBH.su.crit)
+#' ADBH.sd.crit <- ADBH(raw.pvalues, pCDFlist, direction = "sd",
+#'                      ret.crit.consts = TRUE)
+#' ADBH.sd.crit$Adjusted
+#' summary(ADBH.sd.crit)
+#' 
+#' @templateVar DBR FALSE
+#' @template return
+#' 
+#' @name discrete.BH
 NULL
 
-#'@rdname discrete.BH
-#'@export
+#' @rdname discrete.BH
+#' @export
 discrete.BH <- function(raw.pvalues, pCDFlist, alpha = 0.05, direction = "su", adaptive = FALSE, ret.crit.consts = FALSE){
   # check arguments
   if(is.null(alpha) || is.na(alpha) || !is.numeric(alpha) || alpha < 0 || alpha > 1)

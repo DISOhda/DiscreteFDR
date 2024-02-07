@@ -1,41 +1,43 @@
-#'@title Summarizing Discrete FDR Results
+#' @title
+#' Summarizing Discrete FDR Results
+#' 
+#' @description
+#' `summary` method for class "`DiscreteFDR`"
 #'
-#'@description
-#'\code{summary} method for class "\code{DiscreteFDR}"
+#' @param object       an object of class "`DiscreteFDR`".
+#' @param x            an object of class "`summary.DiscreteFDR`".
+#' @param max          numeric or `NULL`, specifying the maximal number of
+#'                     *rows* of the p-value table to be printed. By default,
+#'                     when `NULL`, `getOption("max.print")` is used.
+#' @param ...          further arguments passed to or from other methods.
 #'
-#'@param object       an object of class "\code{DiscreteFDR}".
-#'@param x            an object of class "\code{summary.DiscreteFDR}".
-#'@param max          numeric or \code{NULL}, specifying the maximal number of
-#'                    \emph{rows} of the p-value table to be printed. By default,
-#'                    when \code{NULL}, \code{getOption("max.print")} is used.
-#'@param ...          further arguments passed to or from other methods.
+#' @details
+#' `summary.DiscreteFDR` objects include all data of an `DiscreteFDR`
+#' object, but also include an additional table which includes the raw p-values,
+#' their indices, the respective critical values (if present), the adjusted
+#' p-values (if present) and a logical column to indicate rejection. The table
+#' is sorted in ascending order by the raw p-values.
 #'
-#'@details
-#'\code{summary.DiscreteFDR} objects include all data of an \code{DiscreteFDR}
-#'object, but also include an additional table which includes the raw p-values,
-#'their indices, the respective critical values (if present), the adjusted
-#'p-values (if present) and a logical column to indicate rejection. The table
-#'is sorted in ascending order by the raw p-values.
+#' `print.summary.DiscreteFDR` simply prints the same output as
+#' `print.DiscreteFDR`, but also prints the p-value table.
+#' 
+#' @return
+#' `summary.DiscreteFDR` computes and returns a list that includes all the
+#' data of an input `DiscreteFDR`, plus
+#' \item{Table}{a `data.frame`, sorted by the raw p-values, that contains
+#'              the indices, that raw p-values themselves, their respective
+#'              critical values (if present), their adjusted p-values (if
+#'              present) and a logical column to indicate rejection.}
 #'
-#'\code{print.summary.DiscreteFDR} simply prints the same output as
-#'\code{print.DiscreteFDR}, but also prints the p-value table.
+#' @template example
+#' @examples
+#' 
+#' DBH.sd.crit <- DBH(raw.pvalues, pCDFlist, direction = "sd",
+#'                    ret.crit.consts = TRUE)
+#' summary(DBH.sd.crit)
 #'
-#'@return
-#'\code{summary.DiscreteFDR} computes and returns a list that includes all the
-#'data of an input \code{DiscreteFDR}, plus
-#'\item{Table}{a \code{data.frame}, sorted by the raw p-values, that contains
-#'             the indices, that raw p-values themselves, their respective
-#'             critical values (if present), their adjusted p-values (if
-#'             present) and a logical column to indicate rejection.}
-#'
-#'@template example
-#'@examples
-#'
-#'DBH.sd.crit <- DBH(raw.pvalues, pCDFlist, direction = "sd", ret.crit.consts = TRUE)
-#'summary(DBH.sd.crit)
-#'
-#'@rdname summary.DiscreteFDR
-#'@export
+#' @rdname summary.DiscreteFDR
+#' @export
 ## S3 method for class 'DiscreteFDR'
 summary.DiscreteFDR <- function(object, ...){
   # include all data of x (DiscreteFDR)

@@ -1,25 +1,27 @@
-#'@title Printing DiscreteFDR results
+#' @title
+#' Printing DiscreteFDR results
+#' 
+#' @description
+#' Prints the results of discrete FDR analysis, stored in a `DiscreteFDR` 
+#' S3 class object.
+#' 
+#' @param x          an object of class "`DiscreteFDR`".
+#' @param ...        further arguments to be passed to or from other methods.
+#'                   They are ignored in this function.
 #'
-#'@description
-#'Prints the results of discrete FDR analysis, stored in a \code{DiscreteFDR} 
-#'S3 class object.
-#'
-#'@param x          an object of class "\code{DiscreteFDR}".
-#'@param ...        further arguments to be passed to or from other methods.
-#'                  They are ignored in this function.
-#'
-#'@return
-#'The respective input object is invisibly returned via \code{invisible(x)}. 
-#'
-#'@template example
-#'@examples
-#'
-#'DBH.su.crit <- DBH(raw.pvalues, pCDFlist, direction = "su", ret.crit.consts = TRUE)
-#'print(DBH.su.crit)
-#'
-#'@importFrom stats p.adjust
-#'@method print DiscreteFDR
-#'@export
+#' @return
+#' The respective input object is invisibly returned via `invisible(x)`. 
+#' 
+#' @template example
+#' @examples
+#' 
+#' DBH.su.crit <- DBH(raw.pvalues, pCDFlist, direction = "su",
+#'                    ret.crit.consts = TRUE)
+#' print(DBH.su.crit)
+#' 
+#' @importFrom stats p.adjust
+#' @method print DiscreteFDR
+#' @export
 ## S3 method for class 'DiscreteFDR'
 print.DiscreteFDR <- function(x, ...){
   m <- length(x$Data$raw.pvalues)

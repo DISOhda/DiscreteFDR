@@ -36,7 +36,7 @@ ADBH(
 
 \item{pCDFlist}{a list of the supports of the CDFs of the p-values. Each support is represented by a vector that must be in increasing order.}
 
-\item{alpha}{the target FDR level, a number strictly between 0 and 1. For \code{*.fast} kernels, it is only necessary, if \code{stepUp = TRUE}.}
+\item{alpha}{the target FDR level, a number strictly between 0 and 1.}
 
 \item{direction}{a character string specifying whether to conduct a step-up (\code{direction="su"}, by default) or step-down procedure (\code{direction="sd"}).}
 
@@ -59,16 +59,14 @@ A \code{DiscreteFDR} S3 class object whose elements are:
 \item{Data$data.name}{The respective variable names of \code{raw.pvalues} and \code{pCDFlist}}
 }
 \description{
-Apply the [HSU], [HSD], [AHSU] and [AHSD] procedures,
-with or without computing the critical constants,
-to a set of p-values and their discrete support.
+Apply the [HSU], [HSD], [AHSU] and [AHSD] procedures, with or without
+computing the critical constants, to a set of p-values and their discrete
+support.
 }
 \details{
-\code{DBH} and \code{ADBH} are wrapper functions for \code{discrete.BH}. 
-\code{DBH} simply passes all its parameters to \code{discrete.BH} with \code{adaptive = FALSE}. 
-\code{ADBH} does the same with \code{adaptive = TRUE}.
-
-This version: 2019-06-18.
+\code{DBH} and \code{ADBH} are wrapper functions for \code{discrete.BH}. \code{DBH} simply passes
+all its parameters to \code{discrete.BH} with \code{adaptive = FALSE}. \code{ADBH} does the
+same with \code{adaptive = TRUE}.
 }
 \examples{
 X1 <- c(4, 2, 2, 14, 6, 9, 4, 0, 1)
@@ -84,7 +82,6 @@ df
 df.formatted <- fisher.pvalues.support(counts = df, input = "noassoc")
 raw.pvalues <- df.formatted$raw
 pCDFlist <- df.formatted$support
-
 DBH.su.fast <- DBH(raw.pvalues, pCDFlist)
 summary(DBH.su.fast)
 DBH.sd.fast <- DBH(raw.pvalues, pCDFlist, direction = "sd")
@@ -93,7 +90,8 @@ summary(DBH.sd.fast)
 
 DBH.su.crit <- DBH(raw.pvalues, pCDFlist, ret.crit.consts = TRUE)
 summary(DBH.su.crit)
-DBH.sd.crit <- DBH(raw.pvalues, pCDFlist, direction = "sd", ret.crit.consts = TRUE)
+DBH.sd.crit <- DBH(raw.pvalues, pCDFlist, direction = "sd",
+                   ret.crit.consts = TRUE)
 DBH.sd.crit$Adjusted
 summary(DBH.sd.crit)
 
@@ -105,11 +103,17 @@ summary(ADBH.sd.fast)
 
 ADBH.su.crit <- ADBH(raw.pvalues, pCDFlist, ret.crit.consts = TRUE)
 summary(ADBH.su.crit)
-ADBH.sd.crit <- ADBH(raw.pvalues, pCDFlist, direction = "sd", ret.crit.consts = TRUE)
+ADBH.sd.crit <- ADBH(raw.pvalues, pCDFlist, direction = "sd",
+                     ret.crit.consts = TRUE)
 ADBH.sd.crit$Adjusted
 summary(ADBH.sd.crit)
 
 }
+\references{
+Döhler, S., Durand, G., & Roquain, E. (2018). New FDR bounds for discrete
+and heterogeneous tests. \emph{Electronic Journal of Statistics}, \emph{12}(1),
+pp. 1867-1900. \doi{10.1214/18-EJS1441}
+}
 \seealso{
-\code{\link{kernel}}, \code{\link{DiscreteFDR}}, \code{\link{DBR}}
+\link{fast.Discrete}, \link{DBR}
 }

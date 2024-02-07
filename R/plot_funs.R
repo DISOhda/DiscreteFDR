@@ -1,32 +1,32 @@
-  #'@name hist.DiscreteFDR
-#'@title Histogram of Raw p-Values
+#' @name hist.DiscreteFDR
+#' @title
+#' Histogram of Raw p-Values
+#' 
+#' @description
+#' Computes a histogram of the raw p-values of a `DiscreteFDR` object.
+#' 
+#' @param x          an object of class "`DiscreteFDR`".
+#' @param breaks     as in [hist]; here, the Friedman-Diaconis
+#'                   algorithm(`"FD"`) is used as default.
+#' @param plot       a boolean If `TRUE` (the default), a histogram is plotted,
+#'                   otherwise a list of breaks and counts is returned.
+#' @param ...        further arguments to [hist] or [plot.histogram],
+#'                   respectively.
+#' 
+#' @details
+#' This method simply calls [hist] and passes the raw p-values of the object.
+#' 
+#' @return
+#' An object of class `histogram`.
 #'
-#'@description
-#'Computes a histogram of the raw p-values of a \code{DiscreteFDR} object.
+#' @template example
+#' @examples
+#' 
+#' DBH <- DBH(raw.pvalues, pCDFlist)
+#' hist(DBH)
 #'
-#'@param x          an object of class "\code{DiscreteFDR}".
-#'@param breaks     as in \code{\link{hist}}; here, the Friedman-Diaconis
-#'                  algorithm(\code{"FD"}) is used as default.
-#'@param plot       a boolean If \code{TRUE} (the default), a histogram is
-#'                  plotted, otherwise a list of breaks and counts is returned.
-#'@param ...        further arguments to \code{\link{hist}} or
-#'                  \code{\link{plot.histogram}}, respectively.
-#'
-#'@details
-#'This method simply calls \code{\link{hist}} and passes the raw p-values of
-#'the object.
-#'
-#'@return
-#'An object of class \code{histogram}.
-#'
-#'@template example
-#'@examples
-#'
-#'DBH <- DBH(raw.pvalues, pCDFlist)
-#'hist(DBH)
-#'
-#'@importFrom graphics hist
-#'@export
+#' @importFrom graphics hist
+#' @export
 hist.DiscreteFDR <- function(x, breaks = "FD", plot = TRUE, ...){
   # necessary to appease automated R CMD check on CRAN
   main <- xlab <- NULL
@@ -48,13 +48,13 @@ hist.DiscreteFDR <- function(x, breaks = "FD", plot = TRUE, ...){
 
 
 #'@name plot.DiscreteFDR
-#'@title Plot Method for \code{DiscreteFDR} objects
+#'@title Plot Method for `DiscreteFDR` objects
 #'
 #'@description
-#'Plots raw p-values of a \code{DiscreteFDR} object and highlights rejected and
+#'Plots raw p-values of a `DiscreteFDR` object and highlights rejected and
 #'accepted p-values. If present, the critical values are plotted, too.
 #'
-#'@param x          an object of class "\code{DiscreteFDR}".
+#'@param x          an object of class "`DiscreteFDR`".
 #'@param col        a numeric or character vector of length 3 indicating the
 #'                  colors of the \enumerate{
 #'                    \item rejected p-values
@@ -65,18 +65,17 @@ hist.DiscreteFDR <- function(x, breaks = "FD", plot = TRUE, ...){
 #'                  point characters of the \enumerate{
 #'                    \item rejected p-values
 #'                    \item accepted p-values
-#'                    \item critical values (if present and \code{type.crit}
-#'                          is a plot type like \code{'p'}, \code{'b'} etc.).
+#'                    \item critical values (if present and `type.crit`
+#'                          is a plot type like `'p'`, `'b'` etc.).
 #'                  }
 #'@param lwd        a numeric vector of length 3 indicating the thickness of
 #'                  the points and lines.
 #'@param type.crit  1-character string giving the type of plot desired for the
-#'                  critical values (e.g.: \code{'p'}, \code{'l'} etc; see
-#'                  \code{\link{plot}}).
+#'                  critical values (e.g.: `'p'`, `'l'` etc; see [plot]).
 #'@param legend     if NULL, no legend is plotted; otherwise expecting a
 #'                  character string like "topleft" etc. or a numeric vector
 #'                  of two elements indicating (x, y) coordinates.
-#'@param ...        further arguments to \code{\link{plot.default}}.
+#'@param ...        further arguments to [plot.default].
 #'
 #'@template example
 #'@examples

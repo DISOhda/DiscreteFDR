@@ -38,28 +38,32 @@ kernel_DBR_crit(pCDFlist, pvalues, sorted_pv, lambda = 0.05, alpha = 0.05)
 \item{lambda}{a number strictly between 0 and 1. If \code{lambda=NULL} (by default), then \code{lambda} is chosen equal to \code{alpha}.}
 }
 \value{
-For \code{kernel.DBH.fast}, \code{kernel.ADBH.fast} and
-\code{kernel.DBR.fast}, a vector of transformed p-values is returned.
-\code{kernel.DBH.crit,} \code{kernel.ADBH.crit} and \code{kernel.DBR.crit}
-return a list object with critical constants (\code{$crit.consts}) and
-transformed p-values (\code{$pval.transf}), but if \code{stepUp = FALSE},
-there are critical values only.
+For \code{kernel.DBH.fast}, \code{kernel.ADBH.fast} and \code{kernel.DBR.fast}, a vector
+of transformed p-values is returned. \code{kernel.DBH.crit}, \code{kernel.ADBH.crit}
+\code{kernel.DBR.crit} return a list with critical constants (\verb{$crit.consts})
+and transformed p-values (\verb{$pval.transf}), but if \code{stepUp = FALSE}, there
+are critical values only.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+
 Kernel functions that transform observed p-values or their support according
-to [HSU], [HSD], [AHSU], [AHSD] and [HBR-\eqn{\lambda}]. The output is used
-by \code{\link{discrete.BH}} or \code{\link{DBR}}, respectively.
-Additionally, \code{kernel.DBH.crit}, \code{kernel.ADBH.crit} and
-\code{kernel.DBR.crit} compute and return the critical constants. The end
-user should not use these functions directly.
+to [HSU], [HSD], [AHSU], [AHSD] and [HBR-\eqn{\lambda}]. The
+output is used by \link{discrete.BH} or \link{DBR}, respectively.
+\code{kernel_DBH_crit}, \code{kernel_ADBH_crit} and \code{kernel_DBR_crit} additionally
+compute and return the critical constants.
+The end user should not use these functions directly.
+
+\strong{Note}: In future versions, these functions will no longer be exported to
+the global namespace. Instead, they will be purely internal functions and
+will have to be called directly via \code{:::}, e.g.
+\code{DiscreteFDR:::kernel_DBH_fast()}.
 }
 \details{
 When computing critical constants under step-down, that is, when using
-\code{kernel.DBH.crit}, \code{kernel.ADBH.crit} or \code{kernel.DBR.crit}
-with \code{stepUp = FALSE} (i.e. the step-down case), we still need to get
-transformed p-values to compute the adjusted p-values.
-
-This version: 2019-11-15.
+\code{kernel_DBH_crit}, \code{kernel_ADBH_crit} or \code{kernel_DBR_crit} with
+\code{stepUp = FALSE} (i.e. the step-down case), we still need to get transformed
+p-values to compute the adjusted p-values.
 }
 \examples{
 X1 <- c(4, 2, 2, 14, 6, 9, 4, 0, 1)
@@ -107,6 +111,5 @@ y.DBR.crit$pval.transf
 
 }
 \seealso{
-\code{\link{discrete.BH}}, \code{\link{DiscreteFDR}},
-\code{\link{DBR}}
+\link{discrete.BH}, \link{fast.Discrete}, \link{DBR}
 }

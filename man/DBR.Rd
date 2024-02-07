@@ -17,7 +17,7 @@ DBR(
 
 \item{pCDFlist}{a list of the supports of the CDFs of the p-values. Each support is represented by a vector that must be in increasing order.}
 
-\item{alpha}{the target FDR level, a number strictly between 0 and 1. For \code{*.fast} kernels, it is only necessary, if \code{stepUp = TRUE}.}
+\item{alpha}{the target FDR level, a number strictly between 0 and 1.}
 
 \item{lambda}{a number strictly between 0 and 1. If \code{lambda=NULL} (by default), then \code{lambda} is chosen equal to \code{alpha}.}
 
@@ -38,20 +38,20 @@ A \code{DiscreteFDR} S3 class object whose elements are:
 \item{Data$data.name}{The respective variable names of \code{raw.pvalues} and \code{pCDFlist}}
 }
 \description{
-Apply the [HBR-\eqn{\lambda}] procedure,
-with or without computing the critical constants,
-to a set of p-values and their discrete support.
+Apply the [HBR-\eqn{\lambda}] procedure, with or without computing the
+critical constants, to a set of p-values and their discrete support.
 }
 \details{
-[DBR-lambda] is the discrete version of the [Blanchard-Roquain-lambda] procedure (see References),
-the authors of the latter suggest to take \code{lambda = alpha} (see their Proposition 17),
-which explains the choice of the default value here. 
-
-This version: 2019-06-18.
+[DBR-\eqn{\lambda}] is the discrete version of the
+[Blanchard-Roquain-\eqn{\lambda}] procedure (see References). The authors
+of the latter suggest to take \code{lambda = alpha} (see their Proposition 17),
+which explains the choice of the default value here.
 }
 \section{References}{
 
-G. Blanchard and E. Roquain (2009). Adaptive false discovery rate control under independence and dependence. Journal of Machine Learning Research, 10, 2837-2871.
+G. Blanchard and E. Roquain (2009). Adaptive false discovery rate control
+under independence and dependence. \emph{Journal of Machine Learning Research},
+\emph{10}, pp. 2837-2871.
 }
 
 \examples{
@@ -76,5 +76,5 @@ summary(DBR.crit)
 
 }
 \seealso{
-\code{\link{discrete.BH}}, \code{\link{DiscreteFDR}}
+\link{discrete.BH}
 }

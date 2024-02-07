@@ -14,19 +14,22 @@ fast.Discrete(
 )
 }
 \arguments{
-\item{counts}{a data frame of 2 or 4 columns and any number of lines,
-each line representing a 2 x 2 contingency table to test.
-The number of columns and what they must contain depend on the value of the \code{input} argument, 
-see Details of \code{\link{fisher.pvalues.support}}.}
+\item{counts}{a data frame of two or four columns and any number of
+lines; each line representing a 2x2 contingency table to
+test. The number of columns and what they must contain
+depend on the value of the \code{input} argument (see Details
+section of \link{fisher.pvalues.support}).}
 
-\item{alternative}{same argument as in \code{\link{fisher.test}}. The three possible values are \code{"greater"} 
-(default), \code{"two.sided"} or \code{"less"} and you can specify just the initial letter.}
+\item{alternative}{same argument as in \link{fisher.test}. The three
+possible values are \code{"greater"} (default), \code{"two.sided"}
+or \code{"less"} (may be abbreviated).}
 
-\item{input}{the format of the input data frame, see Details of \code{\link{fisher.pvalues.support}}.
-The three possible values are \code{"noassoc"} 
-(default), \code{"marginal"} or \code{"HG2011"} and you can specify just the initial letter.}
+\item{input}{the format of the input data frame (see Details section
+of \link{fisher.pvalues.support}. The three possible values
+are \code{"noassoc"} (default), \code{"marginal"} or \code{"HG2011"}
+(may be abbreviated).}
 
-\item{alpha}{the target FDR level, a number strictly between 0 and 1. For \code{*.fast} kernels, it is only necessary, if \code{stepUp = TRUE}.}
+\item{alpha}{the target FDR level, a number strictly between 0 and 1.}
 
 \item{direction}{a character string specifying whether to conduct a step-up (\code{direction="su"}, by default) or step-down procedure (\code{direction="sd"}).}
 
@@ -45,15 +48,16 @@ A \code{DiscreteFDR} S3 class object whose elements are:
 \item{Data$data.name}{The variable name of the \code{counts} dataset}
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+
 Apply the [HSU], [HSD], [AHSU] or [AHSD] procedure,
 without computing the critical constants,
-to a data set of 2 x 2 contingency tables using Fisher's exact tests.
-}
-\details{
-This version: 2019-06-18.
+to a data set of 2x2 contingency tables using Fisher's exact tests.
+
+\strong{Note}: In future versions, this function will be removed and replaced by a
+more flexible one, which will not be limited to Fisher's exact test.
 }
 \examples{
-
 X1 <- c(4, 2, 2, 14, 6, 9, 4, 0, 1)
 X2 <- c(0, 0, 1, 3, 2, 1, 2, 2, 2)
 N1 <- rep(148, 9)
@@ -77,4 +81,7 @@ ADBH.sd <- fast.Discrete(counts = df, input = "noassoc", direction = "sd", adapt
 ADBH.sd$Adjusted
 summary(ADBH.sd)
 
+}
+\seealso{
+\link{fisher.pvalues.support}, \link{discrete.BH}
 }

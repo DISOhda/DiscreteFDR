@@ -3,13 +3,16 @@
 \docType{data}
 \name{amnesia}
 \alias{amnesia}
-\title{Amnesia and other drug reactions in the MHRA pharmacovigilance spontaneous reporting system}
+\title{Amnesia and other drug reactions in the MHRA pharmacovigilance spontaneous
+reporting system}
 \format{
-A data frame with 2446 rows representing drugs with the following 3 columns:
+A data frame with 2,446 rows representing drugs with the following
+three columns:
 \describe{
-  \item{DrugName}{The name of the drug.}
-  \item{AmnesiaCases}{Number of the amnesia cases reported for the drug.}
-  \item{OtherAdverseCases}{Number of other adverse drug reactions reported for the drug.}
+\item{DrugName}{The name of the drug.}
+\item{AmnesiaCases}{Number of the amnesia cases reported for the drug.}
+\item{OtherAdverseCases}{Number of other adverse drug reactions reported
+for the drug.}
 }
 }
 \source{
@@ -19,19 +22,27 @@ A data frame with 2446 rows representing drugs with the following 3 columns:
 data(amnesia)
 }
 \description{
-For each of 2446 drugs in the MHRA database (column 1), 
-the number of cases with amnesia as an adverse event (column 2), 
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+
+For each of 2,446 drugs in the MHRA database (column 1),
+the number of cases with amnesia as an adverse event (column 2),
 and the number of cases with other adverse event for this drug (column 3).
-In total, 682648 adverse drug reactions were reported, among them 2044 cases of amnesia.
+In total, 682,648 adverse drug reactions were reported, among them 2,044
+cases of amnesia.
+
+\strong{Note}: In future versions, this dataset will be removed. It will be part
+of a new R package that this package will be depending on.
 }
 \details{
-The data was collected from the Drug Analysis Prints published 
+The data was collected from the Drug Analysis Prints published
 by the Medicines and Healthcare products Regulatory Agency (MHRA),
 by Heller & Gur. See references for more details.
 }
 \section{References}{
 
-R. Heller and H. Gur (2011). False discovery rate controlling procedures for discrete tests. arXiv preprint arXiv:1112.4627v2 \href{https://arxiv.org/abs/1112.4627v2}{link}.
+R. Heller and H. Gur (2011). False discovery rate controlling procedures
+for discrete tests.
+\href{https://arxiv.org/abs/1112.4627v2}{arXiv:1112.4627v2} (preprint).
 }
 
 \keyword{datasets}

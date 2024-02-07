@@ -1,87 +1,99 @@
-#'@title Computing discrete p-values and their support for binomial and Fisher's exact tests
-#'
-#'@description
-#'Computes discrete raw p-values and their support
-#'for binomial test or Fisher's exact test applied to 2 x 2 contingency tables
-#'summarizing counts coming from two categorical measurements.
-#'
-#'@details
-#'Assume that each contingency tables compares 2 variables and resumes the counts of association
-#'or not with a condition. This can be resumed in the following table:
-#'\tabular{lccc}{
-#'\tab Association \tab No association \tab Total \cr
-#'Variable 1 \tab X1 \tab Y1 \tab N1 \cr
-#'Variable 2 \tab X2 \tab Y2 \tab N2 \cr
-#'Total \tab X1 + X2 \tab Y1 + Y2 \tab N1 + N2
-#'}
-#'If \code{input="noassoc"}, \code{counts} has 4 columns which respectively contain X1, Y1, X2 and Y2.
-#'If \code{input="marginal"}, \code{counts} has 4 columns which respectively contain X1, N1, X2 and N2.
-#'
-#'If \code{input="HG2011"}, we are in the situation of the \code{\link{amnesia}} data set as in
-#'Heller & Gur (2011, see References). Each contingency table is obtained from one variable which is compared 
-#'to all other variables of the study. That is, counts for "second variable" are replaced by the sum of the counts
-#'of the other variables:
-#'\tabular{lccc}{
-#'\tab Association \tab No association \tab Total \cr
-#'Variable j \tab Xj \tab Yj \tab Nj \cr
-#'Variables !=j \tab SUM(Xi) - Xj  \tab SUM(Yi) - Yj \tab SUM(Ni) - Nj \cr
-#'Total \tab SUM(Xi) \tab SUM(Yi)  \tab SUM(Ni)
-#'}
-#'Hence \code{counts} needs to have only 2 columns which respectively contain Xj and Yj.
-#'
-#'\code{binomial.pvalues.support} and \code{fisher.pvalues.support} are wrapper functions for \code{pvalues.support},
-#'setting \code{test.type = "binomial"} and \code{test.type = "fisher"}, respectively.
-#'
-#'The code for the computation of the p-values of Fisher's
-#'exact test is inspired by the example in the help page of
-#'\code{\link[discreteMTP]{p.discrete.adjust}}.
-#'
-#'See the Wikipedia article about Fisher's
-#'exact test, paragraph Example, for a good depiction
-#'of what the code does for each possible value
-#'of \code{alternative}.
-#'
-#'The binomial test simply tests for p = 0.5 by using X1
-#'as the test statistic and N1 as the number of trials.
-#'
-#'This version: 2021-05-23.
-#'
-#'@seealso
-#'\code{\link[discreteMTP]{p.discrete.adjust}}, \code{\link{fisher.test}}
-#'
-#'@param counts        a data frame of 2 or 4 columns and any number of lines,
-#'                     each line representing a 2 x 2 contingency table to
-#'                     test. The number of columns and what they must contain
-#'                     depend on the value of the \code{input} argument, see
-#'                     Details.
-#'@param alternative   same argument as in \code{\link{fisher.test}}. The three
-#'                     possible values are \code{"greater"} (default),
-#'                     \code{"two.sided"} or \code{"less"} and you can specify
-#'                     just the initial letter.
-#'@param input         the format of the input data frame, see Details. The
-#'                     three possible values are \code{"noassoc"} (default),
-#'                     \code{"marginal"} or \code{"HG2011"} and you can specify
-#'                     just the initial letter.
-#'
-#'@template example
-#'@template exampleHG
-#'
-#'@return
-#'A list of two elements:
-#'\item{raw}{raw discrete p-values.}
-#'\item{support}{a list of the supports of the CDFs of the p-values.
-#'Each support is represented by a vector in increasing order.}
-#'
-#' @section References:
-#' R. Heller and H. Gur (2011). False discovery rate controlling procedures for discrete tests. arXiv preprint arXiv:1112.4627v2 \href{https://arxiv.org/abs/1112.4627v2}{link}.
+#' @title
+#' Computing discrete p-values and their support for binomial and Fisher's
+#' exact tests
 #' 
-#' "Fisher's exact test", Wikipedia, The Free Encyclopedia,
-#' accessed 2018-03-20,
-#' \href{https://en.wikipedia.org/w/index.php?title=Fisher\%27s_exact_test&oldid=823327889}{link}.
+#' @description
+#' `r lifecycle::badge('deprecated')`
+#' 
+#' Computes discrete raw p-values and their support
+#' for binomial test or Fisher's exact test applied to 2x2 contingency tables
+#' summarizing counts coming from two categorical measurements.
 #'
-#'@importFrom stats dhyper phyper pbinom
-#'@export
+#' **Note**: In future versions, this function will be removed. Generation of
+#' p-value supports for different exact tests, including Fisher's, will be
+#' moved to a separate package.
+#' 
+#' @details
+#' Assume that each contingency tables compares two variables and resumes the
+#' counts of association or not with a condition. This can be resumed in the
+#' following table:
+#' \tabular{lccc}{
+#' \tab Association \tab No association  \tab      Total      \cr
+#'      Variable 1  \tab    \eqn{X_1}    \tab    \eqn{Y_1}    \tab \eqn{N_1} \cr
+#'      Variable 2  \tab    \eqn{X_2}    \tab    \eqn{Y_2}    \tab \eqn{N_2} \cr
+#'      Total       \tab \eqn{X_1 + X_2} \tab \eqn{Y_1 + Y_2} \tab \eqn{N_1 + N_2}
+#' }
+#' If `input="noassoc"`, `counts` has four columns which respectively contain,
+#' \eqn{X_1}, \eqn{Y_1}, \eqn{X_2} and \eqn{Y_2}. If `input="marginal"`,
+#' `counts` has four columns which respectively contain \eqn{X_1}, \eqn{N_1},
+#' \eqn{X_2} and \eqn{N_2}.
+#' 
+#' If `input="HG2011"`, we are in the situation of the [amnesia] data set as
+#' in Heller & Gur (2011, see References). Each contingency table is obtained
+#' from one variable which is compared to all other variables of the study. That
+#' is, counts for "second variable" are replaced by the sum of the counts of the
+#' other variables:
+#' \tabular{lccc}{
+#' \tab Association            \tab No association            \tab Total                     \cr
+#'      Variable \eqn{j}       \tab \eqn{X_j}                 \tab \eqn{Y_j}                 \tab \eqn{N_j} \cr
+#'      Variables \eqn{\neq j} \tab \eqn{\sum_{i \neq j} X_i} \tab \eqn{\sum_{i \neq j} Y_i} \tab \eqn{\sum_{i \neq j} N_i} \cr
+#'      Total                  \tab \eqn{\sum X_i}            \tab \eqn{\sum Y_i}            \tab \eqn{\sum N_i}
+#' }
+#' Hence `counts` needs to have only two columns which respectively contain \eqn{X_j} and \eqn{Y_j}.
+#'
+#' The code for the computation of the p-values of Fisher's exact test is
+#' inspired by the example in the help page of `p.discrete.adjust` of package
+#' `discreteMTP`, which is no longer available on CRAN.
+#'
+#' See the Wikipedia article about Fisher's exact test, paragraph Example, for
+#' a good depiction of what the code does for each possible value of
+#' `alternative`.
+#'
+#' @seealso
+#' [fisher.test]
+#' 
+#' @param counts        a data frame of two or four columns and any number of
+#'                      lines; each line represents a 2x2 contingency table to
+#'                      test. The number of columns and what they must contain
+#'                      depend on the value of the `input` argument, see
+#'                      Details.
+#' @param alternative   same argument as in [stats::fisher.test]. The three
+#'                      possible values are `"greater"` (default),
+#'                      `"two.sided"` or `"less"` and you can specify
+#'                      just the initial letter.
+#' @param input         the format of the input data frame, see Details. The
+#'                      three possible values are `"noassoc"` (default),
+#'                      `"marginal"` or `"HG2011"` and you can specify
+#'                      just the initial letter.
+#' 
+#' @template example
+#' @template exampleHG
+#' 
+#' @return
+#' A list of two elements:
+#' \item{raw}{raw discrete p-values.}
+#' \item{support}{a list of the supports of the CDFs of the p-values.
+#' Each support is represented by a vector in increasing order.}
+#' 
+#' @references
+#' R. Heller and H. Gur (2011). False discovery rate controlling procedures for
+#'   discrete tests. arXiv preprint.
+#'   [arXiv:1112.4627v2](https://arxiv.org/abs/1112.4627v2).
+#'
+#' "Fisher's exact test", Wikipedia, The Free Encyclopedia, accessed 2018-03-20,
+#' [link](https://en.wikipedia.org/w/index.php?title=Fisher's_exact_test&oldid=823327889).
+#' 
+#' @importFrom stats dhyper phyper pbinom
+#' @importFrom lifecycle deprecate_soft
+#' @export
 fisher.pvalues.support <- function(counts, alternative = "greater", input = "noassoc"){
+  deprecate_soft("1.3.7", "fast.Discrete()",
+                 details = paste("In future versions of this package, this",
+                                 "function will be removed. Generation of",
+                                 "p-value supports for different exact tests,",
+                                 "including Fisher's, will be moved to a",
+                                 "separate package."))
+  
   input <- match.arg(input, c("noassoc", "marginal", "HG2011"))
   alternative <- match.arg(alternative, c("two.sided", "less", "greater"))
   

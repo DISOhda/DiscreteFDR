@@ -16,7 +16,7 @@ They are ignored in this function.}
 The respective input object is invisibly returned via \code{invisible(x)}.
 }
 \description{
-Prints the results of discrete FDR analysis, stored in a \code{DiscreteFDR} 
+Prints the results of discrete FDR analysis, stored in a \code{DiscreteFDR}
 S3 class object.
 }
 \examples{
@@ -34,7 +34,8 @@ df.formatted <- fisher.pvalues.support(counts = df, input = "noassoc")
 raw.pvalues <- df.formatted$raw
 pCDFlist <- df.formatted$support
 
-DBH.su.crit <- DBH(raw.pvalues, pCDFlist, direction = "su", ret.crit.consts = TRUE)
+DBH.su.crit <- DBH(raw.pvalues, pCDFlist, direction = "su",
+                   ret.crit.consts = TRUE)
 print(DBH.su.crit)
 
 }

@@ -16,25 +16,24 @@ A vector where each raw p-value has been
 replaced by its nearest neighbor.
 }
 \description{
-Constructs the observed p-values from the raw observed p-values, 
-by rounding them to their nearest neighbor matching
-with the supports of their respective
-CDFs (as in function \code{\link[discreteMTP]{p.discrete.adjust}} 
-of package \code{\link[discreteMTP]{discreteMTP}}).
-The end user should not use it.
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+
+Constructs the observed p-values from the raw observed p-values, by rounding
+them to their nearest neighbor matching with the supports of their
+respective CDFs (as in function \code{p.discrete.adjust} of package \code{discreteMTP},
+which is no longer available on CRAN).
+The end user should not use it directly.
+
+\strong{Note}: In future versions, this function will no longer be exported to the
+global namespace. Instead, it will be a purely internal function and will
+have to be called directly via \code{:::}, i.e. \code{DiscreteFDR:::match.pvals()}.
 }
 \details{
-Well computed raw p-values should already 
-belong to their respective CDF support.
-So this function is called at the beginning
-of \code{\link{DBH}}, \code{\link{ADBH}},
-and \code{\link{DBR}}, just in case
-raw p-values are biased.
+Well computed raw p-values should already belong to their respective CDF
+support. So this function is called at the beginning of \link{discrete.BH},
+\link{DBH}, \link{ADBH} and \link{DBR}, just in case raw p-values are biased.
 
-For each raw p-value that needs to be rounded,
-a warning is issued.
-
-This version: 2017-08-16.
+For each raw p-value that needs to be rounded, a warning is issued.
 }
 \examples{
 toyList <- list(c(0.3,0.7,1),c(0.1,0.65,1))
@@ -45,5 +44,5 @@ match.pvals(toyList,toyRaw2)
 
 }
 \seealso{
-\code{\link{discrete.BH}}, \code{\link{DBR}}
+\link{discrete.BH}, \link{DBR}
 }

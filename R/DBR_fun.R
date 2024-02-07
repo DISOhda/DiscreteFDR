@@ -1,49 +1,50 @@
-#'@title [HBR-\eqn{\lambda}] procedure
+#' @title
+#' \[HBR-\eqn{\lambda}\] procedure
+#' 
+#' @description
+#' Apply the \[HBR-\eqn{\lambda}\] procedure, with or without computing the
+#' critical constants, to a set of p-values and their discrete support.
+#' 
+#' @details
+#' \[DBR-\eqn{\lambda}\] is the discrete version of the 
+#' \[Blanchard-Roquain-\eqn{\lambda}\] procedure (see References). The authors
+#' of the latter suggest to take `lambda = alpha` (see their Proposition 17),
+#' which explains the choice of the default value here. 
+#' 
+#' @section References:
+#' G. Blanchard and E. Roquain (2009). Adaptive false discovery rate control
+#'   under independence and dependence. *Journal of Machine Learning Research*,
+#'   *10*, pp. 2837-2871.
 #'
-#'@description
-#'Apply the [HBR-\eqn{\lambda}] procedure,
-#'with or without computing the critical constants,
-#'to a set of p-values and their discrete support.
-#'
-#'@details
-#'[DBR-lambda] is the discrete version of the [Blanchard-Roquain-lambda] procedure (see References),
-#'the authors of the latter suggest to take \code{lambda = alpha} (see their Proposition 17),
-#'which explains the choice of the default value here. 
-#'
-#'This version: 2019-06-18.
-#'
-#'@section References:
-#'G. Blanchard and E. Roquain (2009). Adaptive false discovery rate control under independence and dependence. Journal of Machine Learning Research, 10, 2837-2871.
-#'
-#'@seealso
-#'\code{\link{discrete.BH}}, \code{\link{DiscreteFDR}}
-#'
-#'@templateVar pvalues FALSE
-#'@templateVar stepUp FALSE
-#'@templateVar alpha TRUE
-#'@templateVar sorted_pv FALSE
-#'@templateVar support FALSE
-#'@templateVar raw.pvalues TRUE
-#'@templateVar pCDFlist TRUE
-#'@templateVar direction FALSE
-#'@templateVar ret.crit.consts TRUE
-#'@templateVar lambda TRUE
-#'@templateVar adaptive FALSE
-#'@template param 
-#'
-#'@template example
-#'@examples
-#'
-#'DBR.fast <- DBR(raw.pvalues, pCDFlist)
-#'summary(DBR.fast)
-#'DBR.crit <- DBR(raw.pvalues, pCDFlist, ret.crit.consts = TRUE)
-#'summary(DBR.crit)
-#'
-#'@templateVar DBR TRUE
-#'@template return
-#'
-#'@name DBR
-#'@export
+#' @seealso
+#' [discrete.BH]
+#' 
+#' @templateVar pvalues FALSE
+#' @templateVar stepUp FALSE
+#' @templateVar alpha TRUE
+#' @templateVar sorted_pv FALSE
+#' @templateVar support FALSE
+#' @templateVar raw.pvalues TRUE
+#' @templateVar pCDFlist TRUE
+#' @templateVar direction FALSE
+#' @templateVar ret.crit.consts TRUE
+#' @templateVar lambda TRUE
+#' @templateVar adaptive FALSE
+#' @template param 
+#' 
+#' @template example
+#' @examples
+#' 
+#' DBR.fast <- DBR(raw.pvalues, pCDFlist)
+#' summary(DBR.fast)
+#' DBR.crit <- DBR(raw.pvalues, pCDFlist, ret.crit.consts = TRUE)
+#' summary(DBR.crit)
+#' 
+#' @templateVar DBR TRUE
+#' @template return
+#' 
+#' @name DBR
+#' @export
 DBR <- function(raw.pvalues, pCDFlist, alpha = 0.05, lambda = NULL, ret.crit.consts = FALSE){
   # check arguments
   if(is.null(alpha) || is.na(alpha) || !is.numeric(alpha) || alpha < 0 || alpha > 1)
