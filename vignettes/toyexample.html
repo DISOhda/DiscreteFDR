@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>A Toy Example</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">A Toy Example</h1>
+
+
+
+<div id="a-toy-example" class="section level1">
+<h1>1. A Toy Example</h1>
+<p>To give a first impression of how <strong>DiscreteFDR</strong> works,
+we consider an artificial toy example. A more realistic example
+involving pharmacovigilance data is given in Section 2.</p>
+<p>Suppose we would like to compare two treatments in nine different
+populations. For each population we do this by evaluating the responders
+and non-responders for each treatment. This leads to categorical data
+which can be represented, for each population <span class="math inline">\(i = 1, \ldots, 9\)</span> in the following 2 <span class="math inline">\(\times\)</span> 2 table:</p>
+<table>
+<colgroup>
+<col width="16%" />
+<col width="26%" />
+<col width="26%" />
+<col width="31%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="center">Responders</th>
+<th align="center">Non-responders</th>
+<th align="center"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Treatment 1</td>
+<td align="center"><span class="math inline">\(x_{1i}\)</span></td>
+<td align="center"><span class="math inline">\(y_{1i}\)</span></td>
+<td align="center"><span class="math inline">\(n_{1i}\)</span></td>
+</tr>
+<tr class="even">
+<td align="left">Treatment 2</td>
+<td align="center"><span class="math inline">\(x_{2i}\)</span></td>
+<td align="center"><span class="math inline">\(y_{2i}\)</span></td>
+<td align="center"><span class="math inline">\(n_{2i}\)</span></td>
+</tr>
+<tr class="odd">
+<td align="left"><strong>Total</strong></td>
+<td align="center"><span class="math inline">\(x_{1i} +
+x_{2i}\)</span></td>
+<td align="center"><span class="math inline">\(y_{1i} +
+y_{2i}\)</span></td>
+<td align="center"><span class="math inline">\(n = n_{1i} +
+n_{2i}\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>Denoting the responder probabilities for population <span class="math inline">\(i\)</span> by <span class="math inline">\(\pi_{1i}\)</span> and <span class="math inline">\(\pi_{2i}\)</span> we can test e.g.</p>
+<p><span class="math display">\[H_{0i}: \pi_{1i} = \pi_{2i} \qquad
+\text{vs.} \qquad H_{1i}: \pi_{1i} \neq \pi_{2i}\]</span></p>
+<p>by using Fisher’s (two-sided) exact test (see <a href="https://doi.org/10.1214/009053605000000084">Lehmann and Romano
+(2006)</a>), which is implemented in the <strong>R</strong> function
+<code>fisher.test</code>. Suppose the data in the nine populations are
+independent and we observe the following data frame <code>df</code></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>X1 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">14</span>, <span class="dv">6</span>, <span class="dv">9</span>, <span class="dv">4</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>X2 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>N1 <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">148</span>, <span class="dv">9</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>N2 <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">132</span>, <span class="dv">9</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>Y1 <span class="ot">&lt;-</span> N1 <span class="sc">-</span> X1</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>Y2 <span class="ot">&lt;-</span> N2 <span class="sc">-</span> X2</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(X1, Y1, X2, Y2)</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="fu">kable</span>(df, <span class="at">caption =</span> <span class="st">&quot;Toy Example&quot;</span>)</span></code></pre></div>
+<table>
+<caption>Toy Example</caption>
+<thead>
+<tr class="header">
+<th align="right">X1</th>
+<th align="right">Y1</th>
+<th align="right">X2</th>
+<th align="right">Y2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">4</td>
+<td align="right">144</td>
+<td align="right">0</td>
+<td align="right">132</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="right">146</td>
+<td align="right">0</td>
+<td align="right">132</td>
+</tr>
+<tr class="odd">
+<td align="right">2</td>
+<td align="right">146</td>
+<td align="right">1</td>
+<td align="right">131</td>
+</tr>
+<tr class="even">
+<td align="right">14</td>
+<td align="right">134</td>
+<td align="right">3</td>
+<td align="right">129</td>
+</tr>
+<tr class="odd">
+<td align="right">6</td>
+<td align="right">142</td>
+<td align="right">2</td>
+<td align="right">130</td>
+</tr>
+<tr class="even">
+<td align="right">9</td>
+<td align="right">139</td>
+<td align="right">1</td>
+<td align="right">131</td>
+</tr>
+<tr class="odd">
+<td align="right">4</td>
+<td align="right">144</td>
+<td align="right">2</td>
+<td align="right">130</td>
+</tr>
+<tr class="even">
+<td align="right">0</td>
+<td align="right">148</td>
+<td align="right">2</td>
+<td align="right">130</td>
+</tr>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">147</td>
+<td align="right">2</td>
+<td align="right">130</td>
+</tr>
+</tbody>
+</table>
+<p>In this data frame each of the 9 rows represents the data of an
+observed 2 <span class="math inline">\(\times\)</span> 2 table: e.g.,
+the third row of the data corresponds to <span class="math inline">\(x_{13} = 2, y_{13} = 146, x_{23} = 1, y_{23} =
+131\)</span>. Even though in this example, the total number of tested
+hypotheses <span class="math inline">\(m = 9\)</span> is very small, for
+illustrative purposes we deal with the multiplicity problem here by
+controlling FDR at level <span class="math inline">\(\alpha =
+5\%\)</span>. The DBH step-down procedure can be applied directly to the
+data frame object <code>df</code> and yields an S3 object of class
+<code>DiscreteFDR</code>, for which we provide both <code>print</code>
+and <code>summary</code> methods:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;DiscreteFDRTest&quot;</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>DBH.sd.fast <span class="ot">&lt;-</span> <span class="fu">fast.Discrete</span>(df, <span class="at">alternative =</span> <span class="st">&quot;two.sided&quot;</span>, <span class="at">direction =</span> <span class="st">&quot;sd&quot;</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="fu">print</span>(DBH.sd.fast)</span></code></pre></div>
+<pre><code>## 
+##   Discrete Benjamini-Hochberg procedure (step-down) 
+## 
+## Data:  df 
+## Number of tests = 9 
+## Number of rejections = 2 at global FDR level 0.05 
+## (Original BH rejections = 0)
+## Largest rejected p value:  0.02126871</code></pre>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">summary</span>(DBH.sd.fast)</span></code></pre></div>
+<pre><code>## 
+##   Discrete Benjamini-Hochberg procedure (step-down) 
+## 
+## Data:  df 
+## Number of tests = 9 
+## Number of rejections = 2 at global FDR level 0.05 
+## (Original BH rejections = 0)
+## Largest rejected p value:  0.02126871 
+## 
+##   Index    P.value   Adjusted Rejected
+## 1     4 0.01243145 0.03819796     TRUE
+## 2     6 0.02126871 0.03819796     TRUE
+## 3     1 0.12476691 0.25630985    FALSE
+## 4     8 0.22135177 0.47895996    FALSE
+## 5     5 0.28849298 0.51482782    FALSE
+## 6     2 0.49984639 1.00000000    FALSE
+## 7     9 0.60329543 1.00000000    FALSE
+## 8     7 0.68723229 1.00000000    FALSE
+## 9     3 1.00000000 1.00000000    FALSE</code></pre>
+<p>The output of the <code>summary</code> function contains the same
+output as the <code>print</code> method, but adds a table that lists the
+raw <span class="math inline">\(p\)</span>-values, their adjusted
+counterparts and their respective rejection decision. It is sorted by
+raw <span class="math inline">\(p\)</span>-values in ascending order.
+Our <code>summary</code> method actually creates a
+<code>summary.DiscreteFDR</code> object, which includes all contents of
+an <code>DiscreteFDR</code> object plus the aforementioned table. This
+table can be accessed directly by the <code>$Table</code> command.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>DBH.sd.fast.summary <span class="ot">&lt;-</span> <span class="fu">summary</span>(DBH.sd.fast)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>DBH.sd.fast.summary<span class="sc">$</span>Table</span></code></pre></div>
+<pre><code>##   Index    P.value   Adjusted Rejected
+## 1     4 0.01243145 0.03819796     TRUE
+## 2     6 0.02126871 0.03819796     TRUE
+## 3     1 0.12476691 0.25630985    FALSE
+## 4     8 0.22135177 0.47895996    FALSE
+## 5     5 0.28849298 0.51482782    FALSE
+## 6     2 0.49984639 1.00000000    FALSE
+## 7     9 0.60329543 1.00000000    FALSE
+## 8     7 0.68723229 1.00000000    FALSE
+## 9     3 1.00000000 1.00000000    FALSE</code></pre>
+<p>Thus we can reject two hypotheses at FDR-level <span class="math inline">\(\alpha = 5\%\)</span>. Note, that our
+<code>print</code> method also gives the number of rejections of the
+usual (continuous) BH procedure. In order to compare its adjusted <span class="math inline">\(p\)</span>-values with ours, we have to determine
+the raw <span class="math inline">\(p\)</span>~values first. This would
+be possible by applying the <code>fisher.test</code> function to all
+nine 2 <span class="math inline">\(\times\)</span> 2 tables.
+Alternatively, we may use the more convenient function
+<code>fisher.pvalues.support</code> included in our package for
+accessing the raw <span class="math inline">\(p\)</span>-values. An even
+more simple way is to extract them from an object that contains the
+results:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">fisher.pvalues.support</span>(df, <span class="at">alternative =</span> <span class="st">&quot;two.sided&quot;</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>raw.pvalues <span class="ot">&lt;-</span> p<span class="sc">$</span>raw</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co"># or:</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>raw.pvalues2 <span class="ot">&lt;-</span> DBH.sd.fast<span class="sc">$</span>Data<span class="sc">$</span>raw.pvalues</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="fu">all</span>(raw.pvalues <span class="sc">==</span> raw.pvalues2)</span></code></pre></div>
+<pre><code>## [1] TRUE</code></pre>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">p.adjust</span>(raw.pvalues, <span class="at">method =</span> <span class="st">&quot;BH&quot;</span>)</span></code></pre></div>
+<pre><code>## [1] 0.37430072 0.74976959 1.00000000 0.09570921 0.51928737 0.09570921 0.77313633
+## [8] 0.49804147 0.77313633</code></pre>
+<p>Applying the continuous BH procedure from the <strong>stats</strong>
+package in the last line of code, we find that we can not reject any
+hypotheses at FDR-level <span class="math inline">\(\alpha =
+5\%\)</span>. Another approach of determining this is to compare the
+critical values of the discrete and continuous BH procedures. In the
+discrete case, we need the observed <span class="math inline">\(p\)</span>-values their distributions. Both were
+computed by our <code>fisher.pvalues.support</code> function above.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">fisher.pvalues.support</span>(df, <span class="at">alternative =</span> <span class="st">&quot;two.sided&quot;</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>raw.pvalues <span class="ot">&lt;-</span> p<span class="sc">$</span>raw</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>pCDFlist <span class="ot">&lt;-</span> p<span class="sc">$</span>support</span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>DBH.sd.crit <span class="ot">&lt;-</span> <span class="fu">DBH</span>(raw.pvalues, pCDFlist, <span class="fl">0.05</span>, <span class="st">&quot;sd&quot;</span>, <span class="cn">TRUE</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>crit.vals.BH.disc <span class="ot">&lt;-</span> DBH.sd.crit<span class="sc">$</span>Critical.values</span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>crit.vals.BH.cont <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span> <span class="sc">*</span> <span class="fl">0.05</span><span class="sc">/</span><span class="dv">9</span></span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a><span class="fu">cbind</span>(<span class="fu">sort</span>(raw.pvalues), crit.vals.BH.disc, crit.vals.BH.cont)</span></code></pre></div>
+<pre><code>##                  crit.vals.BH.disc crit.vals.BH.cont
+##  [1,] 0.01243145        0.01243145       0.005555556
+##  [2,] 0.02126871        0.02832448       0.011111111
+##  [3,] 0.12476691        0.03109596       0.016666667
+##  [4,] 0.22135177        0.04839433       0.022222222
+##  [5,] 0.28849298        0.05014119       0.027777778
+##  [6,] 0.49984639        0.07657062       0.033333333
+##  [7,] 0.60329543        0.07657062       0.038888889
+##  [8,] 0.68723229        0.10328523       0.044444444
+##  [9,] 1.00000000        0.10328523       0.050000000</code></pre>
+<p>Obviously, the critical values of the discrete approach are
+considerably larger than those of the continuous method. As a result,
+the two smallest <span class="math inline">\(p\)</span>-values are
+rejected by the discrete BH procedure, because they are smaller than or
+equal to the respective critical values. The continuous BH approach does
+not reject any hypothesis, because all its critical values are smaller
+than the observed <span class="math inline">\(p\)</span>-values.</p>
+<p>For illustration, our package includes a <code>plot</code> method for
+<code>DiscreteFDR</code> S3 class objects. It allows to define colors,
+line types and point characters separately for accepted and rejected
+<span class="math inline">\(p\)</span>-values and for critical values
+(if present in the object).</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="fu">plot</span>(DBH.sd.crit, <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;red&quot;</span>, <span class="st">&quot;blue&quot;</span>, <span class="st">&quot;green&quot;</span>), <span class="at">pch =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">19</span>), <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">type.crit =</span> <span class="st">&#39;o&#39;</span>,</span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>     <span class="at">legend =</span> <span class="st">&quot;topleft&quot;</span>, <span class="at">cex =</span> <span class="fl">1.3</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>Now, it is visible which observed <span class="math inline">\(p\)</span>-values are rejected. A comparison with
+the continuous BH procedure could be done as follows:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="fu">plot</span>(DBH.sd.crit, <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;red&quot;</span>, <span class="st">&quot;blue&quot;</span>, <span class="st">&quot;green&quot;</span>), <span class="at">pch =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">19</span>), <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">type.crit =</span> <span class="st">&#39;o&#39;</span>,</span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>     <span class="at">cex =</span> <span class="fl">1.3</span>, <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.25</span>), <span class="at">main =</span> <span class="st">&quot;Comparison of discrete and continuous BH procedures&quot;</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a><span class="fu">points</span>(crit.vals.BH.cont, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">cex =</span> <span class="fl">1.3</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;topright&quot;</span>, <span class="fu">c</span>(<span class="st">&quot;Rejected&quot;</span>, <span class="st">&quot;Accepted&quot;</span>, <span class="st">&quot;Critical Values (disc.)&quot;</span>, <span class="st">&quot;Critical Values (cont.)&quot;</span>),</span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;red&quot;</span>, <span class="st">&quot;blue&quot;</span>, <span class="st">&quot;green&quot;</span>, <span class="st">&quot;black&quot;</span>), <span class="at">pch =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">19</span>, <span class="dv">19</span>), <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">lty =</span> <span class="dv">0</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>As this example illustrates, the discrete approach can potentially
+yield a large increase in power. The gain depends on the involved
+distribution functions and the raw <span class="math inline">\(p\)</span>-values. To appreciate where this comes
+from, it is instructive to consider the distribution functions <span class="math inline">\(F_1, \ldots, F_9\)</span> of the <span class="math inline">\(p\)</span>-values under the null in more detail.
+Take for instance the first 2 <span class="math inline">\(\times\)</span> 2 table:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="center">Responders</th>
+<th align="center">Non-responders</th>
+<th align="center"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Treatment 1</td>
+<td align="center">4</td>
+<td align="center">144</td>
+<td align="center">148</td>
+</tr>
+<tr class="even">
+<td align="left">Treatment 2</td>
+<td align="center">0</td>
+<td align="center">132</td>
+<td align="center">132</td>
+</tr>
+<tr class="odd">
+<td align="left"><strong>Total</strong></td>
+<td align="center">4</td>
+<td align="center">276</td>
+<td align="center">280</td>
+</tr>
+</tbody>
+</table>
+<p>Fisher’s exact test works by determining the probability of observing
+this (or a more ‘extreme’) table, given that the margins are fixed. So
+each <span class="math inline">\(F_i\)</span> is determined by the
+margins of table <span class="math inline">\(i\)</span>. Since <span class="math inline">\(x_{11} + x_{21} = 4\)</span>, the only potentially
+observable tables are given by <span class="math inline">\(x_{11} = 0,
+\ldots, 4\)</span>. For each one of these 5 values a <span class="math inline">\(p\)</span>-value can be determined using the
+hypergeometric distribution. Therefore, the <span class="math inline">\(p\)</span>-value of any 2 <span class="math inline">\(\times\)</span> 2 table with margins given by the
+above table can take (at most) 5 distinct values, say <span class="math inline">\(x_1, \ldots, x_5\)</span>. Combining these 5
+values into a set, we obtain the <em>support</em> <span class="math inline">\(\mathcal{A}_1 = \{x_1, \ldots, x_5\}\)</span> of
+distribution <span class="math inline">\(F_1\)</span>. Now we can
+continue in this vein for the remaining 2 <span class="math inline">\(\times\)</span> 2 tables to obtain the supports
+<span class="math inline">\(\mathcal{A}_1, \ldots,
+\mathcal{A}_9\)</span> for the distribution functions <span class="math inline">\(F_1, \ldots, F_{9}\)</span>. The supports can be
+accessed via the <code>$support</code> command, e.g.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>p<span class="sc">$</span>support[<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">5</span>)]</span></code></pre></div>
+<pre><code>## [[1]]
+## [1] 0.04820493 0.12476691 0.34598645 0.62477763 1.00000000
+## 
+## [[2]]
+## [1] 0.002173856 0.007733719 0.028324482 0.069964309 0.154043258 0.288492981
+## [7] 0.481808361 0.726262402 1.000000000</code></pre>
+<p>returns <span class="math inline">\(\mathcal{A}_1\)</span> and <span class="math inline">\(\mathcal{A}_5\)</span>. Panel (a) in the following
+figure shows a graph of the distribution functions <span class="math inline">\(F_1, \ldots, F_9\)</span>. Each <span class="math inline">\(F_i\)</span> is a step-function with <span class="math inline">\(F_i(0) = 0\)</span>, the jumps occurring only on
+the support <span class="math inline">\(\mathcal{A}_i\)</span> and <span class="math inline">\(F_i(x) = x\)</span> only for <span class="math inline">\(x \in \mathcal{A}_i\)</span>. In particular, all
+distributions are stochastically larger than the uniform distribution
+(i.e., <span class="math inline">\(F_i(x) \le x\)</span>), but in a
+heterogeneous manner. This heterogeneity can be exploited e.g., by
+transforming the raw <span class="math inline">\(p\)</span>-values from
+the exact Fisher’s test using the function <span class="math display">\[\displaystyle \xi_{\text{SD}}(x) = \sum_{i =
+1}^{9} \frac{F_i(x)}{1 - F_i(x)}.\]</span> Panel (b) shows that <span class="math inline">\(\xi_{\text{SD}}\)</span> is a step function. Its
+jumps occur on the joint support <span class="math inline">\(\mathcal{A}= \mathcal{A}_1 \cup \ldots \cup
+\mathcal{A}_9\)</span>. Panel (b) also shows that <span class="math inline">\(\displaystyle \xi_{\text{SD}}(x) \ll x\)</span>,
+at least for small values of <span class="math inline">\(x\)</span>. It
+turns out that the critical values of our new DBH step-down procedure
+are essentially given by inverting <span class="math inline">\(\xi_{\text{SD}}\)</span> at the critical values of
+the [BH] procedure <span class="math inline">\(1 \cdot \alpha / 9, 2
+\cdot \alpha / 9, \ldots, \alpha\)</span>, so that these values are
+considerably larger than the [BH] critical values. This is illustrated
+in panel (c) along with the ordered <span class="math inline">\(p\)</span>~values. In particular, all asterisks
+are located above the green [BH] dots, therefore this procedure can not
+reject any hypothesis. In contrast, the two smallest <span class="math inline">\(p\)</span>~values are located below red DBH
+step-down dots, so that this procedure rejects two hypotheses as we had
+already seen earlier.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>pCDFlist <span class="ot">&lt;-</span> p<span class="sc">$</span>support</span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>stepf <span class="ot">&lt;-</span> <span class="fu">lapply</span>(pCDFlist, <span class="cf">function</span>(x) <span class="fu">stepfun</span>(x, <span class="fu">c</span>(<span class="dv">0</span>, x)))</span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfcol =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>), <span class="at">mai =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="fl">0.5</span>, <span class="fl">0.3</span>, <span class="fl">0.1</span>))</span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a><span class="fu">plot</span>(stepf[[<span class="dv">1</span>]], <span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">do.points =</span> <span class="cn">FALSE</span>, <span class="at">lwd =</span> <span class="dv">1</span>, <span class="at">lty =</span> <span class="dv">1</span>, <span class="at">ylab =</span> <span class="st">&quot;F(x)&quot;</span>, </span>
+<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">&quot;(a)&quot;</span>)</span>
+<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> (<span class="dv">2</span><span class="sc">:</span><span class="dv">9</span>)){</span>
+<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a>  <span class="fu">plot</span>(stepf[[i]], <span class="at">add =</span> <span class="cn">TRUE</span>, <span class="at">do.points =</span> <span class="cn">FALSE</span>, <span class="at">lwd =</span> <span class="dv">1</span>, <span class="at">col =</span> i)</span>
+<span id="cb18-8"><a href="#cb18-8" tabindex="-1"></a>}</span>
+<span id="cb18-9"><a href="#cb18-9" tabindex="-1"></a><span class="fu">segments</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="at">col =</span> <span class="st">&quot;grey&quot;</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span>
+<span id="cb18-10"><a href="#cb18-10" tabindex="-1"></a></span>
+<span id="cb18-11"><a href="#cb18-11" tabindex="-1"></a><span class="co">#   Plot xi</span></span>
+<span id="cb18-12"><a href="#cb18-12" tabindex="-1"></a>support <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">unique</span>(<span class="fu">unlist</span>(pCDFlist)))</span>
+<span id="cb18-13"><a href="#cb18-13" tabindex="-1"></a>components <span class="ot">&lt;-</span> <span class="fu">lapply</span>(stepf, <span class="cf">function</span>(s){<span class="fu">s</span>(support) <span class="sc">/</span> (<span class="dv">1</span> <span class="sc">-</span> <span class="fu">s</span>(support))}) </span>
+<span id="cb18-14"><a href="#cb18-14" tabindex="-1"></a>xi.values <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">9</span> <span class="sc">*</span> <span class="fu">Reduce</span>(<span class="st">&#39;+&#39;</span>, components)</span>
+<span id="cb18-15"><a href="#cb18-15" tabindex="-1"></a>xi <span class="ot">&lt;-</span> <span class="fu">stepfun</span>(support, <span class="fu">c</span>(<span class="dv">0</span>, xi.values))</span>
+<span id="cb18-16"><a href="#cb18-16" tabindex="-1"></a><span class="fu">plot</span>(xi, <span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.10</span>), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.10</span>), <span class="at">do.points =</span> <span class="cn">FALSE</span>, <span class="at">ylab =</span> <span class="fu">expression</span>(xi), <span class="at">main =</span> <span class="st">&quot;(b)&quot;</span>)</span>
+<span id="cb18-17"><a href="#cb18-17" tabindex="-1"></a><span class="fu">segments</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="at">col =</span> <span class="st">&quot;grey&quot;</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span>
+<span id="cb18-18"><a href="#cb18-18" tabindex="-1"></a></span>
+<span id="cb18-19"><a href="#cb18-19" tabindex="-1"></a><span class="co">#   Plot discrete critical values as well a BH constants and raw p-values</span></span>
+<span id="cb18-20"><a href="#cb18-20" tabindex="-1"></a>DBH.sd <span class="ot">&lt;-</span> <span class="fu">DBH</span>(raw.pvalues, pCDFlist, <span class="at">direction =</span> <span class="st">&quot;sd&quot;</span>, <span class="at">ret.crit.consts =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb18-21"><a href="#cb18-21" tabindex="-1"></a><span class="fu">plot</span>(DBH.sd, <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;black&quot;</span>, <span class="st">&quot;red&quot;</span>), <span class="at">pch =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">19</span>), <span class="at">type.crit =</span> <span class="st">&#39;p&#39;</span>, <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.15</span>),</span>
+<span id="cb18-22"><a href="#cb18-22" tabindex="-1"></a>     <span class="at">cex =</span> <span class="fl">1.3</span>, <span class="at">main =</span> <span class="st">&quot;(c)&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;Critical Values&quot;</span>)</span>
+<span id="cb18-23"><a href="#cb18-23" tabindex="-1"></a><span class="fu">points</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>, <span class="fl">0.05</span> <span class="sc">*</span> (<span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) <span class="sc">/</span> <span class="dv">9</span>, <span class="at">col =</span> <span class="st">&quot;green&quot;</span>, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">cex =</span> <span class="fl">1.3</span>)</span>
+<span id="cb18-24"><a href="#cb18-24" tabindex="-1"></a></span>
+<span id="cb18-25"><a href="#cb18-25" tabindex="-1"></a><span class="fu">mtext</span>(<span class="st">&quot;Figure 1&quot;</span>, <span class="dv">1</span>, <span class="at">outer =</span> <span class="cn">TRUE</span>, <span class="at">line =</span> <span class="sc">-</span><span class="dv">2</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- -->
+Panel (a) depicts the distribution functions <span class="math inline">\(F_1, \ldots, F_9\)</span> in various colors, (b)
+is a graph of the transformation <span class="math inline">\(\xi_{\text{SD}}\)</span>. The uniform distribution
+function is shown in light grey in (a) and (b). Panel (c) shows the [BH]
+critical values (green dots), the DBH step-down critical values (red
+dots) and the sorted raw <span class="math inline">\(p\)</span>-values
+(asterisks).</p>
+<hr />
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

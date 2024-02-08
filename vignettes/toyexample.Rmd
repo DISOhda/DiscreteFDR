@@ -1,0 +1,149 @@
+---
+title: "A Toy Example"
+#author: "Florian Junge, Christina Kihn"
+#date: "2023-09-24"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{A Toy Example}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+# 1. A Toy Example
+
+To give a first impression of how  **DiscreteFDR** works, we consider an  artificial toy example. A more realistic example involving pharmacovigilance data is given in Section 2.
+
+Suppose we would like to compare two treatments in nine different populations. For each population we do this by evaluating the responders and non-responders for each treatment. This leads to categorical data which can be  represented, for each population $i = 1, \ldots, 9$ in the following 2 $\times$ 2 table:
+
+|              |     Responders      |    Non-responders   |                         |
+|:------------ |:-------------------:|:-------------------:|:-----------------------:|
+| Treatment 1  |      $x_{1i}$       |       $y_{1i}$      |        $n_{1i}$         |
+| Treatment 2  |      $x_{2i}$       |       $y_{2i}$      |        $n_{2i}$         |
+| **Total**    |  $x_{1i} + x_{2i}$  |  $y_{1i} + y_{2i}$  |  $n = n_{1i} + n_{2i}$  |
+
+Denoting the responder probabilities for population $i$ by $\pi_{1i}$ and $\pi_{2i}$ we can test e.g.
+
+$$H_{0i}: \pi_{1i} = \pi_{2i} \qquad \text{vs.} \qquad H_{1i}: \pi_{1i} \neq \pi_{2i}$$
+
+by using Fisher's (two-sided) exact test (see [Lehmann and Romano (2006)](https://doi.org/10.1214/009053605000000084)), which is implemented in the **R** function `fisher.test`. Suppose the data in the nine populations are independent and we observe the following data frame `df`
+
+```{r toy-example-data, results='asis'}
+library(knitr)
+X1 <- c(4, 2, 2, 14, 6, 9, 4, 0, 1)
+X2 <- c(0, 0, 1, 3, 2, 1, 2, 2, 2)
+N1 <- rep(148, 9)
+N2 <- rep(132, 9)
+Y1 <- N1 - X1
+Y2 <- N2 - X2
+df <- data.frame(X1, Y1, X2, Y2)
+kable(df, caption = "Toy Example")
+```
+
+In this data frame each of the 9 rows represents the data of an observed 2 $\times$ 2 table: e.g., the third row of the data corresponds to $x_{13} = 2, y_{13} = 146, x_{23} = 1, y_{23} = 131$. Even though in this example, the total number of tested hypotheses $m = 9$ is very small, for illustrative purposes we deal with the multiplicity problem here by controlling FDR at level $\alpha = 5\%$. The DBH step-down procedure can be applied directly to the data frame object `df` and yields an S3 object of class `DiscreteFDR`, for which we provide both `print` and `summary` methods:
+
+```{r toy-example-5}
+library(DiscreteFDRTest)
+DBH.sd.fast <- fast.Discrete(df, alternative = "two.sided", direction = "sd")
+print(DBH.sd.fast)
+
+summary(DBH.sd.fast)
+```
+
+The output of the `summary` function contains the same output as the `print` method, but adds a table that lists the raw $p$-values, their adjusted counterparts and their respective rejection decision. It is sorted by raw $p$-values in ascending order. Our `summary` method actually creates a `summary.DiscreteFDR` object, which includes all contents of an `DiscreteFDR` object plus the aforementioned table. This table can be accessed directly by the `$Table` command.
+
+```{r toy-example-summary}
+DBH.sd.fast.summary <- summary(DBH.sd.fast)
+DBH.sd.fast.summary$Table
+```
+Thus we can reject two hypotheses at FDR-level $\alpha = 5\%$. Note, that our `print` method also gives the number of rejections of the usual (continuous) BH procedure. In order to compare its adjusted $p$-values with ours, we have to determine the raw $p$~values first. This would be possible by applying the `fisher.test` function to all nine 2 $\times$ 2 tables. Alternatively, we may use the more convenient function `fisher.pvalues.support` included in our package for accessing the raw $p$-values. An even more simple way is to extract them from an object that contains the results:
+
+```{r tow-example-2}
+p <- fisher.pvalues.support(df, alternative = "two.sided")
+raw.pvalues <- p$raw
+
+# or:
+raw.pvalues2 <- DBH.sd.fast$Data$raw.pvalues
+
+all(raw.pvalues == raw.pvalues2)
+
+p.adjust(raw.pvalues, method = "BH")
+```
+
+Applying the continuous BH procedure from the **stats** package in the last line of code, we find that we can not reject any hypotheses at FDR-level $\alpha = 5\%$. Another approach of determining this is to compare the critical values of the discrete and continuous BH procedures. In the discrete case, we need the observed $p$-values their distributions. Both were computed by our `fisher.pvalues.support` function above.
+
+```{r toy-example-crit}
+p <- fisher.pvalues.support(df, alternative = "two.sided")
+raw.pvalues <- p$raw
+pCDFlist <- p$support
+
+DBH.sd.crit <- DBH(raw.pvalues, pCDFlist, 0.05, "sd", TRUE)
+crit.vals.BH.disc <- DBH.sd.crit$Critical.values
+crit.vals.BH.cont <- 1:9 * 0.05/9
+cbind(sort(raw.pvalues), crit.vals.BH.disc, crit.vals.BH.cont)
+```
+
+Obviously, the critical values of the discrete approach are considerably larger than those of the continuous method. As a result, the two smallest $p$-values are rejected by the discrete BH procedure, because they are smaller than or equal to the respective critical values. The continuous BH approach does not reject any hypothesis, because all its critical values are smaller than the observed $p$-values.
+
+For illustration, our package includes a `plot` method for `DiscreteFDR` S3 class objects. It allows to define colors, line types and point characters separately for accepted and rejected $p$-values and for critical values (if present in the object).
+
+```{r toy-example-plot-1}
+plot(DBH.sd.crit, col = c("red", "blue", "green"), pch = c(4, 2, 19), lwd = 2, type.crit = 'o',
+     legend = "topleft", cex = 1.3)
+```
+
+Now, it is visible which observed $p$-values are rejected. A comparison with the continuous BH procedure could be done as follows:
+
+```{r toy-example-plot-2}
+plot(DBH.sd.crit, col = c("red", "blue", "green"), pch = c(4, 2, 19), lwd = 2, type.crit = 'o',
+     cex = 1.3, ylim = c(0, 0.25), main = "Comparison of discrete and continuous BH procedures")
+points(crit.vals.BH.cont, pch = 19, cex = 1.3, lwd = 2)
+legend("topright", c("Rejected", "Accepted", "Critical Values (disc.)", "Critical Values (cont.)"),
+       col = c("red", "blue", "green", "black"), pch = c(4, 2, 19, 19), lwd = 2, lty = 0)
+```
+
+As this example illustrates, the discrete approach can potentially yield a large increase in power. The gain depends on the involved distribution functions and the raw $p$-values. To appreciate where this  comes from, it is instructive to consider the distribution functions $F_1, \ldots, F_9$ of the $p$-values under the null in more detail. Take for instance the first 2 $\times$ 2 table:
+
+|              | Responders | Non-responders |     |
+|:------------ |:----------:|:--------------:|:---:|
+| Treatment 1  |      4     |       144      | 148 |
+| Treatment 2  |      0     |       132      | 132 |
+| **Total**    |      4     |       276      | 280 |
+
+Fisher's exact test works by determining the probability of observing this (or a more 'extreme') table, given that the margins are fixed. So each $F_i$ is determined by the margins of table $i$. Since $x_{11} + x_{21} = 4$, the only potentially observable tables are given by $x_{11} = 0, \ldots, 4$. For each one of these 5 values a $p$-value can be determined using the hypergeometric distribution. Therefore, the $p$-value of any 2 $\times$ 2 table with margins given by the above table can take (at most) 5 distinct values, say $x_1, \ldots, x_5$. Combining these 5 values into a set, we obtain the *support* $\mathcal{A}_1 = \{x_1, \ldots, x_5\}$ of distribution $F_1$. Now we can continue in this vein for the remaining 2 $\times$ 2 tables to obtain the supports $\mathcal{A}_1, \ldots, \mathcal{A}_9$ for the distribution functions $F_1, \ldots, F_{9}$. The supports can be accessed via the `$support` command, e.g.
+
+```{r toy-example-3}
+p$support[c(1,5)]
+```
+
+returns $\mathcal{A}_1$ and $\mathcal{A}_5$. Panel (a) in the following figure shows a graph of the distribution functions $F_1, \ldots, F_9$. Each $F_i$ is a step-function with $F_i(0) = 0$, the jumps occurring only on the support $\mathcal{A}_i$ and $F_i(x) = x$ only for $x \in \mathcal{A}_i$. In particular, all distributions are stochastically larger than the uniform distribution (i.e., $F_i(x) \le x$), but in a heterogeneous manner. This heterogeneity can be exploited e.g., by transforming the raw $p$-values from the exact Fisher's test using the function $$\displaystyle \xi_{\text{SD}}(x) = \sum_{i = 1}^{9} \frac{F_i(x)}{1 - F_i(x)}.$$ Panel (b) shows that $\xi_{\text{SD}}$ is a step function. Its jumps occur on the joint support $\mathcal{A}= \mathcal{A}_1 \cup \ldots \cup \mathcal{A}_9$. Panel (b) also shows that $\displaystyle \xi_{\text{SD}}(x) \ll x$, at least for small values of $x$. It turns out  that the critical values of our new DBH step-down procedure  are essentially given by inverting $\xi_{\text{SD}}$ at the critical values of the [BH] procedure $1 \cdot \alpha / 9, 2 \cdot \alpha / 9, \ldots, \alpha$, so that these values are considerably larger than the [BH] critical values. This is illustrated in panel (c) along with the ordered $p$~values. In particular, all asterisks are located above the green [BH] dots, therefore this procedure can not reject any hypothesis. In contrast, the two smallest $p$~values are located below red DBH step-down dots, so that this procedure rejects two hypotheses as we had already seen earlier.
+
+```{r toy-example-4}
+pCDFlist <- p$support
+stepf <- lapply(pCDFlist, function(x) stepfun(x, c(0, x)))
+par(mfcol = c(1, 3), mai = c(1, 0.5, 0.3, 0.1))
+plot(stepf[[1]], xlim = c(0, 1), ylim = c(0, 1), do.points = FALSE, lwd = 1, lty = 1, ylab = "F(x)", 
+     main = "(a)")
+for(i in (2:9)){
+  plot(stepf[[i]], add = TRUE, do.points = FALSE, lwd = 1, col = i)
+}
+segments(0, 0, 1, 1, col = "grey", lty = 2)
+
+#   Plot xi
+support <- sort(unique(unlist(pCDFlist)))
+components <- lapply(stepf, function(s){s(support) / (1 - s(support))}) 
+xi.values <- 1/9 * Reduce('+', components)
+xi <- stepfun(support, c(0, xi.values))
+plot(xi, xlim = c(0, 0.10), ylim = c(0, 0.10), do.points = FALSE, ylab = expression(xi), main = "(b)")
+segments(0, 0, 0.1, 0.1, col = "grey", lty = 2)
+
+#   Plot discrete critical values as well a BH constants and raw p-values
+DBH.sd <- DBH(raw.pvalues, pCDFlist, direction = "sd", ret.crit.consts = TRUE)
+plot(DBH.sd, col = c("black", "black", "red"), pch = c(4, 4, 19), type.crit = 'p', ylim = c(0, 0.15),
+     cex = 1.3, main = "(c)", ylab = "Critical Values")
+points(1:9, 0.05 * (1:9) / 9, col = "green", pch = 19, cex = 1.3)
+
+mtext("Figure 1", 1, outer = TRUE, line = -2)
+```
+Panel (a) depicts the distribution functions $F_1, \ldots, F_9$ in various colors, (b) is a graph of the transformation $\xi_{\text{SD}}$. The uniform distribution function is shown in light grey in (a) and (b). Panel (c) shows the [BH] critical values (green dots), the DBH step-down critical values (red dots) and the sorted raw $p$-values (asterisks).
+
+
+***

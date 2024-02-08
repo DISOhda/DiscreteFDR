@@ -10,7 +10,8 @@ fast.Discrete(
   input = "noassoc",
   alpha = 0.05,
   direction = "su",
-  adaptive = FALSE
+  adaptive = FALSE,
+  threshold = 1
 )
 }
 \arguments{
@@ -29,11 +30,13 @@ of \link{fisher.pvalues.support}. The three possible values
 are \code{"noassoc"} (default), \code{"marginal"} or \code{"HG2011"}
 (may be abbreviated).}
 
-\item{alpha}{the target FDR level, a number strictly between 0 and 1.}
+\item{alpha}{a real number strictly between 0 and 1, indicating the target FDR level}
 
-\item{direction}{a character string specifying whether to conduct a step-up (\code{direction="su"}, by default) or step-down procedure (\code{direction="sd"}).}
+\item{direction}{a character string specifying whether to conduct a step-up (\code{"su"}; the default) or step-down procedure (\code{"sd"})}
 
-\item{adaptive}{a boolean specifying whether to conduct an adaptive procedure or not.}
+\item{adaptive}{a boolean specifying whether to conduct an adaptive procedure or not}
+
+\item{threshold}{a real number strictly between 0 and 1 indicating the largest observed p-value to be considered, i.e. larger observed p-values are filtered out and subsequent computation of critical values, adjusted p-values and rejection decisions are performed under the condition that raw p-values are smaller than or equal to \code{threshold}}
 }
 \value{
 A \code{DiscreteFDR} S3 class object whose elements are:

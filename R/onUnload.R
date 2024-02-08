@@ -1,5 +1,5 @@
 # http://r-pkgs.had.co.nz/src.html#c-best-practices
 
 .onUnload <- function (libpath) {
-  library.dynam.unload("DiscreteFDR", libpath)
+  library.dynam.unload("DiscreteFDRTest", libpath)
 }

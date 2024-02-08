@@ -36,6 +36,7 @@
 #' @templateVar t FALSE
 #' @templateVar lambda FALSE
 #' @templateVar adaptive TRUE
+#' @templateVar threshold TRUE
 #' @template param
 #' 
 #' @return 
@@ -80,7 +81,7 @@
 #' @name fast.Discrete
 #' @importFrom lifecycle deprecate_soft
 #' @export
-fast.Discrete <- function(counts, alternative = "greater", input = "noassoc", alpha = 0.05, direction = "su", adaptive = FALSE){
+fast.Discrete <- function(counts, alternative = "greater", input = "noassoc", alpha = 0.05, direction = "su", adaptive = FALSE, threshold = 1){
   deprecate_soft("1.3.7", "fast.Discrete()",
                  details = paste("In future versions of this package, this",
                                  "function will be removed and replaced by a",
@@ -91,7 +92,7 @@ fast.Discrete <- function(counts, alternative = "greater", input = "noassoc", al
   raw.pvalues <- data.formatted$raw
   pCDFlist <- data.formatted$support
   
-  out <- discrete.BH(raw.pvalues, pCDFlist, alpha, direction, adaptive, FALSE)
+  out <- discrete.BH(raw.pvalues, pCDFlist, alpha, direction, adaptive, FALSE, threshold)
   out$Data$data.name <- deparse(substitute(counts)) 
   
   return(out)

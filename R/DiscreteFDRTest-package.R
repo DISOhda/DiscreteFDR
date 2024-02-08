@@ -1,5 +1,5 @@
 #' @title
-#' DiscreteFDR
+#' DiscreteFDRTest
 #'
 #' @description
 #' This package implements the \[HSU\], \[HSD\],
@@ -8,8 +8,8 @@
 #'
 #' @docType package
 #' @import Rcpp
-#' @useDynLib DiscreteFDR
-#' @name DiscreteFDR
+#' @useDynLib DiscreteFDRTest
+#' @name DiscreteFDRTest
 #'
 #' @details
 #' The functions are reorganized from the reference paper in the following way.
@@ -32,8 +32,7 @@
 #' 
 #' We also provide the `amnesia` data set, used in our examples and in our
 #' paper. It is basically the `amnesia` data set of package `discreteMTP` (no
-#' longer on CRAN), but slightly reformatted such that each line represents a
-#' 2x2 contingency table.
+#' longer on CRAN), but slightly reformatted.
 #' 
 #' No other function of the package should be used directly, as they are only
 #' internal functions called by the main ones.
@@ -46,7 +45,6 @@
 #' G. Blanchard and E. Roquain (2009). Adaptive false discovery rate control
 #'   under independence and dependence. *Journal of Machine Learning Research*,
 #'   *10*, pp. 2837-2871.
-#'
 "_PACKAGE"
 
 ## usethis namespace: start

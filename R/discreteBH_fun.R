@@ -25,6 +25,7 @@
 #' @templateVar ret.crit.consts TRUE
 #' @templateVar lambda FALSE
 #' @templateVar adaptive TRUE
+#' @templateVar threshold TRUE
 #' @template param 
 #' 
 #' @references
@@ -68,19 +69,52 @@ NULL
 
 #' @rdname discrete.BH
 #' @export
-discrete.BH <- function(raw.pvalues, pCDFlist, alpha = 0.05, direction = "su", adaptive = FALSE, ret.crit.consts = FALSE){
+discrete.BH <- function(raw.pvalues, pCDFlist, alpha = 0.05, direction = "su", adaptive = FALSE, ret.crit.consts = FALSE, threshold = 1){
   # check arguments
   if(is.null(alpha) || is.na(alpha) || !is.numeric(alpha) || alpha < 0 || alpha > 1)
     stop("'alpha' must be a probability between 0 and 1!")
   
-  m <- length(raw.pvalues)
-  if(m != length(pCDFlist)) stop("The lengths of 'raw.pvalues' and 'pCDFlist' must be equal!")
+  if(is.null(threshold) || is.na(threshold) || !is.numeric(threshold) || threshold <= 0 || threshold > 1)
+    stop("'threshold' must be a probability greater than 0 and limited to 1!")
   
+  n <- length(raw.pvalues)
+  if(n != length(pCDFlist)) stop("The lengths of 'raw.pvalues' and 'pCDFlist' must be equal!")
+  
+  for(i in 1:n){
+    if(!is.numeric(pCDFlist[[i]])){
+      stop("All elements of 'pCDFlist' must be numeric vectors!")
+    }#else pCDFlist[[i]] <- sort(unique(pmin(1, c(0, pCDFlist[[i]], 1))))
+  }
+  
+  # check and match 'direction'
   direction <- match.arg(direction, c("su", "sd"))
+  
+  # prepare output data
+  output.Data <- list()
+  output.Data$raw.pvalues <- raw.pvalues
+  output.Data$pCDFlist <- pCDFlist
+  # object names of the data as strings
+  output.Data$data.name <- paste(deparse(substitute(raw.pvalues)), "and", deparse(substitute(pCDFlist)))
+  
   #--------------------------------------------
   #       prepare p-values for processing
   #--------------------------------------------
   pvec <- match.pvals(pCDFlist, raw.pvalues)
+  #--------------------------------------------
+  #       apply p-value selection
+  #--------------------------------------------
+  if(threshold < 1){
+    select <- which(pvec <= threshold)
+    m <- length(select)
+    pCDFlist <- pCDFlist[select]
+    F_thresh <- sapply(pCDFlist, function(X) X[max(which(X <= threshold))])
+    pCDFlist <- sapply(1:m, function(k) pCDFlist[[k]] / F_thresh[k])
+    pvec <- pvec[select] / F_thresh
+  }else{
+    select <- 1:n
+    F_thresh <- rep(1, n)
+    m <- n
+  }
   #--------------------------------------------
   #       Determine sort order and do sorting
   #--------------------------------------------
@@ -89,12 +123,12 @@ discrete.BH <- function(raw.pvalues, pCDFlist, alpha = 0.05, direction = "su", a
   #--------------------------------------------
   #       construct the vector of all values of all supports of the p-values
   #--------------------------------------------
-  pv.list.all <- sort(unique(as.numeric(unlist(pCDFlist))))
+  pv.list.all <- sort(unique(pmin(as.numeric(unlist(pCDFlist)), threshold/max(F_thresh))))
   #--------------------------------------------
   #        Compute [HSU] or [HSD] significant p-values,
   #        their indices and the number of rejections
   #--------------------------------------------
-  direction <- match.arg(direction, c("su", "sd"))
+  direction <- match.arg(tolower(direction), c("su", "sd"))
   if(direction == "su"){
     # SU case
     if(ret.crit.consts){
@@ -120,8 +154,9 @@ discrete.BH <- function(raw.pvalues, pCDFlist, alpha = 0.05, direction = "su", a
         y <- kernel_DBH_fast(pCDFlist, sorted.pvals, TRUE, alpha, pv.list.all)
       }
       # determine significant (transformed) p-values
-      if(length(y)){
-        idx <- which(y <= 1:length(y) * alpha)
+      len.y <- length(y)
+      if(len.y){
+        idx <- which(y <= 1:len.y * alpha)
       }else{
         idx <- integer(0)
       }
@@ -130,7 +165,7 @@ discrete.BH <- function(raw.pvalues, pCDFlist, alpha = 0.05, direction = "su", a
       m.rej <- max(idx)
       # determine significant (observed) p-values in sorted.pvals
       idx <- which(pvec <= sorted.pvals[m.rej]) 
-      pvec.rej <- raw.pvalues[idx]
+      pvec.rej <- raw.pvalues[select][idx]
     }
     else{
       m.rej <- 0
@@ -170,7 +205,7 @@ discrete.BH <- function(raw.pvalues, pCDFlist, alpha = 0.05, direction = "su", a
       if(m.rej){
         # determine significant (observed) p-values in sorted.pvals
         idx <- which(pvec <= sorted.pvals[m.rej])
-        pvec.rej <- raw.pvalues[idx]
+        pvec.rej <- raw.pvalues[select][idx]
       }
       else{
         idx <- numeric(0)
@@ -180,38 +215,45 @@ discrete.BH <- function(raw.pvalues, pCDFlist, alpha = 0.05, direction = "su", a
     else{
       m.rej <- m
       idx <- 1:m
-      pvec.rej <- raw.pvalues
+      pvec.rej <- raw.pvalues[select]
     }
   }
   #--------------------------------------------
   #       Create output S3 object
   #--------------------------------------------
-  output <- list(Rejected = pvec.rej, Indices = idx, Num.rejected = m.rej)
+  output <- list(Rejected = pvec.rej, Indices = select[idx], Num.rejected = m.rej)
   if(direction == "sd"){
     if(ret.crit.consts){
       y <- y$pval.transf
     }
     # compute adjusted p-values
-    pv.adj = cummax(pmin(y / 1:m, 1))
+    pv.adj <- cummax(pmin(y / 1:m, 1))
     # add adjusted p-values to output list
     ro <- order(o)
-    output$Adjusted = pv.adj[ro]
+    output$Adjusted <- numeric(n)
+    output$Adjusted[select]  <- pv.adj[ro]
+    output$Adjusted[-select] <- NA
   }
   # add critical values to output list
-  if(ret.crit.consts) output$Critical.values = crit.constants
+  if(ret.crit.consts) output$Critical.values <- c(crit.constants, rep(NA, n - m))
   
   # include details of the used algorithm as strings
   alg <- "Discrete Benjamini-Hochberg procedure"
   alg <- if(adaptive) paste("Adaptive", alg) else alg
   output$Method <- paste(alg, switch(direction, su = "(step-up)", sd = "(step-down)"))
   output$Signif.level <- alpha
+  if(threshold < 1){
+    output$Select <- list()
+    output$Select$Threshold <- threshold
+    output$Select$Effective.Thresholds <- F_thresh
+    output$Select$Pvalues <- output.Data$raw.pvalues[select]
+    output$Select$Indices <- select
+    output$Select$Scaled <- pvec[order(output$Select$Pvalues)]
+    output$Select$Number <- m
+  }
   
   # original test data (often included, e.g. when using 'binom.test()')
-  output$Data <- list()
-  output$Data$raw.pvalues <- raw.pvalues
-  output$Data$pCDFlist <- pCDFlist
-  # object names of the data as strings
-  output$Data$data.name <- paste(deparse(substitute(raw.pvalues)), "and", deparse(substitute(pCDFlist)))
+  output$Data <- output.Data
   
   class(output) <- "DiscreteFDR"
   return(output)
@@ -219,12 +261,12 @@ discrete.BH <- function(raw.pvalues, pCDFlist, alpha = 0.05, direction = "su", a
 
 #'@rdname discrete.BH
 #'@export
-DBH <- function(raw.pvalues, pCDFlist, alpha = 0.05, direction = "su", ret.crit.consts = FALSE){
-  return(discrete.BH(raw.pvalues, pCDFlist, alpha, direction, adaptive = FALSE, ret.crit.consts))
+DBH <- function(raw.pvalues, pCDFlist, alpha = 0.05, direction = "su", ret.crit.consts = FALSE, threshold = 1){
+  return(discrete.BH(raw.pvalues, pCDFlist, alpha, direction, adaptive = FALSE, ret.crit.consts, threshold))
 }
 
 #'@rdname discrete.BH
 #'@export
-ADBH <- function(raw.pvalues, pCDFlist, alpha = 0.05, direction = "su", ret.crit.consts = FALSE){
-  return(discrete.BH(raw.pvalues, pCDFlist, alpha, direction, adaptive = TRUE, ret.crit.consts))
+ADBH <- function(raw.pvalues, pCDFlist, alpha = 0.05, direction = "su", ret.crit.consts = FALSE, threshold = 1){
+  return(discrete.BH(raw.pvalues, pCDFlist, alpha, direction, adaptive = TRUE, ret.crit.consts, threshold))
 }

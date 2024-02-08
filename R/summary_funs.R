@@ -12,54 +12,65 @@
 #' @param ...          further arguments passed to or from other methods.
 #'
 #' @details
-#' `summary.DiscreteFDR` objects include all data of an `DiscreteFDR`
-#' object, but also include an additional table which includes the raw p-values,
+#' `summary.DiscreteFDR` objects contain all data of an `DiscreteFDR` object,
+#' but also include an additional table which includes the raw p-values,
 #' their indices, the respective critical values (if present), the adjusted
 #' p-values (if present) and a logical column to indicate rejection. The table
 #' is sorted in ascending order by the raw p-values.
-#'
+#' 
 #' `print.summary.DiscreteFDR` simply prints the same output as
 #' `print.DiscreteFDR`, but also prints the p-value table.
 #' 
 #' @return
 #' `summary.DiscreteFDR` computes and returns a list that includes all the
 #' data of an input `DiscreteFDR`, plus
-#' \item{Table}{a `data.frame`, sorted by the raw p-values, that contains
-#'              the indices, that raw p-values themselves, their respective
-#'              critical values (if present), their adjusted p-values (if
-#'              present) and a logical column to indicate rejection.}
-#'
+#' \item{Table}{a `data.frame`, sorted by the raw p-values, that contains the
+#'              indices, the raw p-values themselves, their respective critical
+#'              values (if present), their adjusted p-values (if present) and a
+#'              logical column to indicate rejection.}
+#' 
 #' @template example
 #' @examples
 #' 
 #' DBH.sd.crit <- DBH(raw.pvalues, pCDFlist, direction = "sd",
 #'                    ret.crit.consts = TRUE)
 #' summary(DBH.sd.crit)
-#'
+#' 
 #' @rdname summary.DiscreteFDR
 #' @export
 ## S3 method for class 'DiscreteFDR'
 summary.DiscreteFDR <- function(object, ...){
-  # include all data of x (DiscreteFDR)
-  out <- object
+  # determine if selection as performed
+  select <- exists('Select', object)
+  if(select) m <- object$Select$Number
   
   # number of tests
-  m <- length(object$Data$raw.pvalues)
+  n <- length(object$Data$raw.pvalues)
   # determine order of raw p-values
   o <- order(object$Data$raw.pvalues)
   # ordered indices
-  i <- (1:m)[o]
+  i <- (1:n)[o]
   # sort raw p-values
   y <- object$Data$raw.pvalues[o]
   # determine for each p-value if its corresponding null hypothesis is rejected
-  r <- ((1:m) %in% object$Indices)[o]
+  r <- i %in% object$Indices #if(!select) o %in% object$Indices else o %in% object$Select.Indices[object$Indices]
   
-  # create summary table
-  out <- c(out, list(Table = data.frame('Index' = i, 'P.value' = y)))
-  if(exists('Critical.values', where = object)){
-    out$Table <- data.frame(out$Table, 'Critical.value' = object$Critical.values)
+  # create output object with summary table; include all data of object (DiscreteFDR)
+  out <- c(object, list(Table = data.frame('Index' = i, 'P.value' = y)))
+  if(select){
+    out$Table <- data.frame(out$Table, 'Selected' = i %in% object$Select$Indices) #rep(c(TRUE, FALSE), c(m, n - m))
+    out$Table <- data.frame(out$Table, 'Scaled' = c(object$Select$Scaled, rep(NA, n - m)))
   }
-  if(exists('Adjusted', where = object)){
+  if(exists('Critical.values', object)){
+    if(select){
+      #cv.unscaled <- c((object$Critical.values[1:m] * object$Select$Effective.Thresholds), rep(NA, n - m))
+      out$Table <- data.frame(out$Table, 
+                              'Critical.value' = object$Critical.values)
+      # 'Critical.value.scaled' = object$Critical.values,
+      # 'Critical.value' = cv.unscaled)
+    }else out$Table <- data.frame(out$Table, 'Critical.value' = object$Critical.values)
+  }
+  if(exists('Adjusted', object)){
     out$Table <- data.frame(out$Table, 'Adjusted' = object$Adjusted[o])
   }
   out$Table <- data.frame(out$Table, 'Rejected' = r)
@@ -73,9 +84,6 @@ summary.DiscreteFDR <- function(object, ...){
 #'@export
 ## S3 method for class 'summary.DiscreteFDR'
 print.summary.DiscreteFDR <- function(x, max = NULL, ...){
-  # determine number of tests
-  m <- length(x$Data$raw.pvalues)
-  
   # print 'DiscreteFDR' part of the object
   print.DiscreteFDR(x)
   

@@ -6,9 +6,9 @@
 \usage{
 \method{plot}{DiscreteFDR}(
   x,
-  col = c(2, 4, 1),
-  pch = c(1, 1, 1),
-  lwd = c(1, 1, 1),
+  col = c(2, 4, 1, 8),
+  pch = rep(1, 4),
+  lwd = rep(1, 4),
   type.crit = "b",
   legend = NULL,
   ...
@@ -38,8 +38,8 @@ the points and lines.}
 \item{type.crit}{1-character string giving the type of plot desired for the
 critical values (e.g.: \code{'p'}, \code{'l'} etc; see \link{plot}).}
 
-\item{legend}{if NULL, no legend is plotted; otherwise expecting a
-character string like "topleft" etc. or a numeric vector
+\item{legend}{if \code{NULL}, no legend is plotted; otherwise expecting a
+character string like \code{"topleft"} etc. or a numeric vector
 of two elements indicating (x, y) coordinates.}
 
 \item{...}{further arguments to \link{plot.default}.}
@@ -71,9 +71,9 @@ DBH.sd.crit <- DBH(raw.pvalues, pCDFlist, direction = "sd", ret.crit.consts = TR
 plot(DBH.sd.fast)
 plot(DBH.sd.crit, xlim = c(1, 5), ylim = c(0, 0.4))
 plot(DBH.su.fast, col = c(2, 4), pch = c(2, 3), lwd = c(2, 2), 
-    legend = "topleft", xlim = c(1, 5), ylim = c(0, 0.4))
+     legend = "topleft", xlim = c(1, 5), ylim = c(0, 0.4))
 plot(DBH.su.crit, col = c(2, 4, 1), pch = c(1, 1, 4), lwd = c(1, 1, 2), 
-    type.crit = 'o', legend = c(1, 0.4), lty = 1, xlim = c(1, 5), 
-    ylim = c(0, 0.4))
+     type.crit = 'o', legend = c(1, 0.4), lty = 1, xlim = c(1, 5), 
+     ylim = c(0, 0.4))
 
 }

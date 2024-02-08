@@ -1,6 +1,7 @@
+//' @name kernel
+//' 
 //' @title
 //' Kernel functions
-//' @name kernel
 //' 
 //' @description
 //' `r lifecycle::badge('deprecated')`
@@ -80,28 +81,50 @@
 //' and transformed p-values (`$pval.transf`), but if `stepUp = FALSE`, there
 //' are critical values only.
 //' 
-
+#include <Rcpp.h>
+using namespace Rcpp;
+ 
 // fast step function evaluation
 // step function is represented by a single numeric vector under the conditions
 // a) f(x) = x and b) x is sorted
 // this is much faster than passing and evaluating R step function objects
-#include <Rcpp.h>
-using namespace Rcpp;
-
-NumericVector stepfun(const NumericVector &x, const NumericVector &sfun){
+/*IntegerVector stepfun_new(const NumericVector &x, const NumericVector &sfun_x, const int &start = 0){
   // index variables and vector lengths
-  int pos = 0, size = sfun.length(), len = x.length();
+  int pos = start, size = sfun_x.length(), len = x.length();
   // output vector of the same length as 'x'
-  NumericVector out(len);
+  IntegerVector out(len);
   
   // computing results
   for(int i = 0; i < len; i++){
+    while(pos < size - 1 && sfun_x[pos] < x[i]) pos++;
+    if(sfun_x[pos] == x[i]) out[i] = pos;
+    else if(pos) out[i] = pos - 1; else out[i] = -1;
+  }
+  
+  return out;
+}*/
+
+struct stepfun_result{
+  NumericVector y;
+  int last_index;
+};
+
+stepfun_result stepfun(const NumericVector &x, const NumericVector &sfun, const int &start = 0){
+  // index variables and vector lengths
+  int pos = start, size = sfun.length(), len = x.length();
+  // output vector of the same length as 'x'
+  NumericVector out(len, 1.0);
+  
+  // computing results
+  for(int i = 0; i < len && x[i] < 1; i++){
     while(pos < size - 1 && sfun[pos] < x[i]) pos++;
     if(sfun[pos] == x[i]) out[i] = sfun[pos];
     else if(pos) out[i] = sfun[pos - 1]; else out[i] = 0;
   }
   
-  return out;
+  stepfun_result res = {out, pos};
+  
+  return res;
 }
 
 // shortcut function that eliminates all values of a SORTED vector that
@@ -152,61 +175,61 @@ void colsortdec(NumericMatrix &mat){
 //'@rdname kernel
 //'@export
 // [[Rcpp::export]]
-NumericVector kernel_DBH_fast(const List &pCDFlist, const NumericVector &pvalues, const bool stepUp = false, const double alpha = 0.05, const NumericVector &support = 0){
+NumericVector kernel_DBH_fast(const List &pCDFlist, const NumericVector &pvalues, const bool stepUp = false, const double &alpha = 0.05, const NumericVector &support = 0, const List &pCDFlistIndices = 0){
+  // number of p-value CDFs
+  //int numCDF = pCDFlist.length();
+  // if there are no CDF indices, all CDFs are unique
+  //if(pCDFlistIndices.length()){
+    
+  //}
   // Number of tests
   int numTests = pCDFlist.length();
   // vector to store transformed p-values
   NumericVector pval_transf;
+  // p-values to be processed
+  NumericVector pv_list;
+  // tau_m for SU case
+  double tau_m = 1;
   
-  if(!stepUp){
-    // SD case, see (11)
-    // Vector to store results of step function evaluations
-    NumericVector f_eval;
-    // number of p-values
-    int numValues = pvalues.length();
-    // the output is the vector y= \sum_{i=1}^numTests F_i(pvalues)/(1 - F_i(pvalues))
-    // note that 'pvalues' is either all values of all supports of the p-values
-    // (when searching for the critical values, numValues != numTests), or only the observed
-    // p-values (when skipping the critical values computation, numValues = numTests)
-    pval_transf = NumericVector(numValues);
-    for(int i = 0; i < numTests; i++){
-      checkUserInterrupt();
-      f_eval = stepfun(pvalues, as<NumericVector>(pCDFlist[i]));
-      pval_transf += f_eval / (1 - f_eval);
-    }
-  }
-  else{
+  if(stepUp){
     // SU case, see (10)
     // apply the shortcut drawn from Lemma 2, that is
     // c.numTests >= the effective critical value associated to alpha / (1 + alpha)
-    NumericVector pv_list = short_eff(support, alpha / (1 + alpha));
+    pv_list = short_eff(support, alpha / (1 + alpha));
     // compute transformed support
-    pval_transf = kernel_DBH_fast(pCDFlist, pv_list, false);
+    pval_transf = kernel_DBH_fast(pCDFlist, pv_list, false, alpha, 0);
     // search the values of the vector <= numTests * alpha
     pv_list = pv_list[pval_transf <= numTests * alpha];
     // get the greatest value (note that Ceiling is sorted in non-decreasing order)
-    double tau_m = pv_list[pv_list.length() - 1];
+    tau_m = pv_list[pv_list.length() - 1];
     // restrict attention to these values, because tau_k needs to be <= tau_m
-    // note that 'pvalues' is either all values of all supports of the p-values
-    // (when searching for the critical values, numValues != numTests), or only the observed
-    // p-values (when skipping the critical values computation, numValues = numTests)
     pv_list = pvalues[pvalues <= tau_m];
-    // the output is the vector y= \sum_{i=1}^numTests F_i(pvalues)/(1 - F_i(tau.numTests))
-    pval_transf = NumericVector(pv_list.length());
-    for(int i = 0; i < numTests; i++){
-      checkUserInterrupt();
-      NumericVector f = as<NumericVector>(pCDFlist[i]);
-      pval_transf += stepfun(pv_list, f) / (1 - as<double>(stepfun(NumericVector(1, tau_m), f)));
-    }
-  }
+  }else
+    // SD case, see (11)
+    pv_list = pvalues;
   
+  pval_transf = NumericVector(pv_list.length());
+  for(int i = 0; i < numTests; i++){
+    checkUserInterrupt();
+    NumericVector sfun = as<NumericVector>(pCDFlist[i]);
+    NumericVector f_eval = stepfun(pv_list, sfun).y;
+    
+    if(!stepUp) // SD case, see (11)
+      pval_transf += f_eval / (1 - f_eval); // the output is the vector y= \sum_{i=1}^numTests F_i(pvalues)/(1 - F_i(pvalues))
+    else{ // SU case, see (10)
+      double denom = 1 - stepfun(NumericVector(1, tau_m), sfun).y[0];
+      pval_transf += f_eval / denom; // the output is the vector y= \sum_{i=1}^numTests F_i(pvalues)/(1 - F_i(tau.numTests))
+    }
+    
+  }
+   
   return pval_transf;
 }
 
 //'@rdname kernel
 //'@export
 // [[Rcpp::export]]
-List kernel_DBH_crit(const List &pCDFlist, const NumericVector &pvalues, const NumericVector &sorted_pv, const bool stepUp = false, const double alpha = 0.05){
+List kernel_DBH_crit(const List &pCDFlist, const NumericVector &pvalues, const NumericVector &sorted_pv, const bool stepUp = false, const double &alpha = 0.05){
   // number of tests
   int numTests = pCDFlist.length();
   // number of p-values to be transformed
@@ -227,7 +250,7 @@ List kernel_DBH_crit(const List &pCDFlist, const NumericVector &pvalues, const N
     // p-values), because we may have removed some of them by the shortcut
     pv_list = sort_combine(sorted_pv, pv_list);
     // get the transformations of the observed p-values inside pv_list
-    pval_transf = kernel_DBH_fast(pCDFlist, pv_list, false);
+    pval_transf = kernel_DBH_fast(pCDFlist, pv_list, false, alpha, 0);
   }
   else{
     // SU case
@@ -280,6 +303,10 @@ NumericVector kernel_ADBH_fast(const List &pCDFlist, const NumericVector &pvalue
   NumericVector pval_transf;
   // vector to store F_i(tau_m) for SU case only
   std::vector<double> f_denom(numTests, 0.0);
+  // vector to store F_i
+  std::vector<NumericVector> sfun(numTests);
+  for(int i = 0; i < numTests; i++)
+    sfun[i] = as<NumericVector>(pCDFlist[i]);
   
   if(!stepUp){
     // SD case
@@ -290,20 +317,19 @@ NumericVector kernel_ADBH_fast(const List &pCDFlist, const NumericVector &pvalue
     // SU case
     // apply the shortcut drawn from Lemma 2, that is
     // tau_m >= the effective critical value associated to alpha / (1 + alpha)
-    pv_list = short_eff(support, alpha / (1 + alpha));
+    pv_list = short_eff(support, alpha / (numTests + numTests * alpha));
     // get the transformations of the observed p-values inside pv_list
-    pval_transf = kernel_DBH_fast(pCDFlist, pv_list, false);
+    pval_transf = kernel_DBH_fast(pCDFlist, pv_list, false, alpha, 0);
     // search the values of the vector <= numTests * alpha
     pv_list = pv_list[pval_transf <= numTests * alpha];
-    // get the greatest value (note that Ceiling is sorted in non-decreasing order)
+    // get the greatest value (note that ceiling is sorted in non-decreasing order)
     double tau_m = pv_list[pv_list.length() - 1];
     // restrict attention to these values, because tau_k needs to be <= tau_m
-    // note that 'pvalues' is either all values of all supports of the p-values
-    // (when searching for the critical values, numValues != numTests), or only the
-    // observed p-values (when skipping the critical values computation, numValues = numTests)
     pv_list = pvalues[pvalues <= tau_m];
-    // pre-compute F_i(tau_m) to avoid unnecessary re-computing
-    for(int i = 0; i < numTests; i++) f_denom[i] = 1 - stepfun(NumericVector(1, tau_m), as<NumericVector>(pCDFlist[i]))[0];
+    // pre-compute F_i(tau_m) and selection thresholds to avoid unnecessary re-computing
+    for(int i = 0; i < numTests; i++){
+      f_denom[i] = 1 - stepfun(NumericVector(1, tau_m), sfun[i]).y[0];
+    }
   }
   
   // number of p-values to be transformed
@@ -313,12 +339,14 @@ NumericVector kernel_ADBH_fast(const List &pCDFlist, const NumericVector &pvalue
   int size = std::max<int>(1, std::pow(2.0, 26.0) / numTests);
   // number of chunks
   int chunks = (numValues - 1) / size + 1;
-  // vector to store transformed p-values
+   // vector to store transformed p-values
   pval_transf = NumericVector(numValues);
+  // last positions in step function evaluations
+  IntegerVector last(numTests, 0);
   
   for(int i = 0; i < chunks; i++){
     checkUserInterrupt();
-    // the min( , numValues) is here for the last chunk
+    // the min(... , numValues) is here for the last chunk
     NumericVector pv = pvalues[Range(i * size, std::min<int>((i + 1) * size, numValues) - 1)];
     // length of the vector
     int len = pv.length();
@@ -326,17 +354,14 @@ NumericVector kernel_ADBH_fast(const List &pCDFlist, const NumericVector &pvalue
     // columns: p-values
     NumericMatrix mat(numTests, len);
     // compute columns \sum_{j=1}^numTests F_j(pv)/(1 - F_j(pv))
-    if(!stepUp)
-      // SD case, see (11)
-      for(int j = 0; j < numTests; j++){
-        NumericVector f_eval = stepfun(pv, as<NumericVector>(pCDFlist[j]));
-        mat(j, _) = f_eval / (1 - f_eval);
-      }
-    else
-      // SU case, see (10)
-      for(int j = 0; j < numTests; j++){
-        mat(j, _) = stepfun(pv, as<NumericVector>(pCDFlist[j])) / f_denom[j];
-      }
+    for(int j = 0; j < numTests; j++){
+      stepfun_result res = stepfun(pv, sfun[j], last[j]);
+      last[j] = res.last_index;
+      if(stepUp) // SU case, see (10)
+        mat(j, _) = res.y / f_denom[j];
+      else // SD case, see (11)
+        mat(j, _) = res.y / (1 - res.y);
+    }
     // sort columns in descending order
     colsortdec(mat);
     // compute transformed p-values
@@ -361,18 +386,16 @@ NumericVector kernel_ADBH_fast(const List &pCDFlist, const NumericVector &pvalue
 List kernel_ADBH_crit(const List &pCDFlist, const NumericVector &pvalues, const NumericVector &sorted_pv, const bool stepUp = false, const double alpha = 0.05){
   // index variables and lengths
   int numTests = pCDFlist.length();
-  // seqence 1 ... m
-  //NumericVector seq_m = NumericVector(IntegerVector(seq_len(numTests)));
-  // sequence 1 * alpha ... m * alpha
-  //NumericVector seq_alpha = seq_m * alpha;
   // intermediate results
   NumericVector pv_list;
   // vector to store transformed p-values
   NumericVector pval_transf(numTests);
-  // critical values indices and set for comparisons
-  IntegerVector crit(numTests), cmp;
   // vector to store F_i(tau_m) for SU case only
   std::vector<double> f_denom(numTests, 0.0);
+  // vector to store F_i
+  std::vector<NumericVector> sfun(numTests);
+  for(int i = 0; i < numTests; i++)
+    sfun[i] = as<NumericVector>(pCDFlist[i]);
   
   if(!stepUp){
     // SD case
@@ -383,29 +406,31 @@ List kernel_ADBH_crit(const List &pCDFlist, const NumericVector &pvalues, const 
     // then re-add the observed p-values (needed to compute the adjusted p-values),
     // because we may have removed some of them by the shortcut
     pv_list = rev(sort_combine(sorted_pv, pv_list));
-    // set minimum critical values indices to the one of the largest value <= tau_1
-    int idx_pval = 1;
-    while(idx_pval < pv_list.length() && tau_1 > pv_list[idx_pval]) idx_pval++;
-    crit.fill(idx_pval - 1);
   }
   else{
     // SU case
     // apply the shortcut drawn from Lemma 2, that is
     // c.1 >= the effective critical value associated to (alpha / numTests) / (1 + alpha)
-    pv_list = short_eff(pvalues, alpha / (1 + alpha));
+    pv_list = short_eff(pvalues, alpha / (numTests + numTests * alpha));
     // compute transformed support
-    pval_transf = kernel_DBH_fast(pCDFlist, pv_list, false);
-    // search the values of the vector <= numTests * alpha
+    pval_transf = kernel_DBH_fast(pCDFlist, pv_list, false, alpha, 0);
+    // get tau_m: search largest value of the vector which is <= numTests * alpha
     pv_list = pv_list[pval_transf <= numTests * alpha];
-    // get the greatest value (note that Ceiling is sorted in non-decreasing order)
-    double tau_m = pv_list[pv_list.length() - 1];
+    int i = pval_transf.length() - 1;
+    double tau_m = pv_list[i];
+    while(i > 0 && pval_transf[i] > numTests * alpha) i--;
+    if(pval_transf[i] <= numTests * alpha) tau_m = pv_list[i];
     // restrict attention to these values, because tau_k needs to be <= tau_m
-    pv_list = pvalues[pvalues <= tau_m];
+    i = pvalues.length() - 1;
+    while(i > 0 && pvalues[i] > tau_m) i--;
+    pv_list = pvalues[Range(0, i)];
     // apply the shortcut drawn from Lemma 4, that is
     // c.1 >= the effective critical value associated to min((1 - tau_m) * alpha/numTests, tau_m)
     pv_list = rev(short_eff(pv_list, std::min<double>(tau_m, (1 - tau_m) * alpha / numTests)));
     // pre-compute F_i(tau_m) to avoid unnecessary re-computing
-    for(int i = 0; i < numTests; i++) f_denom[i] = 1 - stepfun(NumericVector(1, tau_m), as<NumericVector>(pCDFlist[i]))[0];
+    for(i = 0; i < numTests; i++){
+      f_denom[i] = 1 - stepfun(NumericVector(1, tau_m), sfun[i]).y[0];
+    }
   }
   
   // number of p-values to be transformed
@@ -416,10 +441,16 @@ List kernel_ADBH_crit(const List &pCDFlist, const NumericVector &pvalues, const 
   // number of chunks
   int chunks = (numValues - 1) / size + 1;
   
+  // critical values indices
+  IntegerVector crit(numTests);
+  // initialize critical values indices
+  //crit.fill(pv_list.length() - 1);
   // index of current critical value
   int idx_crit = numTests - 1;
   // index of current raw p-value to be transformed
   int idx_transf = numTests - 1;
+  // last positions in step function evaluations
+  IntegerVector last(numTests, 0);
   // compute critical values (and transformed raw p-values for step-down)
   for(int i = 0; i < chunks; i++){
     checkUserInterrupt();
@@ -430,19 +461,15 @@ List kernel_ADBH_crit(const List &pCDFlist, const NumericVector &pvalues, const 
     // rows:    indices from 1 to numTests
     // columns: p-values
     NumericMatrix mat(numTests, len);
-    if(!stepUp)
-      // SD case, see (13)
-      // compute columns \sum_{j=1}^numTests F_j(pv)/(1 - F_j(pv))
-      for(int j = 0; j < numTests; j++){
-        NumericVector f_eval = rev(stepfun(rev(pv), as<NumericVector>(pCDFlist[j])));
-        mat(j, _) = f_eval / (1 - f_eval);
-      }
-    else
-      // SD case, see (12)
-      // compute columns \sum_{j=1}^numTests F_j(pv)/(1 - F_j(tau_m))
-      for(int j = 0; j < numTests; j++){
-        mat(j, _) = rev(stepfun(rev(pv), as<NumericVector>(pCDFlist[j]))) / f_denom[j];
-      }
+    for(int j = 0; j < numTests; j++){
+      stepfun_result res = stepfun(rev(pv), sfun[j], last[j]);
+      last[j] = res.last_index;
+      NumericVector f_eval = rev(res.y);
+      if(stepUp) // SU case, see (12)
+        mat(j, _) = f_eval / f_denom[j];   // compute columns \sum_{j=1}^numTests F_j(pv)/(1 - F_j(tau_m))
+      else // SD case, see (13)
+        mat(j, _) = f_eval / (1 - f_eval); // compute columns \sum_{j=1}^numTests F_j(pv)/(1 - F_j(pv))
+    }
     // sort columns in descending order
     colsortdec(mat);
     // compute transformed p-value support (as in pv_list)
@@ -463,7 +490,7 @@ List kernel_ADBH_crit(const List &pCDFlist, const NumericVector &pvalues, const 
         // => save index of current p-value as critical value
         crit[idx_crit] = i * size + j;
         // go to next critical value index to search for
-        idx_crit--;
+        --idx_crit;
       }else{
         // current p-value does not satisfy condition
         // go to next p-value in this chunk
@@ -481,6 +508,8 @@ List kernel_ADBH_crit(const List &pCDFlist, const NumericVector &pvalues, const 
     }
   }
   
+  for(;idx_crit >= 0; idx_crit--) crit[idx_crit] = crit[idx_crit + 1];
+  
   // output
   if(!stepUp)
     return List::create(Named("crit.consts") = pv_list[crit], Named("pval.transf") = pval_transf);
@@ -491,7 +520,7 @@ List kernel_ADBH_crit(const List &pCDFlist, const NumericVector &pvalues, const 
 //'@rdname kernel
 //'@export
 // [[Rcpp::export]]
-NumericVector kernel_DBR_fast(const List &pCDFlist, const NumericVector &pvalues, const double lambda = 0.05){
+NumericVector kernel_DBR_fast(const List &pCDFlist, const NumericVector &pvalues, const double &lambda = 0.05){
   // index variables and lengths
   int numTests = pCDFlist.length();
   // number of p-values to be transformed
@@ -500,6 +529,10 @@ NumericVector kernel_DBR_fast(const List &pCDFlist, const NumericVector &pvalues
   NumericVector pv_list;
   // vector to store transformed p-values
   NumericVector pval_transf(numValues, 1.0);
+  // vector to store F_i
+  std::vector<NumericVector> sfun(numTests);
+  for(int i = 0; i < numTests; i++)
+    sfun[i] = as<NumericVector>(pCDFlist[i]);
   
   // possibly large data size requires to use chunks
   // size of the chunks (i.e. number of elements in a ~512 MiB matrix)
@@ -507,6 +540,8 @@ NumericVector kernel_DBR_fast(const List &pCDFlist, const NumericVector &pvalues
   // number of chunks
   int chunks = (numValues - 1) / size + 1;
   
+  // last positions in step function evaluations
+  IntegerVector last(numTests, 0);
   for(int i = 0; i < chunks; i++){
     checkUserInterrupt();
     // the min( , numValues) is here for the last chunk
@@ -517,8 +552,11 @@ NumericVector kernel_DBR_fast(const List &pCDFlist, const NumericVector &pvalues
     // columns: p-values
     NumericMatrix mat(numTests, len);
     // compute columns \sum_{j=1}^numTests F_j(pv)
-    for(int j = 0; j < numTests; j++) 
-      mat(j, _) = stepfun(pv, as<NumericVector>(pCDFlist[j]));
+    for(int j = 0; j < numTests; j++){
+      stepfun_result res = stepfun(pv, sfun[j], last[j]);
+      last[j] = res.last_index;
+      mat(j, _) = res.y;
+    }
     
     // sort columns in descending order
     colsortdec(mat);
@@ -546,13 +584,17 @@ NumericVector kernel_DBR_fast(const List &pCDFlist, const NumericVector &pvalues
 //'@rdname kernel
 //'@export
 // [[Rcpp::export]]
-List kernel_DBR_crit(const List &pCDFlist, const NumericVector &pvalues, const NumericVector &sorted_pv, const double lambda = 0.05, const double alpha = 0.05){
+List kernel_DBR_crit(const List &pCDFlist, const NumericVector &pvalues, const NumericVector &sorted_pv, const double &lambda = 0.05, const double &alpha = 0.05){
   // number of tests
   int numTests = pCDFlist.length(), k_star = 0;
   // critical values indices
   IntegerVector crit(numTests);
   // transformed p-values
   NumericVector pval_transf(numTests, 1.0);
+  // vector to store F_i
+  std::vector<NumericVector> sfun(numTests);
+  for(int i = 0; i < numTests; i++)
+    sfun[i] = as<NumericVector>(pCDFlist[i]);
   
   // apply the shortcut drawn from Corollary 3, that is
   // c.1 >= the effective critical value associated to min((1 - lambda) * alpha/numTests , lambda)
@@ -574,6 +616,8 @@ List kernel_DBR_crit(const List &pCDFlist, const NumericVector &pvalues, const N
   // index of current raw p-value to be transformed
   int idx_transf = 0;
   
+  // last positions in step function evaluations
+  IntegerVector last(numTests, 0);
   for(int i = 0; i < chunks; i++){
     checkUserInterrupt();
     // the min( , numValues) is here for the last chunk
@@ -584,8 +628,11 @@ List kernel_DBR_crit(const List &pCDFlist, const NumericVector &pvalues, const N
     // columns: p-values
     NumericMatrix mat(numTests, len);
     // compute columns \sum_{j=1}^numTests F_j(pv)
-    for(int j = 0; j < numTests; j++)
-      mat(j, _) = stepfun(pv, as<NumericVector>(pCDFlist[j]));
+    for(int j = 0; j < numTests; j++){
+      stepfun_result res = stepfun(pv, sfun[j], last[j]);
+      last[j] = res.last_index;
+      mat(j, _) = res.y;
+    }
     // sort columns in descending order
     colsortdec(mat);
     

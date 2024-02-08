@@ -7,9 +7,9 @@
 match.pvals(pCDFlist, raw.pvalues)
 }
 \arguments{
-\item{pCDFlist}{a list of the supports of the CDFs of the p-values. Each support is represented by a vector that must be in increasing order.}
+\item{pCDFlist}{a list of the supports of the CDFs of the p-values; each list item must be a numeric vector, sorted in increasing order, whose last element equals 1}
 
-\item{raw.pvalues}{vector of the raw observed p-values, as provided by the end user and before matching with their nearest neighbor in the CDFs supports.}
+\item{raw.pvalues}{a numeric vector of the raw observed p-values}
 }
 \value{
 A vector where each raw p-value has been

@@ -3,11 +3,16 @@
 #'\item{Rejected}{Rejected raw p-values}
 #'\item{Indices}{Indices of rejected hypotheses}
 #'\item{Num.rejected}{Number of rejections}
-#'\item{Adjusted}{Adjusted p-values <%=ifelse(exists("DBR") && DBR, "","(only for step-down direction).") %>}
+#'\item{Adjusted}{Adjusted p-values<%=ifelse(exists("DBR") && DBR, ""," (only for step-down direction).") %>}
 #'\item{Critical.constants}{Critical constants (if requested)}
 #'\item{Method}{Character string describing the used algorithm, e.g. 'Discrete Benjamini-Hochberg procedure (step-up)'}
 #'\item{Signif.level}{Significance level \code{alpha}}
 #'<%=ifelse(exists("DBR") && DBR, "\\item{Lambda}{Value of \\code{lambda}.}","") %>
+#'\item{Select.Threshold}{p-value selection \code{threshold}; only present if \code{threshold} \eqn{< 1}}
+#'\item{Select.PV}{selected p-values that are \eqn{\leq} selection \code{threshold}; only present if \code{threshold} \eqn{< 1}}
+#'\item{Select.Indices}{indices of p-values \eqn{\leq} selection \code{threshold}; only present if \code{threshold} \eqn{< 1}}
+#'\item{Select.Scaled}{scaled selected p-values, i.e. \eqn{\frac{p-value}{threshold}}; only present if \code{threshold} \eqn{< 1}}
+#'\item{Select.Number}{number of selected p-values \eqn{\leq} \code{threshold}; only present if \code{threshold} \eqn{< 1}}
 #'\item{Data$raw.pvalues}{The values of \code{raw.pvalues}}
 #'\item{Data$pCDFlist}{The values of \code{pCDFlist}}
 #'\item{Data$data.name}{The respective variable names of \code{raw.pvalues} and \code{pCDFlist}}

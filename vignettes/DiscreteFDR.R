@@ -23,7 +23,7 @@ df <- data.frame(X1, Y1, X2, Y2)
 kable(df, caption = "Toy Example")
 
 ## ----toy-example-5------------------------------------------------------------
-library("DiscreteFDR")
+library("DiscreteFDRTest")
 DBH.sd.fast <- fast.Discrete(df, alternative = "two.sided", direction = "sd")
 print(DBH.sd.fast)
 

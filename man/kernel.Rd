@@ -10,7 +10,14 @@
 \alias{kernel_DBR_crit}
 \title{Kernel functions}
 \usage{
-kernel_DBH_fast(pCDFlist, pvalues, stepUp = FALSE, alpha = 0.05, support = 0L)
+kernel_DBH_fast(
+  pCDFlist,
+  pvalues,
+  stepUp = FALSE,
+  alpha = 0.05,
+  support = 0L,
+  pCDFlistIndices = 0L
+)
 
 kernel_DBH_crit(pCDFlist, pvalues, sorted_pv, stepUp = FALSE, alpha = 0.05)
 
@@ -23,19 +30,19 @@ kernel_DBR_fast(pCDFlist, pvalues, lambda = 0.05)
 kernel_DBR_crit(pCDFlist, pvalues, sorted_pv, lambda = 0.05, alpha = 0.05)
 }
 \arguments{
-\item{pCDFlist}{a list of the supports of the CDFs of the p-values. Each support is represented by a vector that must be in increasing order.}
+\item{pCDFlist}{a list of the supports of the CDFs of the p-values; each list item must be a numeric vector, sorted in increasing order, whose last element equals 1}
 
-\item{pvalues}{a numeric vector. Contains all values of the p-values supports if we search for the critical constants. If not, contains only the observed p-values. Must be sorted in increasing order!}
+\item{pvalues}{a numeric vector, sorted in increasing order, that either must contain the entirety of all observable values of the p-value supports (when computing critical constants) or only the observed p-values}
 
-\item{stepUp}{a numeric vector. Identical to \code{pvalues} for a step-down procedure. Equals \code{c.m} for a step-up procedure.}
+\item{stepUp}{a boolean specifying whether to conduct the step-up (\code{TRUE}) or step-down (\code{FALSE}; the default) procedure}
 
 \item{alpha}{the target FDR level, a number strictly between 0 and 1. For \code{*.fast} kernels, it is only necessary, if \code{stepUp = TRUE}.}
 
-\item{support}{a numeric vector. Contains all values of the p-values supports. Ignored, if \code{stepUp = FALSE}. Must be sorted in increasing order!}
+\item{support}{a numeric vector, sorted in increasing order, that contains the entirety of all observable values of the p-value supports; ignored if \code{stepUp = FALSE}}
 
-\item{sorted_pv}{a vector of observed p-values, in increasing order.}
+\item{sorted_pv}{a numeric vector containing the observed p-values, sorted in increasing order}
 
-\item{lambda}{a number strictly between 0 and 1. If \code{lambda=NULL} (by default), then \code{lambda} is chosen equal to \code{alpha}.}
+\item{lambda}{a real number strictly between 0 and 1; if \code{lambda = NULL} (the default), \code{lambda} is chosen to be equal to \code{alpha}}
 }
 \value{
 For \code{kernel.DBH.fast}, \code{kernel.ADBH.fast} and \code{kernel.DBR.fast}, a vector

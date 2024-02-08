@@ -9,30 +9,38 @@ DBR(
   pCDFlist,
   alpha = 0.05,
   lambda = NULL,
-  ret.crit.consts = FALSE
+  ret.crit.consts = FALSE,
+  threshold = 1
 )
 }
 \arguments{
-\item{raw.pvalues}{vector of the raw observed p-values, as provided by the end user and before matching with their nearest neighbor in the CDFs supports.}
+\item{raw.pvalues}{a numeric vector of the raw observed p-values}
 
-\item{pCDFlist}{a list of the supports of the CDFs of the p-values. Each support is represented by a vector that must be in increasing order.}
+\item{pCDFlist}{a list of the supports of the CDFs of the p-values; each list item must be a numeric vector, sorted in increasing order, whose last element equals 1}
 
-\item{alpha}{the target FDR level, a number strictly between 0 and 1.}
+\item{alpha}{a real number strictly between 0 and 1, indicating the target FDR level}
 
-\item{lambda}{a number strictly between 0 and 1. If \code{lambda=NULL} (by default), then \code{lambda} is chosen equal to \code{alpha}.}
+\item{lambda}{a real number strictly between 0 and 1; if \code{lambda = NULL} (the default), \code{lambda} is chosen to be equal to \code{alpha}}
 
-\item{ret.crit.consts}{a boolean. If \code{TRUE}, critical constants are computed and returned (this is computationally intensive).}
+\item{ret.crit.consts}{a boolean; if \code{TRUE}, critical constants are computed and returned (this may be computationally much more intensive)}
+
+\item{threshold}{a real number strictly between 0 and 1 indicating the largest observed p-value to be considered, i.e. larger observed p-values are filtered out and subsequent computation of critical values, adjusted p-values and rejection decisions are performed under the condition that raw p-values are smaller than or equal to \code{threshold}}
 }
 \value{
 A \code{DiscreteFDR} S3 class object whose elements are:
 \item{Rejected}{Rejected raw p-values}
 \item{Indices}{Indices of rejected hypotheses}
 \item{Num.rejected}{Number of rejections}
-\item{Adjusted}{Adjusted p-values }
+\item{Adjusted}{Adjusted p-values}
 \item{Critical.constants}{Critical constants (if requested)}
 \item{Method}{Character string describing the used algorithm, e.g. 'Discrete Benjamini-Hochberg procedure (step-up)'}
 \item{Signif.level}{Significance level \code{alpha}}
 \item{Lambda}{Value of \code{lambda}.}
+\item{Select.Threshold}{p-value selection \code{threshold}; only present if \code{threshold} \eqn{< 1}}
+\item{Select.PV}{selected p-values that are \eqn{\leq} selection \code{threshold}; only present if \code{threshold} \eqn{< 1}}
+\item{Select.Indices}{indices of p-values \eqn{\leq} selection \code{threshold}; only present if \code{threshold} \eqn{< 1}}
+\item{Select.Scaled}{scaled selected p-values, i.e. \eqn{\frac{p-value}{threshold}}; only present if \code{threshold} \eqn{< 1}}
+\item{Select.Number}{number of selected p-values \eqn{\leq} \code{threshold}; only present if \code{threshold} \eqn{< 1}}
 \item{Data$raw.pvalues}{The values of \code{raw.pvalues}}
 \item{Data$pCDFlist}{The values of \code{pCDFlist}}
 \item{Data$data.name}{The respective variable names of \code{raw.pvalues} and \code{pCDFlist}}

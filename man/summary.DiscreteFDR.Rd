@@ -23,17 +23,17 @@ when \code{NULL}, \code{getOption("max.print")} is used.}
 \value{
 \code{summary.DiscreteFDR} computes and returns a list that includes all the
 data of an input \code{DiscreteFDR}, plus
-\item{Table}{a \code{data.frame}, sorted by the raw p-values, that contains
-the indices, that raw p-values themselves, their respective
-critical values (if present), their adjusted p-values (if
-present) and a logical column to indicate rejection.}
+\item{Table}{a \code{data.frame}, sorted by the raw p-values, that contains the
+indices, the raw p-values themselves, their respective critical
+values (if present), their adjusted p-values (if present) and a
+logical column to indicate rejection.}
 }
 \description{
 \code{summary} method for class "\code{DiscreteFDR}"
 }
 \details{
-\code{summary.DiscreteFDR} objects include all data of an \code{DiscreteFDR}
-object, but also include an additional table which includes the raw p-values,
+\code{summary.DiscreteFDR} objects contain all data of an \code{DiscreteFDR} object,
+but also include an additional table which includes the raw p-values,
 their indices, the respective critical values (if present), the adjusted
 p-values (if present) and a logical column to indicate rejection. The table
 is sorted in ascending order by the raw p-values.

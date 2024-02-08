@@ -9,10 +9,10 @@
 \arguments{
 \item{x}{an object of class "\code{DiscreteFDR}".}
 
-\item{breaks}{as in \link{hist}; here, the Friedman-Diaconis
-algorithm(\code{"FD"}) is used as default.}
+\item{breaks}{as in \link{hist}; here, the Friedman-Diaconis algorithm
+(\code{"FD"}) is used as default.}
 
-\item{plot}{a boolean If \code{TRUE} (the default), a histogram is plotted,
+\item{plot}{a boolean; if \code{TRUE} (the default), a histogram is plotted,
 otherwise a list of breaks and counts is returned.}
 
 \item{...}{further arguments to \link{hist} or \link{plot.histogram},

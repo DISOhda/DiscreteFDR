@@ -59,7 +59,7 @@ match.pvals <- function(pCDFlist, raw.pvalues){
                                  "'DiscreteFDR:::match.pvals()'."))
   
   m <- length(raw.pvalues)
-  if(m > 0){
+  if(m > 0 && m == length(pCDFlist)){
     pvec <- raw.pvalues
     in.CDF <- numeric(m)
     for (k in 1:m) {
@@ -79,6 +79,6 @@ match.pvals <- function(pCDFlist, raw.pvalues){
     }
     return(pvec)
   }else{
-    return(raw.pvalues)
+    stop("'pCDFlist' and 'raw.pvalues' must have the same non-zero length")
   }
 }

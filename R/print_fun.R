@@ -2,15 +2,15 @@
 #' Printing DiscreteFDR results
 #' 
 #' @description
-#' Prints the results of discrete FDR analysis, stored in a `DiscreteFDR` 
-#' S3 class object.
+#' Prints the results of discrete FDR analysis, stored in a `DiscreteFDR` class
+#' object.
 #' 
 #' @param x          an object of class "`DiscreteFDR`".
 #' @param ...        further arguments to be passed to or from other methods.
 #'                   They are ignored in this function.
-#'
+#' 
 #' @return
-#' The respective input object is invisibly returned via `invisible(x)`. 
+#' The respective input object is invisibly returned via `invisible(x)`.
 #' 
 #' @template example
 #' @examples
@@ -24,21 +24,28 @@
 #' @export
 ## S3 method for class 'DiscreteFDR'
 print.DiscreteFDR <- function(x, ...){
-  m <- length(x$Data$raw.pvalues)
+  n <- length(x$Data$raw.pvalues)
   k <- x$Num.rejected
   BH <- p.adjust(x$Data$raw.pvalues, "BH")
   
   # print title (i.e. algorithm)
   cat("\n")
   cat("\t", x$Method, "\n")
+  
   # print dataset name(s)
   cat("\n")
-  cat("data: ", x$Data$data.name, "\n")
+  cat("Data: ", x$Data$data.name, "\n")
+  
   # print short results overview
-  cat("number of tests =", m, "\n")
-  cat("number of rejections =", k, "at global FDR level", x$Signif.level, "\n")
+  if(!exists('Select', x))
+    cat("Number of tests =", n, "\n") else{
+      cat("Number of selected tests =", x$Select$Number, "out of", n, "\n")
+      cat("Selection threshold =", x$Select$Threshold, "\n")
+    }
+  
+  cat("Number of rejections =", k, "at global FDR level", x$Signif.level, "\n")
   cat("(Original BH rejections = ", sum(BH <= x$Signif.level), ")\n", sep = "")
-  if(k) cat("largest rejected p value: ", max(x$Rejected), "\n")
+  if(k) cat("Largest rejected p value: ", max(x$Rejected), "\n")
   
   cat("\n")
   invisible(x)
