@@ -4,34 +4,33 @@
 \alias{match.pvals}
 \title{Matching raw p-values with supports}
 \usage{
-match.pvals(pCDFlist, raw.pvalues)
+match.pvals(pCDFlist, raw.pvalues, pCDFlist.indices = NULL)
 }
 \arguments{
-\item{pCDFlist}{a list of the supports of the CDFs of the p-values; each list item must be a numeric vector, sorted in increasing order, whose last element equals 1}
+\item{pCDFlist}{list of the supports of the CDFs of the p-values; each list item must be a numeric vector, which is sorted in increasing order and whose last element equals 1.}
 
-\item{raw.pvalues}{a numeric vector of the raw observed p-values}
+\item{raw.pvalues}{numeric vector of the raw observed p-values.}
+
+\item{pCDFlist.indices}{list of numeric vectors containing the test indices that indicate to which p-value each \strong{unique} support in \code{pCDFlist} belongs; ignored if the lengths of \code{raw.pvalues} and \code{pCDFlist} are equal.}
 }
 \value{
-A vector where each raw p-value has been
-replaced by its nearest neighbor.
+A vector where each raw p-value has been replaced by its nearest neighbor, if
+necessary.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
-
+#'
 Constructs the observed p-values from the raw observed p-values, by rounding
 them to their nearest neighbor matching with the supports of their
 respective CDFs (as in function \code{p.discrete.adjust} of package \code{discreteMTP},
 which is no longer available on CRAN).
-The end user should not use it directly.
 
-\strong{Note}: In future versions, this function will no longer be exported to the
-global namespace. Instead, it will be a purely internal function and will
-have to be called directly via \code{:::}, i.e. \code{DiscreteFDR:::match.pvals()}.
+\strong{Note}: This is an internal function and has to be called directly via
+\code{:::}, i.e. \code{DiscreteFDR:::match.pvals()}.
 }
 \details{
 Well computed raw p-values should already belong to their respective CDF
-support. So this function is called at the beginning of \link{discrete.BH},
-\link{DBH}, \link{ADBH} and \link{DBR}, just in case raw p-values are biased.
+support. So this function is called at the beginning of \code{\link[=discrete.BH]{discrete.BH()}},
+\code{\link[=DBH]{DBH()}}, \code{\link[=ADBH]{ADBH()}} and \code{\link[=DBR]{DBR()}}, just in case raw p-values are biased.
 
 For each raw p-value that needs to be rounded, a warning is issued.
 }
@@ -44,5 +43,5 @@ match.pvals(toyList,toyRaw2)
 
 }
 \seealso{
-\link{discrete.BH}, \link{DBR}
+\code{\link[=discrete.BH]{discrete.BH()}}, \code{\link[=DBR]{DBR()}}
 }

@@ -33,13 +33,14 @@ Each support is represented by a vector in increasing order.}
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 
-Computes discrete raw p-values and their support
-for binomial test or Fisher's exact test applied to 2x2 contingency tables
-summarizing counts coming from two categorical measurements.
+Computes discrete raw p-values and their support for Fisher's exact test
+applied to 2x2 contingency tables summarizing counts coming from two
+categorical measurements.
 
-\strong{Note}: In future versions, this function will be removed. Generation of
-p-value supports for different exact tests, including Fisher's, will be
-moved to a separate package.
+\strong{Note}: This function is deprecated. Please use
+\code{\link[DiscreteTests:fisher.test.pv]{DiscreteTests::fisher.test.pv()}} after
+\code{\link[DiscreteDatasets:reconstruct_two]{DiscreteDatasets::reconstruct_two()}} or
+\code{\link[DiscreteDatasets:reconstruct_four]{DiscreteDatasets::reconstruct_four()}}.
 }
 \details{
 Assume that each contingency tables compares two variables and resumes the

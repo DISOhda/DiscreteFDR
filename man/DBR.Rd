@@ -2,11 +2,24 @@
 % Please edit documentation in R/DBR_fun.R
 \name{DBR}
 \alias{DBR}
-\title{[HBR-\eqn{\lambda}] procedure}
+\alias{DBR.default}
+\alias{DBR.DiscreteTestResults}
+\title{Discrete Blanchard-Roquain procedure}
 \usage{
-DBR(
+DBR(x, ...)
+
+\method{DBR}{default}(
   raw.pvalues,
   pCDFlist,
+  alpha = 0.05,
+  lambda = NULL,
+  ret.crit.consts = FALSE,
+  threshold = 1,
+  pCDFlist.indices = NULL
+)
+
+\method{DBR}{DiscreteTestResults}(
+  test.results,
   alpha = 0.05,
   lambda = NULL,
   ret.crit.consts = FALSE,
@@ -14,46 +27,58 @@ DBR(
 )
 }
 \arguments{
-\item{raw.pvalues}{a numeric vector of the raw observed p-values}
+\item{x}{either a numeric vector with p-values between 0 and 1 or an R6 object of class \code{\link[DiscreteTests]{DiscreteTestResults}} from package \link[DiscreteTests]{DiscreteTests} for which a discrete FDR procedure is to be performed.}
 
-\item{pCDFlist}{a list of the supports of the CDFs of the p-values; each list item must be a numeric vector, sorted in increasing order, whose last element equals 1}
+\item{raw.pvalues}{numeric vector of the raw observed p-values.}
 
-\item{alpha}{a real number strictly between 0 and 1, indicating the target FDR level}
+\item{pCDFlist}{list of the supports of the CDFs of the p-values; each list item must be a numeric vector, which is sorted in increasing order and whose last element equals 1.}
 
-\item{lambda}{a real number strictly between 0 and 1; if \code{lambda = NULL} (the default), \code{lambda} is chosen to be equal to \code{alpha}}
+\item{alpha}{single real number strictly between 0 and 1 indicating the target FDR level.}
 
-\item{ret.crit.consts}{a boolean; if \code{TRUE}, critical constants are computed and returned (this may be computationally much more intensive)}
+\item{lambda}{real number strictly between 0 and 1 specifying the DBR tuning parameter; if \code{lambda = NULL} (the default), \code{lambda} is chosen to be equal to \code{alpha}.}
 
-\item{threshold}{a real number strictly between 0 and 1 indicating the largest observed p-value to be considered, i.e. larger observed p-values are filtered out and subsequent computation of critical values, adjusted p-values and rejection decisions are performed under the condition that raw p-values are smaller than or equal to \code{threshold}}
+\item{ret.crit.consts}{single boolean specifying whether critical constants are to be computed and returned.}
+
+\item{threshold}{single real number strictly between 0 and 1 indicating the largest observed p-value to be considered, i.e. larger observed p-values are filtered out and subsequent computation of critical values, adjusted p-values and rejection decisions are performed under the condition that raw p-values are smaller than or equal to \code{threshold}.}
+
+\item{pCDFlist.indices}{list of numeric vectors containing the test indices that indicate to which p-value each \strong{unique} support in \code{pCDFlist} belongs; ignored if the lengths of \code{raw.pvalues} and \code{pCDFlist} are equal.}
 }
 \value{
 A \code{DiscreteFDR} S3 class object whose elements are:
-\item{Rejected}{Rejected raw p-values}
-\item{Indices}{Indices of rejected hypotheses}
-\item{Num.rejected}{Number of rejections}
-\item{Adjusted}{Adjusted p-values}
-\item{Critical.constants}{Critical constants (if requested)}
-\item{Method}{Character string describing the used algorithm, e.g. 'Discrete Benjamini-Hochberg procedure (step-up)'}
-\item{Signif.level}{Significance level \code{alpha}}
-\item{Lambda}{Value of \code{lambda}.}
-\item{Select.Threshold}{p-value selection \code{threshold}; only present if \code{threshold} \eqn{< 1}}
-\item{Select.PV}{selected p-values that are \eqn{\leq} selection \code{threshold}; only present if \code{threshold} \eqn{< 1}}
-\item{Select.Indices}{indices of p-values \eqn{\leq} selection \code{threshold}; only present if \code{threshold} \eqn{< 1}}
-\item{Select.Scaled}{scaled selected p-values, i.e. \eqn{\frac{p-value}{threshold}}; only present if \code{threshold} \eqn{< 1}}
-\item{Select.Number}{number of selected p-values \eqn{\leq} \code{threshold}; only present if \code{threshold} \eqn{< 1}}
-\item{Data$raw.pvalues}{The values of \code{raw.pvalues}}
-\item{Data$pCDFlist}{The values of \code{pCDFlist}}
-\item{Data$data.name}{The respective variable names of \code{raw.pvalues} and \code{pCDFlist}}
+\item{Rejected}{rejected raw p-values.}
+\item{Indices}{indices of rejected hypotheses.}
+\item{Num.rejected}{number of rejections.}
+\item{Adjusted}{adjusted p-values.}
+\item{Critical.constants}{critical constants (if requested).}
+\item{Select$Threshold}{p-value selection \code{threshold} (only present if \code{threshold} \eqn{< 1}).}
+\item{Select$Effective.Thresholds}{results of each p-value CDF evaluated at the selection threshold (only present if \code{threshold} \eqn{< 1}).}
+\item{Select$Pvalues}{selected p-values that are \eqn{\leq} selection \code{threshold} (only present if \code{threshold} \eqn{< 1}).}
+\item{Select$Indices}{indices of p-values \eqn{\leq} selection \code{threshold} (only present if \code{threshold} \eqn{< 1}).}
+\item{Select$Scaled}{scaled selected p-values, i.e. \eqn{\frac{i-th p-value}{i-th effective threshold}} (only present if \code{threshold} \eqn{< 1}).}
+\item{Select$Number}{number of selected p-values \eqn{\leq} \code{threshold} (only present if \code{threshold} \eqn{< 1}).}
+\item{Data$Method}{character string describing the used algorithm, e.g. 'Discrete Benjamini-Hochberg procedure (step-up)'}
+\item{Data$raw.pvalues}{observed p-values.}
+\item{Data$pCDFlist}{p-value supports.}
+\item{Data$pCDFlist.indices}{observed p-value indices of the \strong{unique} p-value supports.}
+\item{Data$FDR.level}{FDR level \code{alpha}.}
+\item{Data$Data.name}{the respective variable names of the input data.}
+\item{DBR.Tuning}{value of the tuning parameter \code{lambda}.}
 }
 \description{
 Apply the [HBR-\eqn{\lambda}] procedure, with or without computing the
-critical constants, to a set of p-values and their discrete support.
+critical constants, to a set of p-values and their respective discrete
+supports.
 }
 \details{
 [DBR-\eqn{\lambda}] is the discrete version of the
 [Blanchard-Roquain-\eqn{\lambda}] procedure (see References). The authors
 of the latter suggest to take \code{lambda = alpha} (see their Proposition 17),
 which explains the choice of the default value here.
+
+Computing critical constants (\code{ret.crit.consts = TRUE}) requires considerably
+more execution time, especially if the number of unique supports is large.
+The user should only have them calculated when he needs them, e.g. for
+illustration the rejection area in a plot or other theoretical reasons.
 }
 \section{References}{
 
@@ -84,5 +109,5 @@ summary(DBR.crit)
 
 }
 \seealso{
-\link{discrete.BH}
+\code{\link[=discrete.BH]{discrete.BH()}}, \code{\link[=DBH]{DBH()}}, \code{\link[=ADBH]{ADBH()}}, \code{\link[=DBR]{DBR()}}
 }

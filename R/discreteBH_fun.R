@@ -1,32 +1,33 @@
 #' @title
-#' \[HSU\], \[HSD\], \[AHSU\] and \[AHSD\] procedures
+#' Discrete Benjamini-Hochberg procedure
 #' 
 #' @description
-#' Apply the \[HSU\], \[HSD\], \[AHSU\] and \[AHSD\] procedures, with or without
-#' computing the critical constants, to a set of p-values and their discrete
-#' support.
+#' Apply the \[HSU\], \[HSD\], \[AHSU\] and \[AHSD\] procedures at a given FDR
+#' level, with or without computing the critical constants, to a set of p-values
+#' and their respective discrete supports.
 #' 
 #' @details
-#' `DBH` and `ADBH` are wrapper functions for `discrete.BH`. `DBH` simply passes
-#' all its parameters to `discrete.BH` with `adaptive = FALSE`. `ADBH` does the
-#' same with `adaptive = TRUE`.
+#' The adaptive variants \[AHSU\] and \[AHSD\], which are executed via
+#' `adaptive = TRUE`, are often slightly more powerful than \[HSU\] and \[HSD\],
+#' respectively. But they are also computationally more demanding.
+#' @template details_crit
 #' 
 #' @seealso
-#' [fast.Discrete], [DBR]
+#' [DBH()], [ADBH()], [DBR()]
 #' 
-#' @templateVar pvalues FALSE
-#' @templateVar stepUp FALSE
-#' @templateVar alpha TRUE
-#' @templateVar sorted_pv FALSE
-#' @templateVar support FALSE
+#' @templateVar x TRUE
 #' @templateVar raw.pvalues TRUE
 #' @templateVar pCDFlist TRUE
+#' @templateVar alpha TRUE
 #' @templateVar direction TRUE
-#' @templateVar ret.crit.consts TRUE
-#' @templateVar lambda FALSE
 #' @templateVar adaptive TRUE
+#' @templateVar ret.crit.consts TRUE
 #' @templateVar threshold TRUE
-#' @template param 
+#' @templateVar pCDFlist.indices TRUE
+#' @template param
+#' 
+#' @templateVar DBR FALSE
+#' @template return
 #' 
 #' @references
 #' Döhler, S., Durand, G., & Roquain, E. (2018). New FDR bounds for discrete
@@ -34,239 +35,221 @@
 #'   pp. 1867-1900. \doi{10.1214/18-EJS1441}
 #'   
 #' @template example
-#' @examples 
-#' DBH.su.fast <- DBH(raw.pvalues, pCDFlist)
+#' @examples
+#' 
+#' DBH.su.fast <- discrete.BH(raw.pvalues, pCDFlist)
 #' summary(DBH.su.fast)
-#' DBH.sd.fast <- DBH(raw.pvalues, pCDFlist, direction = "sd")
-#' DBH.sd.fast$Adjusted
+#' DBH.sd.fast <- discrete.BH(raw.pvalues, pCDFlist, direction = "sd")
 #' summary(DBH.sd.fast)
 #' 
-#' DBH.su.crit <- DBH(raw.pvalues, pCDFlist, ret.crit.consts = TRUE)
+#' DBH.su.crit <- discrete.BH(raw.pvalues, pCDFlist, ret.crit.consts = TRUE)
 #' summary(DBH.su.crit)
-#' DBH.sd.crit <- DBH(raw.pvalues, pCDFlist, direction = "sd",
-#'                    ret.crit.consts = TRUE)
-#' DBH.sd.crit$Adjusted
+#' DBH.sd.crit <- discrete.BH(raw.pvalues, pCDFlist, direction = "sd",
+#'                            ret.crit.consts = TRUE)
 #' summary(DBH.sd.crit)
 #' 
-#' ADBH.su.fast <- ADBH(raw.pvalues, pCDFlist)
+#' ADBH.su.fast <- discrete.BH(raw.pvalues, pCDFlist, adaptive = TRUE)
 #' summary(ADBH.su.fast)
-#' ADBH.sd.fast <- ADBH(raw.pvalues, pCDFlist, direction = "sd")
-#' ADBH.sd.fast$Adjusted
+#' ADBH.sd.fast <- discrete.BH(raw.pvalues, pCDFlist, direction = "sd",
+#'                             adaptive = TRUE)
 #' summary(ADBH.sd.fast)
 #'
-#' ADBH.su.crit <- ADBH(raw.pvalues, pCDFlist, ret.crit.consts = TRUE)
+#' ADBH.su.crit <- discrete.BH(raw.pvalues, pCDFlist, adaptive = TRUE, 
+#'                             ret.crit.consts = TRUE)
 #' summary(ADBH.su.crit)
-#' ADBH.sd.crit <- ADBH(raw.pvalues, pCDFlist, direction = "sd",
-#'                      ret.crit.consts = TRUE)
-#' ADBH.sd.crit$Adjusted
+#' ADBH.sd.crit <- discrete.BH(raw.pvalues, pCDFlist, direction = "sd", 
+#'                             adaptive = TRUE, ret.crit.consts = TRUE)
 #' summary(ADBH.sd.crit)
 #' 
-#' @templateVar DBR FALSE
-#' @template return
-#' 
 #' @name discrete.BH
-NULL
+#' @export
+discrete.BH <- function(x, ...) UseMethod("discrete.BH")
 
 #' @rdname discrete.BH
+#' @importFrom checkmate assert_character assert_integerish assert_list assert_numeric qassert
 #' @export
-discrete.BH <- function(raw.pvalues, pCDFlist, alpha = 0.05, direction = "su", adaptive = FALSE, ret.crit.consts = FALSE, threshold = 1){
-  # check arguments
-  if(is.null(alpha) || is.na(alpha) || !is.numeric(alpha) || alpha < 0 || alpha > 1)
-    stop("'alpha' must be a probability between 0 and 1!")
-  
-  if(is.null(threshold) || is.na(threshold) || !is.numeric(threshold) || threshold <= 0 || threshold > 1)
-    stop("'threshold' must be a probability greater than 0 and limited to 1!")
-  
+discrete.BH.default <- function(
+  raw.pvalues,
+  pCDFlist,
+  alpha = 0.05,
+  direction = "su",
+  adaptive = FALSE,
+  ret.crit.consts = FALSE,
+  threshold = 1,
+  pCDFlist.indices = NULL
+) {
+  #----------------------------------------------------
+  #       check arguments
+  #----------------------------------------------------
+  # raw p-values
+  qassert(x = raw.pvalues, rules = "N+[0, 1]")
   n <- length(raw.pvalues)
-  if(n != length(pCDFlist)) stop("The lengths of 'raw.pvalues' and 'pCDFlist' must be equal!")
   
-  for(i in 1:n){
-    if(!is.numeric(pCDFlist[[i]])){
-      stop("All elements of 'pCDFlist' must be numeric vectors!")
-    }#else pCDFlist[[i]] <- sort(unique(pmin(1, c(0, pCDFlist[[i]], 1))))
+  # list structure of p-value distributions
+  assert_list(
+    x = pCDFlist,
+    types = "numeric",
+    any.missing = FALSE,
+    min.len = 1,
+    max.len = n
+  )
+  # individual p-value distributions
+  for(i in seq_along(pCDFlist)){
+    assert_numeric(
+      x = pCDFlist[[i]],
+      lower = 0,
+      upper = 1,
+      any.missing = FALSE,
+      min.len = 1,
+      sorted = TRUE
+    )
+    if(max(pCDFlist[[i]]) != 1)
+      stop("Last value of each vector in 'pCDFlist' must be 1!")
   }
+  m <- length(pCDFlist)
   
-  # check and match 'direction'
-  direction <- match.arg(direction, c("su", "sd"))
+  # significance level
+  qassert(x = alpha, rules = "N1(0, 1]")
   
-  # prepare output data
-  output.Data <- list()
-  output.Data$raw.pvalues <- raw.pvalues
-  output.Data$pCDFlist <- pCDFlist
-  # object names of the data as strings
-  output.Data$data.name <- paste(deparse(substitute(raw.pvalues)), "and", deparse(substitute(pCDFlist)))
-  
-  #--------------------------------------------
-  #       prepare p-values for processing
-  #--------------------------------------------
-  pvec <- match.pvals(pCDFlist, raw.pvalues)
-  #--------------------------------------------
-  #       apply p-value selection
-  #--------------------------------------------
-  if(threshold < 1){
-    select <- which(pvec <= threshold)
-    m <- length(select)
-    pCDFlist <- pCDFlist[select]
-    F_thresh <- sapply(pCDFlist, function(X) X[max(which(X <= threshold))])
-    pCDFlist <- sapply(1:m, function(k) pCDFlist[[k]] / F_thresh[k])
-    pvec <- pvec[select] / F_thresh
-  }else{
-    select <- 1:n
-    F_thresh <- rep(1, n)
-    m <- n
-  }
-  #--------------------------------------------
-  #       Determine sort order and do sorting
-  #--------------------------------------------
-  o <- order(pvec)
-  sorted.pvals <- pvec[o]
-  #--------------------------------------------
-  #       construct the vector of all values of all supports of the p-values
-  #--------------------------------------------
-  pv.list.all <- sort(unique(pmin(as.numeric(unlist(pCDFlist)), threshold/max(F_thresh))))
-  #--------------------------------------------
-  #        Compute [HSU] or [HSD] significant p-values,
-  #        their indices and the number of rejections
-  #--------------------------------------------
+  # step-up/step-down direction
+  assert_character(
+    x = direction,
+    n.chars = 2,
+    len = 1,
+    any.missing = FALSE
+  )
   direction <- match.arg(tolower(direction), c("su", "sd"))
-  if(direction == "su"){
-    # SU case
-    if(ret.crit.consts){
-      if(adaptive){
-        # compute transformed support
-        y <- kernel_ADBH_crit(pCDFlist, pv.list.all, sorted.pvals, TRUE, alpha)
-      }
-      else{
-        # compute transformed support
-        y <- kernel_DBH_crit(pCDFlist, pv.list.all, sorted.pvals, TRUE, alpha)
-      }
-      # find critical constants
-      crit.constants <- y$crit.consts
-      idx <- which(sorted.pvals <= crit.constants)
-    }
-    else{
-      if(adaptive){
-        # compute transformed observed p-values
-        y <- kernel_ADBH_fast(pCDFlist, sorted.pvals, TRUE, alpha, pv.list.all)
-      }
-      else{
-        # compute transformed observed p-values
-        y <- kernel_DBH_fast(pCDFlist, sorted.pvals, TRUE, alpha, pv.list.all)
-      }
-      # determine significant (transformed) p-values
-      len.y <- length(y)
-      if(len.y){
-        idx <- which(y <= 1:len.y * alpha)
-      }else{
-        idx <- integer(0)
-      }
-    }
-    if(length(idx)){
-      m.rej <- max(idx)
-      # determine significant (observed) p-values in sorted.pvals
-      idx <- which(pvec <= sorted.pvals[m.rej]) 
-      pvec.rej <- raw.pvalues[select][idx]
-    }
-    else{
-      m.rej <- 0
-      idx <- integer(0)
-      pvec.rej <- numeric(0)
-    }
-  }
-  else{
-    # SD case
-    if(ret.crit.consts){
-      if(adaptive){
-        # compute transformed support
-        y <- kernel_ADBH_crit(pCDFlist, pv.list.all, sorted.pvals, FALSE, alpha)
-      }
-      else{
-        # compute transformed support
-        y <- kernel_DBH_crit(pCDFlist, pv.list.all, sorted.pvals, FALSE, alpha)
-      }
-      # find critical constants
-      crit.constants <- y$crit.consts
-      idx <- which(sorted.pvals > crit.constants)
-    }
-    else{
-      if(adaptive){
-        # compute transformed sorted p-values
-        y <- kernel_ADBH_fast(pCDFlist, sorted.pvals, FALSE)
-      }
-      else{
-        # compute transformed sorted p-values
-        y <- kernel_DBH_fast(pCDFlist, sorted.pvals, FALSE)
-      }
-      # determine significant (transformed) p-values
-      idx <- which(y > 1:m * alpha) 
-    }
-    if(length(idx)){
-      m.rej <- min(idx) - 1
-      if(m.rej){
-        # determine significant (observed) p-values in sorted.pvals
-        idx <- which(pvec <= sorted.pvals[m.rej])
-        pvec.rej <- raw.pvalues[select][idx]
-      }
-      else{
-        idx <- numeric(0)
-        pvec.rej <- numeric(0)
-      }
-    }
-    else{
-      m.rej <- m
-      idx <- 1:m
-      pvec.rej <- raw.pvalues[select]
-    }
-  }
-  #--------------------------------------------
-  #       Create output S3 object
-  #--------------------------------------------
-  output <- list(Rejected = pvec.rej, Indices = select[idx], Num.rejected = m.rej)
-  if(direction == "sd"){
-    if(ret.crit.consts){
-      y <- y$pval.transf
-    }
-    # compute adjusted p-values
-    pv.adj <- cummax(pmin(y / 1:m, 1))
-    # add adjusted p-values to output list
-    ro <- order(o)
-    output$Adjusted <- numeric(n)
-    output$Adjusted[select]  <- pv.adj[ro]
-    output$Adjusted[-select] <- NA
-  }
-  # add critical values to output list
-  if(ret.crit.consts) output$Critical.values <- c(crit.constants, rep(NA, n - m))
   
-  # include details of the used algorithm as strings
-  alg <- "Discrete Benjamini-Hochberg procedure"
-  alg <- if(adaptive) paste("Adaptive", alg) else alg
-  output$Method <- paste(alg, switch(direction, su = "(step-up)", sd = "(step-down)"))
-  output$Signif.level <- alpha
-  if(threshold < 1){
-    output$Select <- list()
-    output$Select$Threshold <- threshold
-    output$Select$Effective.Thresholds <- F_thresh
-    output$Select$Pvalues <- output.Data$raw.pvalues[select]
-    output$Select$Indices <- select
-    output$Select$Scaled <- pvec[order(output$Select$Pvalues)]
-    output$Select$Number <- m
+  # adaptiveness
+  qassert(adaptive, "B1")
+  
+  # compute and return critical values?
+  qassert(ret.crit.consts, "B1")
+  
+  # selection threshold
+  qassert(x = threshold, rules = "N1(0, 1]")
+  
+  # list structure of indices
+  assert_list(
+    x = pCDFlist.indices,
+    types = "numeric",
+    any.missing = FALSE,
+    len = m,
+    unique = TRUE,
+    null.ok = TRUE
+  )
+  # individual index vectors (if not NULL)
+  if(is.null(pCDFlist.indices)){
+    if(n != m){
+      stop(
+        paste(
+          "If no counts for the p-value CDFs are provided, the lengths of",
+          "'raw.pvalues' and 'pCDFlist' must be equal!"
+        )
+      )
+    }
+    pCDFlist.indices <- as.list(1:n)
+    pCDFlist.counts <- rep(1, n)
+  } else {
+    set <- 1L:n
+    for(i in seq_along(pCDFlist.indices)){
+      pCDFlist.indices[[i]] <- assert_integerish(
+        x = pCDFlist.indices[[i]],
+        lower = 1,
+        upper = n,
+        any.missing = FALSE,
+        min.len = 1,
+        max.len = n,
+        unique = TRUE,
+        sorted = TRUE,
+        coerce = TRUE
+      )
+      set <- setdiff(set, pCDFlist.indices[[i]])
+    }
+    if(length(set))
+      stop("'pCDFlist.indices' must contain each p-value index exactly once!")
+    pCDFlist.counts <- sapply(pCDFlist.indices, length)
   }
   
-  # original test data (often included, e.g. when using 'binom.test()')
-  output$Data <- output.Data
+  #----------------------------------------------------
+  #       check and prepare p-values for processing
+  #----------------------------------------------------
+  pvec <- match.pvals(pCDFlist, raw.pvalues, pCDFlist.indices)
   
-  class(output) <- "DiscreteFDR"
+  #----------------------------------------------------
+  #       execute computations
+  #----------------------------------------------------
+  output <- discrete_fdr_int(
+    pvec = pvec,
+    pCDFlist = pCDFlist,
+    pCDFlist_indices = pCDFlist.indices,
+    method = ifelse(adaptive, "ADBH", "DBH"),
+    alpha = alpha,
+    method_parameter = (direction == "su"),
+    crit_consts = ret.crit.consts,
+    threshold = threshold,
+    data_name = paste(deparse(substitute(raw.pvalues)), "and", deparse(substitute(pCDFlist)))
+  )
+  
   return(output)
 }
 
-#'@rdname discrete.BH
-#'@export
-DBH <- function(raw.pvalues, pCDFlist, alpha = 0.05, direction = "su", ret.crit.consts = FALSE, threshold = 1){
-  return(discrete.BH(raw.pvalues, pCDFlist, alpha, direction, adaptive = FALSE, ret.crit.consts, threshold))
-}
-
-#'@rdname discrete.BH
-#'@export
-ADBH <- function(raw.pvalues, pCDFlist, alpha = 0.05, direction = "su", ret.crit.consts = FALSE, threshold = 1){
-  return(discrete.BH(raw.pvalues, pCDFlist, alpha, direction, adaptive = TRUE, ret.crit.consts, threshold))
+#' @rdname discrete.BH
+#' @importFrom checkmate assert_character assert_r6 qassert
+#' @export
+discrete.BH.DiscreteTestResults <- function(
+  test.results,
+  alpha = 0.05,
+  direction = "su",
+  adaptive = FALSE,
+  ret.crit.consts = FALSE,
+  threshold = 1
+) {
+  #----------------------------------------------------
+  #       check arguments
+  #----------------------------------------------------
+  # discrete test results object
+  assert_r6(
+    x = test.results,
+    classes = "DiscreteTestResults",
+    public = c("get_pvalues", "get_pvalue_supports", "get_support_indices")
+  )
+  
+  # significance level
+  qassert(x = alpha, rules = "N1(0, 1]")
+  
+  # step-up/step-down direction
+  assert_character(
+    x = direction,
+    n.chars = 2,
+    len = 1,
+    any.missing = FALSE
+  )
+  direction <- match.arg(tolower(direction), c("su", "sd"))
+  
+  # adaptiveness
+  qassert(adaptive, "B1")
+  
+  # compute and return critical values?
+  qassert(ret.crit.consts, "B1")
+  
+  # selection threshold
+  qassert(x = threshold, rules = "N1(0, 1]")
+  
+  #----------------------------------------------------
+  #       execute computations
+  #----------------------------------------------------
+  output <- discrete_fdr_int(
+    pvec             = test.results$get_pvalues(),
+    pCDFlist         = test.results$get_pvalue_supports(unique = TRUE),
+    pCDFlist_indices = test.results$get_support_indices(),
+    method           = ifelse(adaptive, "ADBH", "DBH"),
+    alpha            = alpha,
+    method_parameter = (direction == "su"),
+    crit_consts      = ret.crit.consts,
+    threshold        = threshold,
+    data_name        = deparse(substitute(test.results))
+  )
+  
+  return(output)
 }

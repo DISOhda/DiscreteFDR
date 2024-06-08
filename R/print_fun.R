@@ -30,11 +30,11 @@ print.DiscreteFDR <- function(x, ...){
   
   # print title (i.e. algorithm)
   cat("\n")
-  cat("\t", x$Method, "\n")
+  cat("\t", x$Data$Method, "\n")
   
   # print dataset name(s)
   cat("\n")
-  cat("Data: ", x$Data$data.name, "\n")
+  cat("Data: ", x$Data$Data.name, "\n")
   
   # print short results overview
   if(!exists('Select', x))
@@ -43,9 +43,9 @@ print.DiscreteFDR <- function(x, ...){
       cat("Selection threshold =", x$Select$Threshold, "\n")
     }
   
-  cat("Number of rejections =", k, "at global FDR level", x$Signif.level, "\n")
-  cat("(Original BH rejections = ", sum(BH <= x$Signif.level), ")\n", sep = "")
-  if(k) cat("Largest rejected p value: ", max(x$Rejected), "\n")
+  cat("Number of rejections =", k, "at global FDR level", x$Data$FDR.level, "\n")
+  cat("(Original BH rejections = ", sum(BH <= x$Data$FDR.level), ")\n", sep = "")
+  if(k && !exists('Select', x)) cat("Largest rejected p value: ", max(x$Rejected), "\n")
   
   cat("\n")
   invisible(x)

@@ -1,8 +1,8 @@
 Package: DiscreteFDRTest
 Type: Package
 Title: Multiple Testing Procedures with Adaptation for Discrete Tests
-Version: 1.3.7
-Date: 2024-02-06
+Version: 1.3.8-240601
+Date: 2024-06-01
 Authors@R: c(
     person("Sebastian", "Döhler", role = c("aut", "ctb")),
     person("Florian", "Junge", role = c("aut", "ctb", "cre"), 
@@ -15,12 +15,11 @@ Description: Multiple testing procedures described in the paper Döhler, Durand 
 License: GPL-3
 Encoding: UTF-8
 Depends: R (>= 3.00)
-LazyData: true
 RoxygenNote: 7.3.1
 Suggests: rmarkdown, knitr, R.rsp
 VignetteBuilder: knitr, R.rsp
-Imports: Rcpp (>= 1.0.12), lifecycle
-LinkingTo: Rcpp
+Imports: Rcpp (>= 1.0.12), lifecycle, checkmate, DiscreteTests, DiscreteDatasets
+LinkingTo: Rcpp, RcppArmadillo
 URL: https://github.com/DISOhda/DiscreteFDR
 BugReports: https://github.com/DISOhda/DiscreteFDR/issues
 Roxygen: list(markdown = TRUE)

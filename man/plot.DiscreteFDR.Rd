@@ -6,9 +6,9 @@
 \usage{
 \method{plot}{DiscreteFDR}(
   x,
-  col = c(2, 4, 1, 8),
-  pch = rep(1, 4),
-  lwd = rep(1, 4),
+  col = c(2, 4, 1),
+  pch = c(20, 20, 20),
+  lwd = c(1, 1, 1),
   type.crit = "b",
   legend = NULL,
   ...

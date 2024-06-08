@@ -15,34 +15,62 @@ kernel_DBH_fast(
   pvalues,
   stepUp = FALSE,
   alpha = 0.05,
-  support = 0L,
-  pCDFlistIndices = 0L
+  support = numeric(),
+  pCDFcounts = NULL
 )
 
-kernel_DBH_crit(pCDFlist, pvalues, sorted_pv, stepUp = FALSE, alpha = 0.05)
+kernel_DBH_crit(
+  pCDFlist,
+  support,
+  sorted_pv,
+  stepUp = FALSE,
+  alpha = 0.05,
+  pCDFcounts = NULL
+)
 
-kernel_ADBH_fast(pCDFlist, pvalues, stepUp = FALSE, alpha = 0.05, support = 0L)
+kernel_ADBH_fast(
+  pCDFlist,
+  sorted_pv,
+  stepUp = FALSE,
+  alpha = 0.05,
+  support = numeric(),
+  pCDFcounts = NULL
+)
 
-kernel_ADBH_crit(pCDFlist, pvalues, sorted_pv, stepUp = FALSE, alpha = 0.05)
+kernel_ADBH_crit(
+  pCDFlist,
+  support,
+  sorted_pv,
+  stepUp = FALSE,
+  alpha = 0.05,
+  pCDFcounts = NULL
+)
 
-kernel_DBR_fast(pCDFlist, pvalues, lambda = 0.05)
+kernel_DBR_fast(pCDFlist, sorted_pv, lambda = 0.05, pCDFcounts = NULL)
 
-kernel_DBR_crit(pCDFlist, pvalues, sorted_pv, lambda = 0.05, alpha = 0.05)
+kernel_DBR_crit(
+  pCDFlist,
+  support,
+  sorted_pv,
+  lambda = 0.05,
+  alpha = 0.05,
+  pCDFcounts = NULL
+)
 }
 \arguments{
-\item{pCDFlist}{a list of the supports of the CDFs of the p-values; each list item must be a numeric vector, sorted in increasing order, whose last element equals 1}
+\item{pCDFlist}{list of the supports of the CDFs of the p-values; each list item must be a numeric vector, which is sorted in increasing order and whose last element equals 1.}
 
-\item{pvalues}{a numeric vector, sorted in increasing order, that either must contain the entirety of all observable values of the p-value supports (when computing critical constants) or only the observed p-values}
+\item{pvalues}{numeric vector, sorted in increasing order, that either must contain the entirety of all observable values of the p-value supports (when computing critical constants) or only the observed p-values.}
 
-\item{stepUp}{a boolean specifying whether to conduct the step-up (\code{TRUE}) or step-down (\code{FALSE}; the default) procedure}
+\item{stepUp}{boolean specifying whether to conduct the step-up (\code{TRUE}) or step-down (\code{FALSE}; the default) procedure.}
 
-\item{alpha}{the target FDR level, a number strictly between 0 and 1. For \code{*.fast} kernels, it is only necessary, if \code{stepUp = TRUE}.}
+\item{alpha}{single real number strictly between 0 and 1 indicating the target FDR level; for \code{*.fast} kernels, it is only necessary, if \code{stepUp = TRUE}.}
 
-\item{support}{a numeric vector, sorted in increasing order, that contains the entirety of all observable values of the p-value supports; ignored if \code{stepUp = FALSE}}
+\item{support}{numeric vector, sorted in increasing order, that contains the entirety of all observable values of the p-value supports; for \code{*.fast} kernels, it is ignored if \code{stepUp = FALSE}.}
 
-\item{sorted_pv}{a numeric vector containing the observed p-values, sorted in increasing order}
+\item{sorted_pv}{numeric vector containing the observed p-values, sorted in increasing order.}
 
-\item{lambda}{a real number strictly between 0 and 1; if \code{lambda = NULL} (the default), \code{lambda} is chosen to be equal to \code{alpha}}
+\item{lambda}{real number strictly between 0 and 1 specifying the DBR tuning parameter.}
 }
 \value{
 For \code{kernel.DBH.fast}, \code{kernel.ADBH.fast} and \code{kernel.DBR.fast}, a vector
@@ -52,8 +80,6 @@ and transformed p-values (\verb{$pval.transf}), but if \code{stepUp = FALSE}, th
 are critical values only.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
-
 Kernel functions that transform observed p-values or their support according
 to [HSU], [HSD], [AHSU], [AHSD] and [HBR-\eqn{\lambda}]. The
 output is used by \link{discrete.BH} or \link{DBR}, respectively.
@@ -61,61 +87,17 @@ output is used by \link{discrete.BH} or \link{DBR}, respectively.
 compute and return the critical constants.
 The end user should not use these functions directly.
 
-\strong{Note}: In future versions, these functions will no longer be exported to
-the global namespace. Instead, they will be purely internal functions and
-will have to be called directly via \code{:::}, e.g.
-\code{DiscreteFDR:::kernel_DBH_fast()}.
+\strong{Note}: As of version 1.4, these functions are purely internal functions!
+As a consequence, they have to be called directly via \code{:::}, e.g.
+\code{DiscreteFDR:::kernel_DBH_fast()}. But users should \strong{not} rely on them, as
+parameters (including their names, order, etc.) may be changed without
+notice!
 }
 \details{
 When computing critical constants under step-down, that is, when using
 \code{kernel_DBH_crit}, \code{kernel_ADBH_crit} or \code{kernel_DBR_crit} with
 \code{stepUp = FALSE} (i.e. the step-down case), we still need to get transformed
 p-values to compute the adjusted p-values.
-}
-\examples{
-X1 <- c(4, 2, 2, 14, 6, 9, 4, 0, 1)
-X2 <- c(0, 0, 1, 3, 2, 1, 2, 2, 2)
-N1 <- rep(148, 9)
-N2 <- rep(132, 9)
-Y1 <- N1 - X1
-Y2 <- N2 - X2
-df <- data.frame(X1, Y1, X2, Y2)
-df
-
-#Construction of the p-values and their support
-df.formatted <- fisher.pvalues.support(counts = df, input = "noassoc")
-raw.pvalues <- df.formatted$raw
-pCDFlist <- df.formatted$support
-
-alpha <- 0.05
-
-# Compute the step functions from the supports
-
-# We stay in a step-down context, where pv.numer = pv.denom,
-# for the sake of simplicity
-
-# If not searching for critical constants, we use only the observed p-values
-sorted.pvals <- sort(raw.pvalues)
-y.DBH.fast <- kernel_DBH_fast(pCDFlist, sorted.pvals)
-y.ADBH.fast <- kernel_ADBH_fast(pCDFlist, sorted.pvals)
-# transformed values
-y.DBH.fast
-y.ADBH.fast
-
-# compute transformed support
-pv.list <- sort(unique(unlist(pCDFlist)))
-y.DBH.crit <- kernel_DBH_crit(pCDFlist, pv.list, sorted.pvals)
-y.ADBH.crit <- kernel_ADBH_crit(pCDFlist, pv.list, sorted.pvals)
-y.DBR.crit <- kernel_DBR_crit(pCDFlist, pv.list, sorted.pvals)
-# critical constants
-y.DBH.crit$crit.consts
-y.ADBH.crit$crit.consts
-y.DBR.crit$crit.consts
-# The following exist only for step-down direction or DBR
-y.DBH.crit$pval.transf
-y.ADBH.crit$pval.transf
-y.DBR.crit$pval.transf
-
 }
 \seealso{
 \link{discrete.BH}, \link{fast.Discrete}, \link{DBR}

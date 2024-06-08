@@ -2,12 +2,12 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 #' @name kernel
+#' @rdname kernel
 #' 
 #' @title
 #' Kernel functions
 #' 
 #' @description
-#' `r lifecycle::badge('deprecated')`
 #'
 #' Kernel functions that transform observed p-values or their support according
 #' to \[HSU\], \[HSD\], \[AHSU\], \[AHSD\] and \[HBR-\eqn{\lambda}\]. The
@@ -16,10 +16,11 @@
 #' compute and return the critical constants. 
 #' The end user should not use these functions directly.
 #' 
-#' **Note**: In future versions, these functions will no longer be exported to
-#' the global namespace. Instead, they will be purely internal functions and
-#' will have to be called directly via `:::`, e.g.
-#' `DiscreteFDR:::kernel_DBH_fast()`.
+#' **Note**: As of version 1.4, these functions are purely internal functions!
+#' As a consequence, they have to be called directly via `:::`, e.g. 
+#' `DiscreteFDR:::kernel_DBH_fast()`. But users should **not** rely on them, as
+#' parameters (including their names, order, etc.) may be changed without
+#' notice!
 #' 
 #' @details
 #' When computing critical constants under step-down, that is, when using
@@ -31,51 +32,13 @@
 #' [discrete.BH], [fast.Discrete], [DBR]
 #' 
 #' @templateVar pCDFlist TRUE
-#' @templateVar stepf FALSE
 #' @templateVar pvalues TRUE
 #' @templateVar stepUp TRUE
-#' @templateVar alpha FALSE
 #' @templateVar alpha2 TRUE
-#' @templateVar lambda TRUE
 #' @templateVar support TRUE
 #' @templateVar sorted_pv TRUE
-#' @templateVar raw.pvalues FALSE
-#' @templateVar direction FALSE
-#' @templateVar ret.crit.consts FALSE
-#' @templateVar adaptive FALSE
+#' @templateVar lambda2 TRUE
 #' @template param 
-#' 
-#' @template example
-#' @examples
-#' 
-#' alpha <- 0.05
-#' 
-#' # Compute the step functions from the supports
-#' 
-#' # We stay in a step-down context, where pv.numer = pv.denom,
-#' # for the sake of simplicity
-#' 
-#' # If not searching for critical constants, we use only the observed p-values
-#' sorted.pvals <- sort(raw.pvalues)
-#' y.DBH.fast <- kernel_DBH_fast(pCDFlist, sorted.pvals)
-#' y.ADBH.fast <- kernel_ADBH_fast(pCDFlist, sorted.pvals)
-#' # transformed values
-#' y.DBH.fast
-#' y.ADBH.fast
-#' 
-#' # compute transformed support
-#' pv.list <- sort(unique(unlist(pCDFlist)))
-#' y.DBH.crit <- kernel_DBH_crit(pCDFlist, pv.list, sorted.pvals)
-#' y.ADBH.crit <- kernel_ADBH_crit(pCDFlist, pv.list, sorted.pvals)
-#' y.DBR.crit <- kernel_DBR_crit(pCDFlist, pv.list, sorted.pvals)
-#' # critical constants
-#' y.DBH.crit$crit.consts
-#' y.ADBH.crit$crit.consts
-#' y.DBR.crit$crit.consts
-#' # The following exist only for step-down direction or DBR
-#' y.DBH.crit$pval.transf
-#' y.ADBH.crit$pval.transf
-#' y.DBR.crit$pval.transf
 #' 
 #' @return
 #' For `kernel.DBH.fast`, `kernel.ADBH.fast` and `kernel.DBR.fast`, a vector
@@ -86,39 +49,33 @@
 #' 
 NULL
 
-#'@rdname kernel
-#'@export
-kernel_DBH_fast <- function(pCDFlist, pvalues, stepUp = FALSE, alpha = 0.05, support = 0L, pCDFlistIndices = 0L) {
-    .Call('_DiscreteFDRTest_kernel_DBH_fast', PACKAGE = 'DiscreteFDRTest', pCDFlist, pvalues, stepUp, alpha, support, pCDFlistIndices)
+#' @rdname kernel
+kernel_DBH_fast <- function(pCDFlist, pvalues, stepUp = FALSE, alpha = 0.05, support = numeric(), pCDFcounts = NULL) {
+    .Call('_DiscreteFDRTest_kernel_DBH_fast', PACKAGE = 'DiscreteFDRTest', pCDFlist, pvalues, stepUp, alpha, support, pCDFcounts)
 }
 
-#'@rdname kernel
-#'@export
-kernel_DBH_crit <- function(pCDFlist, pvalues, sorted_pv, stepUp = FALSE, alpha = 0.05) {
-    .Call('_DiscreteFDRTest_kernel_DBH_crit', PACKAGE = 'DiscreteFDRTest', pCDFlist, pvalues, sorted_pv, stepUp, alpha)
+#' @rdname kernel
+kernel_DBH_crit <- function(pCDFlist, support, sorted_pv, stepUp = FALSE, alpha = 0.05, pCDFcounts = NULL) {
+    .Call('_DiscreteFDRTest_kernel_DBH_crit', PACKAGE = 'DiscreteFDRTest', pCDFlist, support, sorted_pv, stepUp, alpha, pCDFcounts)
 }
 
-#'@rdname kernel
-#'@export
-kernel_ADBH_fast <- function(pCDFlist, pvalues, stepUp = FALSE, alpha = 0.05, support = 0L) {
-    .Call('_DiscreteFDRTest_kernel_ADBH_fast', PACKAGE = 'DiscreteFDRTest', pCDFlist, pvalues, stepUp, alpha, support)
+#' @rdname kernel
+kernel_ADBH_fast <- function(pCDFlist, sorted_pv, stepUp = FALSE, alpha = 0.05, support = numeric(), pCDFcounts = NULL) {
+    .Call('_DiscreteFDRTest_kernel_ADBH_fast', PACKAGE = 'DiscreteFDRTest', pCDFlist, sorted_pv, stepUp, alpha, support, pCDFcounts)
 }
 
-#'@rdname kernel
-#'@export
-kernel_ADBH_crit <- function(pCDFlist, pvalues, sorted_pv, stepUp = FALSE, alpha = 0.05) {
-    .Call('_DiscreteFDRTest_kernel_ADBH_crit', PACKAGE = 'DiscreteFDRTest', pCDFlist, pvalues, sorted_pv, stepUp, alpha)
+#' @rdname kernel
+kernel_ADBH_crit <- function(pCDFlist, support, sorted_pv, stepUp = FALSE, alpha = 0.05, pCDFcounts = NULL) {
+    .Call('_DiscreteFDRTest_kernel_ADBH_crit', PACKAGE = 'DiscreteFDRTest', pCDFlist, support, sorted_pv, stepUp, alpha, pCDFcounts)
 }
 
-#'@rdname kernel
-#'@export
-kernel_DBR_fast <- function(pCDFlist, pvalues, lambda = 0.05) {
-    .Call('_DiscreteFDRTest_kernel_DBR_fast', PACKAGE = 'DiscreteFDRTest', pCDFlist, pvalues, lambda)
+#' @rdname kernel
+kernel_DBR_fast <- function(pCDFlist, sorted_pv, lambda = 0.05, pCDFcounts = NULL) {
+    .Call('_DiscreteFDRTest_kernel_DBR_fast', PACKAGE = 'DiscreteFDRTest', pCDFlist, sorted_pv, lambda, pCDFcounts)
 }
 
-#'@rdname kernel
-#'@export
-kernel_DBR_crit <- function(pCDFlist, pvalues, sorted_pv, lambda = 0.05, alpha = 0.05) {
-    .Call('_DiscreteFDRTest_kernel_DBR_crit', PACKAGE = 'DiscreteFDRTest', pCDFlist, pvalues, sorted_pv, lambda, alpha)
+#' @rdname kernel
+kernel_DBR_crit <- function(pCDFlist, support, sorted_pv, lambda = 0.05, alpha = 0.05, pCDFcounts = NULL) {
+    .Call('_DiscreteFDRTest_kernel_DBR_crit', PACKAGE = 'DiscreteFDRTest', pCDFlist, support, sorted_pv, lambda, alpha, pCDFcounts)
 }
 

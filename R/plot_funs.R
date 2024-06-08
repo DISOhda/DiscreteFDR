@@ -97,69 +97,88 @@ hist.DiscreteFDR <- function(x, breaks = "FD", plot = TRUE, ...){
 #' 
 #' @importFrom graphics plot lines points title
 #' @export
-plot.DiscreteFDR <- function(x, col = c(2, 4, 1, 8), pch = rep(1, 4), lwd = rep(1, 4), type.crit = 'b', legend = NULL, ...){
+plot.DiscreteFDR <- function(
+  x,
+  col = c(2, 4, 1),
+  pch = c(20, 20, 20),
+  lwd = c(1, 1, 1),
+  type.crit = 'b',
+  legend = NULL,
+  ...
+) {
   # determine number of tests, selections and rejections
   n <- length(x$Data$raw.pvalues)
-  select <- exists('Select$Number', x)
+  select <- exists('Select', x)
   m <- if(select) x$Select$Number else n
   
   # replicate shorter plot parameter vectors to avoid errors
-  col <- rep_len(col, 4)
-  pch <- rep_len(pch, 4)
-  lwd <- rep_len(lwd, 4)
+  col <- rep_len(col, 3)
+  pch <- rep_len(pch, 3)
+  lwd <- rep_len(lwd, 3)
   
   # get values of ...-arguments
   lst <- list(...)
   
+  # labels
+  if(!exists('main', where = lst)) lst$main <- x$Data$Method
+  if(!exists('xlab', where = lst)) {
+    lst$xlab <- "Index"
+    if(select) lst$xlab <- paste(lst$xlab, "(selected)")
+  }
+  if(!exists('ylab', where = lst)) {
+    lst$ylab <- "Sorted raw p-values"
+    if(select) lst$ylab <- paste(lst$ylab, "(selected, scaled)")
+  }
+  
   # start plotting with empty area
-  if(exists('ylim', where = lst))
-    plot(x$Data$raw.pvalues, col = NA, ...) else
-      plot(x$Data$raw.pvalues, ylim = c(0, 1), col = NA, ...)
-  if(exists('main', where = lst)) title(lst$main) else title(x$Method)
-  if(exists('ylab', where = lst)) 
-    title(ylab = lst$ylab) else title(ylab = "Sorted raw p-values")
+  lst$x <- if(select) x$Select$Scaled else x$Data$raw.pvalues
+  lst$col <- "NA"
+  do.call(plot, lst)
   
   # plot critical values (if present and plotting is requested by the user)
   if(exists('Critical.values', where = x) && type.crit != 'n'){
-    lines(x$Critical.values * if(select) x$Select$Effective.Thresholds else 1, 
-          col = col[3], lwd = lwd[3], pch = pch[3], type = type.crit, ...)
+    lines(x$Critical.values, col = col[3], lwd = lwd[3], pch = pch[3],
+          type = type.crit, ...)
   }
   
-  idx <- match(x$Rejected, sort(x$Data$raw.pvalues))
-  
   # plot accepted p-values
-  points(setdiff(1:n, idx), sort(x$Data$raw.pvalues[setdiff(1:n, x$Indices)]), 
-         col = col[2], pch = pch[2], lwd = lwd[2], ...)
+  if(select) {
+    idx <- which(!(x$Select$Pvalues %in% x$Rejected))
+    if(length(idx)) {
+      y_acc <- sort(x$Select$Scaled[idx])
+      x_acc <- (m - length(y_acc) + 1):m
+    }
+  } else {
+    idx <- setdiff(1:n, x$Indices)
+    if(length(idx)) {
+      y_acc <- sort(x$Data$raw.pvalues[idx])
+      x_acc <- setdiff(seq_len(n), seq_len(x$Num.rejected))
+    }
+  }
+  if(length(idx))
+    points(x_acc, y_acc, col = col[2], pch = pch[2], lwd = lwd[2], ...)
   
   # plot rejected p-values
-  if(x$Num.rejected)
-    points(match(x$Rejected, sort(x$Data$raw.pvalues)), x$Rejected, 
-           col = col[1], pch = pch[1], lwd = lwd[1], ...)
   
-  # plot selection area (if threshold < 1)
-  if(select){
-    lines(rep(m + 0.05, 2), c(x$Select$Threshold, -10), col = "darkgrey", lwd = lwd[4], lty = 3)
-    lines(c(-1000, m + 0.05), rep(x$Select$Threshold, 2), col = "darkgrey", lwd = lwd[4], lty = 3)
+  if(x$Num.rejected) {
+    y_rej <- if(select) sort(x$Select$Scaled[-idx]) else sort(x$Rejected)
+    points(1:x$Num.rejected, y_rej, col = col[1], pch = pch[1],
+           lwd = lwd[1], ...)
   }
   
   # plot legend
-  if(!is.null(legend)){
+  if(!is.null(legend)) {
     idx <- 1:2
-    lt <- rep(0, 4)
-    if(exists('Critical.values', x) && type.crit != "n"){
+    lt <- rep(0, 3)
+    if(exists('Critical.values', x) && type.crit != "n") {
       idx <- c(idx, 3)
       if(!(type.crit %in% c("p", "o", "b"))) pch[3] <- NA
-      lt[3] <- if(type.crit %in% c('b', 'l', 'o')){
+      lt[3] <- if(type.crit %in% c('b', 'l', 'o')) {
         if(exists('lty', where = lst)) lst$lty else 1
-      }else 0
-    }
-    if(select){
-      idx <- c(idx, 4)
-      pch[4] <- NA
-      lt[4] <- 3
+      } else 0
     }
     len <- length(legend)
-    if(len <= 2 & len >= 1){
+    if(len <= 2 & len >= 1) {
       if(len == 1){
         x <- legend
         y <- NULL
@@ -167,7 +186,7 @@ plot.DiscreteFDR <- function(x, col = c(2, 4, 1, 8), pch = rep(1, 4), lwd = rep(
         x <- legend[1]
         y <- legend[2]
       }
-      legend(x, y, c("Rejected", "Accepted", "Critical values", "Selection area")[idx], col = c(col[idx], "darkgrey"), pch = pch[idx], lty = lt[idx], lwd = lwd[idx])
-    }else warning("Expecting character string or numeric vector of one or two elements for creating a legend")
+      legend(x, y, c("Rejected", "Accepted", "Critical values")[idx], col = c(col[idx], "darkgrey"), pch = pch[idx], lty = lt[idx], lwd = lwd[idx])
+    } else warning("Expecting character string or numeric vector of one or two elements for creating a legend")
   }
 }

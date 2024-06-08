@@ -19,8 +19,9 @@ We proceed as in the example in Section 1. Since we need to access the critical 
 
 ```{r format-am}
 library(DiscreteFDRTest)
+library(DiscreteDatasets)
 data(amnesia)
-amnesia.formatted <- fisher.pvalues.support(amnesia[, 2:3], input = "HG2011")
+amnesia.formatted <- fisher.pvalues.support(amnesia, input = "HG2011")
 raw.pvalues <- amnesia.formatted$raw
 pCDFlist <- amnesia.formatted$support
 ```
@@ -187,83 +188,83 @@ Panel (a) depicts the distribution functions $F_1, \ldots, F_9$ in various color
 
 <!-- # Ab hier gibt es keine Texte mehr -->
 
-<!-- ```{r} -->
-<!-- library(DiscreteDataSets) -->
-<!-- library(DiscreteFDR) -->
+```{r}
+library(DiscreteDatasets)
+library(DiscreteFDRTest)
 
-<!-- lambda.0 <- disorderdetection[,2] -->
-<!-- lambda.vector <- lambda.0 -->
-<!-- observations <- disorderdetection[,1] -->
-<!-- configuration <- cbind(observations, lambda.0) -->
-<!-- alpha <- 0.05 -->
-<!-- m <- length(observations) -->
+lambda.0 <- disorderdetection[,2]
+lambda.vector <- lambda.0
+observations <- disorderdetection[,1]
+configuration <- cbind(observations, lambda.0)
+alpha <- 0.05
+m <- length(observations)
 
-<!-- raw.pvalues <- sapply(1:m,function(i){ppois(observations[i] , lambda.vector[i], lower.tail = TRUE)}) -->
+raw.pvalues <- sapply(1:m,function(i){ppois(observations[i] , lambda.vector[i], lower.tail = TRUE)})
 
-<!-- pvalues_a3=p.adjust(raw.pvalues, method="BH",n=m) -->
-<!-- BH_NumRejected <- length(pvalues_a3[pvalues_a3<0.05]) -->
-<!-- BH_NumRejected -->
+pvalues_a3=p.adjust(raw.pvalues, method="BH",n=m)
+BH_NumRejected <- length(pvalues_a3[pvalues_a3<0.05])
+BH_NumRejected
 
-<!-- #pvalues_a=SB_SU(raw.pvalues,hu,gg,alt="del")#AHSU correction -->
-<!-- #pvalues_a$Num.rejected -->
+#pvalues_a=SB_SU(raw.pvalues,hu,gg,alt="del")#AHSU correction
+#pvalues_a$Num.rejected
 
-<!-- ``` -->
-
-
-<!-- ```{r} -->
-
-<!-- n.max <- qpois(1-10^(-5),lambda.vector) -->
-
-<!-- supports <- lapply(1:m, function(w){sort(ppois(0:n.max[w], lambda.vector[w], lower.tail = TRUE))}) -->
-<!-- ``` -->
-
-<!-- ```{r other-procedures} -->
-<!-- # rc = real case -->
-
-<!-- library(DiscreteFDR) -->
-<!-- raw.pvalues.rc <- raw.pvalues -->
-<!-- pCDFlist.rc <- supports -->
-
-<!-- DBH.su.rc  <-  DBH(raw.pvalues.rc, pCDFlist.rc, ret.crit.consts = TRUE) -->
-<!-- DBH.sd.rc  <-  DBH(raw.pvalues.rc, pCDFlist.rc, direction = "sd", ret.crit.consts = TRUE) -->
-<!-- ADBH.su.rc <- ADBH(raw.pvalues.rc, pCDFlist.rc, ret.crit.consts = TRUE) -->
-<!-- ADBH.sd.rc <- ADBH(raw.pvalues.rc, pCDFlist.rc, direction = "sd", ret.crit.consts = TRUE) -->
-<!-- DBR.su.rc  <-  DBR(raw.pvalues.rc, pCDFlist.rc, ret.crit.consts = TRUE) -->
-<!-- ``` -->
-
-<!-- ```{r plot} -->
+```
 
 
-<!-- num.plot<-60 -->
-<!-- index.plot<-1:num.plot -->
-<!-- m <- length(raw.pvalues.rc) -->
-<!-- crit.values.BH <- 0.05 * (1:m) / m -->
+```{r}
 
-<!-- plot(index.plot,sort(raw.pvalues.rc)[index.plot],pch=3,lwd=1.5,ylim=c(0,0.02),ylab="critical values / p-values",col="black") -->
-<!-- points(index.plot, ADBH.su.rc$Critical.values[index.plot],pch = 19, col="blue") -->
-<!-- points(crit.values.BH[1:105],             col = "green",  pch = 19) -->
-<!-- points(DBH.sd.rc$Critical.values[1:105],  col = "red",   pch = 19) -->
-<!-- points(ADBH.sd.rc$Critical.values[1:105], col = "purple", pch = 19) -->
-<!-- points(DBR.su.rc$Critical.values[1:105],  col = "cyan", pch = 19) -->
+n.max <- qpois(2^-1074, lambda.vector, FALSE)
 
-<!-- legend("topleft",inset=0.05, legend=c("raw p-values (sorted)",   "[A-DBH-SU]","[A-DBH-SD]","[DBH-SU]","[DBH-SD]", "[DBR-SU]","BH"), -->
-<!--        col=c("black","blue","purple","orange", "red", "cyan", "green"), pch=c(3, 19, 19, 19, 19, 19, 19), cex=0.75) -->
-<!-- title(expression("NGS Disorder Detection: critical values for " ~  "FDR" <=0.05),line=1) -->
+supports <- lapply(1:m, function(i){sort(ppois(0:n.max[i], lambda.vector[i]))})
+```
 
-<!-- ``` -->
+```{r other-procedures}
+# rc = real case
 
-<!-- ```{r table} -->
-<!-- df.rc <- c("FDR<=0.05") -->
+library(DiscreteFDRTest)
+raw.pvalues.rc <- raw.pvalues
+pCDFlist.rc <- supports
 
-<!-- table_rc <- cbind("FDR <= 0.05",ADBH.su.rc$Num.rejected, ADBH.sd.rc$Num.rejected, DBH.su.rc$Num.rejected, DBH.sd.rc$Num.rejected, DBR.su.rc$Num.rejected, BH_NumRejected ) -->
+DBH.su.rc  <-  DBH(raw.pvalues.rc, pCDFlist.rc, ret.crit.consts = TRUE)
+DBH.sd.rc  <-  DBH(raw.pvalues.rc, pCDFlist.rc, direction = "sd", ret.crit.consts = TRUE)
+ADBH.su.rc <- ADBH(raw.pvalues.rc, pCDFlist.rc, ret.crit.consts = TRUE)
+ADBH.sd.rc <- ADBH(raw.pvalues.rc, pCDFlist.rc, direction = "sd", ret.crit.consts = TRUE)
+DBR.su.rc  <-  DBR(raw.pvalues.rc, pCDFlist.rc, ret.crit.consts = TRUE)
+```
 
-<!-- ``` -->
+```{r plot}
 
 
-<!-- ```{r rc-table, echo=FALSE} -->
-<!-- library(knitr) -->
-<!-- library(kableExtra) -->
-<!-- kable(table_rc, col.names = c("procedure controls", "[A-DBH-SU]", "[A-DBH-SD]", "[DBH-SU]", "[DBH-SD]", "[DBR-SU]", "[BH]" ),caption = "*Number of rejections for the disorder detection data.*")%>%  -->
-<!--   kable_styling(latex_options = "striped") -->
+num.plot<-60
+index.plot<-1:num.plot
+m <- length(raw.pvalues.rc)
+crit.values.BH <- 0.05 * (1:m) / m
 
-<!-- ``` -->
+plot(index.plot,sort(raw.pvalues.rc)[index.plot],pch=3,lwd=1.5,ylim=c(0,0.02),ylab="critical values / p-values",col="black")
+points(index.plot, ADBH.su.rc$Critical.values[index.plot],pch = 19, col="blue")
+points(crit.values.BH[1:105],             col = "green",  pch = 19)
+points(DBH.sd.rc$Critical.values[1:105],  col = "red",   pch = 19)
+points(ADBH.sd.rc$Critical.values[1:105], col = "purple", pch = 19)
+points(DBR.su.rc$Critical.values[1:105],  col = "cyan", pch = 19)
+
+legend("topleft",inset=0.05, legend=c("raw p-values (sorted)",   "[A-DBH-SU]","[A-DBH-SD]","[DBH-SU]","[DBH-SD]", "[DBR-SU]","BH"),
+       col=c("black","blue","purple","orange", "red", "cyan", "green"), pch=c(3, 19, 19, 19, 19, 19, 19), cex=0.75)
+title(expression("NGS Disorder Detection: critical values for " ~  "FDR" <=0.05),line=1)
+
+```
+
+```{r table}
+df.rc <- c("FDR<=0.05")
+
+table_rc <- cbind("FDR <= 0.05",ADBH.su.rc$Num.rejected, ADBH.sd.rc$Num.rejected, DBH.su.rc$Num.rejected, DBH.sd.rc$Num.rejected, DBR.su.rc$Num.rejected, BH_NumRejected )
+
+```
+
+
+```{r rc-table, echo=FALSE}
+library(knitr)
+library(kableExtra)
+kable(table_rc, col.names = c("procedure controls", "[A-DBH-SU]", "[A-DBH-SD]", "[DBH-SU]", "[DBH-SD]", "[DBR-SU]", "[BH]" ),caption = "*Number of rejections for the disorder detection data.*")%>%
+  kable_styling(latex_options = "striped")
+
+```

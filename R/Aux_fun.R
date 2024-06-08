@@ -1,39 +1,30 @@
+#' @name match.pvals
+
 #' @title
 #' Matching raw p-values with supports 
 #' 
-#' @description
-#' `r lifecycle::badge('deprecated')`
-#' 
+#' @description#' 
 #' Constructs the observed p-values from the raw observed p-values, by rounding
 #' them to their nearest neighbor matching with the supports of their
 #' respective CDFs (as in function `p.discrete.adjust` of package `discreteMTP`,
 #' which is no longer available on CRAN).
-#' The end user should not use it directly.
 #' 
-#' **Note**: In future versions, this function will no longer be exported to the
-#' global namespace. Instead, it will be a purely internal function and will
-#' have to be called directly via `:::`, i.e. `DiscreteFDR:::match.pvals()`.
+#' **Note**: This is an internal function and has to be called directly via
+#' `:::`, i.e. `DiscreteFDR:::match.pvals()`.
 #' 
 #' @details
 #' Well computed raw p-values should already belong to their respective CDF
-#' support. So this function is called at the beginning of [discrete.BH],
-#' [DBH], [ADBH] and [DBR], just in case raw p-values are biased.
+#' support. So this function is called at the beginning of [discrete.BH()],
+#' [DBH()], [ADBH()] and [DBR()], just in case raw p-values are biased.
 #'
 #' For each raw p-value that needs to be rounded, a warning is issued.
 #'
 #' @seealso
-#' [discrete.BH], [DBR]
+#' [discrete.BH()], [DBR()]
 #'
-#' @templateVar stepf FALSE
-#' @templateVar pv.numer FALSE
-#' @templateVar pv.denom FALSE
-#' @templateVar alpha FALSE
-#' @templateVar sorted.pv FALSE
 #' @templateVar pCDFlist TRUE
 #' @templateVar raw.pvalues TRUE
-#' @templateVar direction FALSE
-#' @templateVar ret.crit.consts FALSE
-#' @templateVar lambda FALSE
+#' @templateVar pCDFlist.indices TRUE
 #' @template param
 #' 
 #' @examples
@@ -44,22 +35,18 @@
 #' match.pvals(toyList,toyRaw2)
 #'
 #' @return
-#' A vector where each raw p-value has been
-#' replaced by its nearest neighbor.
+#' A vector where each raw p-value has been replaced by its nearest neighbor, if
+#' necessary.
 #'
-#' @name match.pvals
-#' @importFrom lifecycle deprecate_soft
-#' @export
-match.pvals <- function(pCDFlist, raw.pvalues){
-  deprecate_soft("1.3.7", "match.pvals()",
-                 details = paste("In future versions of this package, this",
-                                 "function will no longer be exported to the",
-                                 "global namespace and will have to be",
-                                 "accessed directly via ':::', i.e.",
-                                 "'DiscreteFDR:::match.pvals()'."))
-  
+match.pvals <- function(pCDFlist, raw.pvalues, pCDFlist.indices = NULL){
   m <- length(raw.pvalues)
-  if(m > 0 && m == length(pCDFlist)){
+  if(!is.null(pCDFlist.indices)){
+    idx <- unlist(pCDFlist.indices)
+    counts <- sapply(pCDFlist.indices, length)
+    pCDFlist <- rep(pCDFlist, counts)[order(idx)]
+  }
+  n <- length(pCDFlist)
+  if(m > 0 && m == n){
     pvec <- raw.pvalues
     in.CDF <- numeric(m)
     for (k in 1:m) {

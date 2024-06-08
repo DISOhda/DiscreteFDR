@@ -49,31 +49,32 @@ summary.DiscreteFDR <- function(object, ...){
   # determine order of raw p-values
   o <- order(object$Data$raw.pvalues)
   # ordered indices
-  i <- (1:n)[o]
-  # sort raw p-values
-  y <- object$Data$raw.pvalues[o]
+  i <- 1:n
+  # raw p-values
+  #y <- object$Data$raw.pvalues
   # determine for each p-value if its corresponding null hypothesis is rejected
   r <- i %in% object$Indices #if(!select) o %in% object$Indices else o %in% object$Select.Indices[object$Indices]
   
   # create output object with summary table; include all data of object (DiscreteFDR)
-  out <- c(object, list(Table = data.frame('Index' = i, 'P.value' = y)))
+  out <- c(object, list(Table = data.frame('Index' = i, 'P.value' = object$Data$raw.pvalues)))
   if(select){
-    out$Table <- data.frame(out$Table, 'Selected' = i %in% object$Select$Indices) #rep(c(TRUE, FALSE), c(m, n - m))
-    out$Table <- data.frame(out$Table, 'Scaled' = c(object$Select$Scaled, rep(NA, n - m)))
+    out$Table$Selected <- i %in% object$Select$Indices #rep(c(TRUE, FALSE), c(m, n - m))
+    out$Table$Scaled <- NA
+    out$Table$Scaled[out$Table$Selected] <- object$Select$Scaled
+    #out$Table <- data.frame(out$Table, 'Scaled' = c(object$Select$Scaled, rep(NA, n - m)))
   }
-  if(exists('Critical.values', object)){
-    if(select){
-      #cv.unscaled <- c((object$Critical.values[1:m] * object$Select$Effective.Thresholds), rep(NA, n - m))
-      out$Table <- data.frame(out$Table, 
-                              'Critical.value' = object$Critical.values)
-      # 'Critical.value.scaled' = object$Critical.values,
-      # 'Critical.value' = cv.unscaled)
-    }else out$Table <- data.frame(out$Table, 'Critical.value' = object$Critical.values)
+  out$Table <- out$Table[o, ]
+  if(exists('Critical.values', object)) {
+    if(select) {
+      out$Table$Critical.value <- NA
+      out$Table$Critical.value[1:m] <- object$Critical.values[1:m][order(order(out$Table$Scaled[1:m]))]
+    } else out$Table$Critical.value <- object$Critical.values
   }
   if(exists('Adjusted', object)){
-    out$Table <- data.frame(out$Table, 'Adjusted' = object$Adjusted[o])
+    out$Table$Adjusted <- object$Adjusted[o]
   }
-  out$Table <- data.frame(out$Table, 'Rejected' = r)
+  out$Table <- data.frame(out$Table, 'Rejected' = r[o])
+  rownames(out$Table) <- i
   
   # return output object
   class(out) <- "summary.DiscreteFDR" # basically a 'DiscreteFDR' object, but with a summary table (just like 'lm' and 'summary.lm' classes)

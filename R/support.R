@@ -5,13 +5,14 @@
 #' @description
 #' `r lifecycle::badge('deprecated')`
 #' 
-#' Computes discrete raw p-values and their support
-#' for binomial test or Fisher's exact test applied to 2x2 contingency tables
-#' summarizing counts coming from two categorical measurements.
+#' Computes discrete raw p-values and their support for Fisher's exact test
+#' applied to 2x2 contingency tables summarizing counts coming from two
+#' categorical measurements.
 #'
-#' **Note**: In future versions, this function will be removed. Generation of
-#' p-value supports for different exact tests, including Fisher's, will be
-#' moved to a separate package.
+#' **Note**: This function is deprecated. Please use
+#' [`DiscreteTests::fisher.test.pv()`] after 
+#' [`DiscreteDatasets::reconstruct_two()`] or
+#' [`DiscreteDatasets::reconstruct_four()`].
 #' 
 #' @details
 #' Assume that each contingency tables compares two variables and resumes the
@@ -85,115 +86,90 @@
 #' 
 #' @importFrom stats dhyper phyper pbinom
 #' @importFrom lifecycle deprecate_soft
+#' @importFrom checkmate assert_data_frame qassert
+#' @importFrom DiscreteDatasets reconstruct_four reconstruct_two
+#' @importFrom DiscreteTests fisher.test.pv
 #' @export
 fisher.pvalues.support <- function(counts, alternative = "greater", input = "noassoc"){
-  deprecate_soft("1.3.7", "fast.Discrete()",
-                 details = paste("In future versions of this package, this",
-                                 "function will be removed. Generation of",
-                                 "p-value supports for different exact tests,",
-                                 "including Fisher's, will be moved to a",
-                                 "separate package."))
+  deprecate_soft("1.3.7", "fisher.pvalues.support()",
+                 details = paste("Please use",
+                                 "`DiscreteDatasets::reconstruct_*() %>%",
+                                 "DiscreteTests::fisher.test.pv()` or just",
+                                 "`DiscreteTests::fisher.test.pv()` instead."))
   
+  # 'counts' must be a non-empty data frame or a non-empty matrix 
+  qassert(x = counts, rules = c("M+", "D+"))
+  # convert to data frame, if it is a matrix
+  if(is.matrix(counts))
+    counts <- as.data.frame(counts)
+  # check if it contains only integer-like values and between two and four columns
+  assert_data_frame(
+    x = counts,
+    types = "integerish",
+    any.missing = FALSE,
+    min.rows = 1,
+    min.cols = 2,
+    max.cols = 4
+  )
+  # round to integer
+  counts <- round(counts)
+  # ensure that the data frame has exactly two or exactly four columns
+  qassert(x = counts, rules = c("D2", "D4"))
+  
+  # check and match 'input' parameter
+  qassert(x = input, rules = "S1")
   input <- match.arg(input, c("noassoc", "marginal", "HG2011"))
-  alternative <- match.arg(alternative, c("two.sided", "less", "greater"))
   
-  number.items <- nrow(counts)
-  switch (input, 
-          noassoc = {
-            A11 <- counts[, 1]
-            A12 <- counts[, 2]
-            n <- A11 + A12
-            #A21 <- counts[, 3]
-            #A22 <- counts[, 4]
-            A1. <- A11 + counts[, 3]
-            A2. <- A12 + counts[, 4]
-            #N <- A1. + A2.
-            # Entry j in each of the above vectors is a count for the j-th test of no association
-            # between two variables and a condition :  
-            #                   Association    No association   Marginal counts
-            #  Variable 1       A11[j]         A12[j]           n[j]
-            #  Variable 2       A21[j]         A22[j]           N[j]-n[j]
-            #  All variables    A1.[j]         A2.[j]           N[j]
-          },
-          marginal = {
-            A11 <- counts[, 1]
-            n <- counts[, 2]
-            A12 <- n - A11
-            #A21 <- counts[, 3]
-            #A22 <- counts[, 4] - A21
-            A1. <- A11 + counts[, 3]
-            A2. <- counts[, 4] + n - A1.
-            #N <- A1. + A2.
-            # Entry j in each of the above vectors is a count for the j-th test of no association
-            # between two variables and a condition :  
-            #                   Association    No association   Marginal counts
-            #  Variable 1       A11[j]         A12[j]           n[j]
-            #  Variable 2       A21[j]         A22[j]           N[j]-n[j]
-            #  All variables    A1.[j]         A2.[j]           N[j]
-          },
-          HG2011 = {
-            A11 <- counts[, 1]
-            #A21 <- sum(counts[, 1]) - A11
-            A12 <- counts[, 2]
-            #A22 <- sum(counts[, 2]) - A12
-            A1. <- rep(sum(counts[, 1]), number.items)
-            A2. <- rep(sum(counts[, 2]), number.items)
-            n <- A11 + A12
-            #N <- A1. + A2.
-            # Entry j in each of the above vectors is a count for the test of no association
-            # between variable j and the condition, compared to all other variables :  
-            #                    Association    No association   Marginal counts
-            #  Variable j        A11[j]         A12[j]           n[j]
-            #  Other variables   A21[j]         A22[j]           N[j]-n[j]
-            #  All variables     A1.[j]         A2.[j]           N[j]
-          }
+  # transform 'counts' according to 'input'
+  counts <- switch(
+    EXPR = input,
+    HG2011 = reconstruct_two(counts),
+    marginal = reconstruct_four(counts),
+    counts
   )
   
-  pCDFlist <- vector("list", number.items)
-  raw.pvalues <- numeric(number.items)
+  # compute p-values and supports
+  res <- fisher.test.pv(counts, alternative)
   
-  k <- pmin(n, A1.)
-  l <- pmax(0, n - A2.)
-  switch(alternative, greater =
-           for (i in 1:number.items){
-             x <- l[i]:k[i]
-             # the "-1" below is because lower.tail = FALSE computes P[X > x],
-             # and we want P[X >= x]=P[X > x-1]
-			       # pmin/pmax below is to account for machine rounding issues
-             pCDFlist[[i]] <- pmax(0, pmin(1, phyper(x-1, A1.[i], A2.[i], n[i], lower.tail = FALSE)))
-             # the "+1" below is because vectors start with index 1 in R: x[A11[i]+1]=A11[i]
-             raw.pvalues[i] <- pCDFlist[[i]][A11[i] - l[i] + 1]
-             # we want to have pCDFlist[[i]] in increasing order:
-             pCDFlist[[i]] <- rev(pCDFlist[[i]])
-           },
-         less =
-           for (i in 1:number.items){
-             x <- l[i]:k[i]
-			       # pmin/pmax below is to account for machine rounding issues
-             pCDFlist[[i]] <- pmax(0, pmin(1, phyper(x, A1.[i], A2.[i], n[i], lower.tail = TRUE)))
-             # the "+1" below is because vectors start with index 1 in R: x[A11[i]+1]=A11[i]
-             raw.pvalues[i] <- pCDFlist[[i]][A11[i] - l[i] + 1]
-           },
-         two.sided =
-           for (i in 1:number.items){
-             x <- l[i]:k[i]
-             atoms <- dhyper(x, A1.[i], A2.[i], n[i])
-             # ensure that probabilities sum up to 1 (sometimes, needs to be done multiple times)
-             newsum <- sum(atoms)
-             while(newsum < 1){
-               oldsum <- newsum
-               atoms <- atoms/newsum
-               newsum <- sum(atoms)
-               if(oldsum == newsum) break;
-             }
-			       # pmin/pmax below is to account for machine rounding issues
-             pCDFlist[[i]] <- pmax(0, pmin(1, sapply(x, function(nu){sum(atoms[which(atoms <= atoms[nu + 1 - l[i]])])})))
-             # the "+1" above and below is because vectors start with index 1 in R: x[A11[i]+1]=A11[i]
-             raw.pvalues[i] <- pCDFlist[[i]][A11[i] - l[i] + 1]
-             # we want to have pCDFlist[[i]] in increasing order:
-             pCDFlist[[i]] <- sort(pCDFlist[[i]])
-           }
-  )
+  # return list of results
+  return(list(raw = res$get_pvalues(),
+              support = res$get_pvalue_supports(unique = FALSE)))
+}
+
+#' @importFrom checkmate assert_function assert_list test_r6
+#' @export
+generate.pvalues <- function(
+  data,
+  test_fun,
+  test_args = NULL,
+  preprocess_fun = NULL,
+  preprocess_args = NULL
+) {
+  assert_function(test_fun)
+  assert_list(test_args, names = "unique", null.ok = TRUE)
+  assert_function(preprocess_fun, null.ok = TRUE)
+  assert_list(preprocess_args, names = "unique", null.ok = TRUE)
   
-  return(list(raw = raw.pvalues, support = pCDFlist))
+  if(!is.null(preprocess_fun)){
+    xname <- names(as.list(args(preprocess_fun)))[1]
+    preprocess_args <- c(list(x = data), preprocess_args)
+    names(preprocess_args)[1] <- xname
+    
+    data <- do.call(preprocess_fun, preprocess_args)
+  }
+  
+  xname <- names(as.list(args(test_fun)))[1]
+  test_args <- c(list(x = data), test_args)
+  names(test_args)[1] <- xname
+  
+  res <- do.call(test_fun, test_args)
+  if(!test_r6(res, "DiscreteTestResults"))
+    warning(
+      paste("Result must be an R6 object of class 'DiscreteTestResults'.",
+            "Use a test function from package 'DiscreteTests' as 'test_fun'."#,
+            #sep = "\n  "
+      )
+    )
+  
+  return(res)
 }
