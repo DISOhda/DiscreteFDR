@@ -6,16 +6,17 @@
 \alias{ADBH.DiscreteTestResults}
 \title{Wrapper functions for the adaptive Discrete Benjamini-Hochberg procedure}
 \usage{
-ADBH(x, ...)
+ADBH(test.results, ...)
 
 \method{ADBH}{default}(
-  raw.pvalues,
+  test.results,
   pCDFlist,
   alpha = 0.05,
   direction = "su",
   ret.crit.consts = FALSE,
   threshold = 1,
-  pCDFlist.indices = NULL
+  pCDFlist.indices = NULL,
+  ...
 )
 
 \method{ADBH}{DiscreteTestResults}(
@@ -23,13 +24,14 @@ ADBH(x, ...)
   alpha = 0.05,
   direction = "su",
   ret.crit.consts = FALSE,
-  threshold = 1
+  threshold = 1,
+  ...
 )
 }
 \arguments{
-\item{x}{either a numeric vector with p-values between 0 and 1 or an R6 object of class \code{\link[DiscreteTests]{DiscreteTestResults}} from package \link[DiscreteTests]{DiscreteTests} for which a discrete FDR procedure is to be performed.}
+\item{test.results}{either a numeric vector with observed p-values or an R6 object of class \code{\link[DiscreteTests]{DiscreteTestResults}} from package \link[DiscreteTests]{DiscreteTests} for which a discrete FDR procedure is to be performed.}
 
-\item{raw.pvalues}{numeric vector of the raw observed p-values.}
+\item{...}{further arguments to be passed to or from other methods. They are ignored in these functions.}
 
 \item{pCDFlist}{list of the supports of the CDFs of the p-values; each list item must be a numeric vector, which is sorted in increasing order and whose last element equals 1.}
 
@@ -85,20 +87,25 @@ Y2 <- N2 - X2
 df <- data.frame(X1, Y1, X2, Y2)
 df
 
-#Construction of the p-values and their support
-df.formatted <- fisher.pvalues.support(counts = df, input = "noassoc")
-raw.pvalues <- df.formatted$raw
-pCDFlist <- df.formatted$support
+# Compute p-values and their supports of Fisher's exact test
+test.result <- generate.pvalues(df, "fisher")
+raw.pvalues <- test.result$get_pvalues()
+pCDFlist <- test.result$get_pvalue_supports()
 
+# ADBH (SU) without critical values; using extracted p-values and supports
 ADBH.su.fast <- ADBH(raw.pvalues, pCDFlist)
 summary(ADBH.su.fast)
+
+# ADBH (SD) without critical values; using extracted p-values and supports
 ADBH.sd.fast <- ADBH(raw.pvalues, pCDFlist, direction = "sd")
 summary(ADBH.sd.fast)
 
-ADBH.su.crit <- ADBH(raw.pvalues, pCDFlist, ret.crit.consts = TRUE)
+# ADBH (SU) with critical values; using test results
+ADBH.su.crit <- ADBH(test.result, ret.crit.consts = TRUE)
 summary(ADBH.su.crit)
-ADBH.sd.crit <- ADBH(raw.pvalues, pCDFlist, direction = "sd",
-                     ret.crit.consts = TRUE)
+
+# ADBH (SD) with critical values; using test results
+ADBH.sd.crit <- ADBH(test.result, direction = "sd", ret.crit.consts = TRUE)
 summary(ADBH.sd.crit)
 
 }

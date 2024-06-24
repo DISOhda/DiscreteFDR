@@ -4,7 +4,7 @@
 \name{DiscreteFDRTest}
 \alias{DiscreteFDRTest-package}
 \alias{DiscreteFDRTest}
-\title{DiscreteFDRTest}
+\title{FDR-based Multiple Testing Procedures with Adaptation for Discrete Tests}
 \description{
 This package implements the [HSU], [HSD],
 [AHSU], [AHSD] and [HBR-\eqn{\lambda}] procedures for
@@ -12,29 +12,37 @@ discrete tests (see References).
 }
 \details{
 The functions are reorganized from the reference paper in the following way.
-\link{discrete.BH} (for Discrete Benjamini-Hochberg) implements
-[HSU], [HSD], [AHSU] and [AHSD], while \link{DBR} (for Discrete
-Blanchard-Roquain) implements [HBR-\eqn{\lambda}]. \link{DBH} and \link{ADBH} are
-wrapper functions for \link{discrete.BH} to access [HSU] and [HSD], as well as
-[AHSU] and [AHSD] directly. Their main arguments are a vector of raw
-observed p-values, and a list of the same length, whose elements are the
+\code{\link[=discrete.BH]{discrete.BH()}} (for Discrete Benjamini-Hochberg) implements
+[HSU], [HSD], [AHSU] and [AHSD], while \code{\link[=DBR]{DBR()}} (for Discrete
+Blanchard-Roquain) implements [HBR-\eqn{\lambda}]. \code{\link[=DBH]{DBH()}} and \code{\link[=ADBH]{ADBH()}}
+are wrapper functions for \code{\link[=discrete.BH]{discrete.BH()}} to access [HSU] and [HSD], as
+well as [AHSU] and [AHSD] directly.
+
+This package is part of a package family to which the
+\code{\link[DiscreteDatasets:DiscreteDatasets-package]{DiscreteDatasets}} and
+\code{\link[DiscreteTests:DiscreteTests-package]{DiscreteTests}} packages also
+belong. The latter allows to compute p-values and their respective supports
+for various tests. The objects that contain these results can be used
+directly by the \code{\link[=discrete.BH]{discrete.BH()}}, \code{\link[=DBH]{DBH()}}, \code{\link[=ADBH]{ADBH()}} and \code{\link[=DBR]{DBR()}}
+functions. Alternatively, these functions also accept a vector of raw
+observed p-values and a list of the same length, whose elements are the
 discrete supports of the CDFs of the p-values.
 
-The function \link{fisher.pvalues.support} allows to compute such p-values and
-support in the framework of a Fisher's exact test of association. It has been
-inspired by a help page of the package \code{discreteMTP}, which is no longer
-available on CRAN.
+\strong{Note}: The function \code{\link[=fisher.pvalues.support]{fisher.pvalues.support()}}, which allows to compute
+such p-values and supports in the framework of a Fisher's exact test, is now
+deprecated and should not be used anymore. It has been replaced by
+\code{\link[=generate.pvalues]{generate.pvalues()}}.
 
-The function \link{fast.Discrete} is a wrapper for \link{fisher.pvalues.support} and
-\link{discrete.BH} which allows to apply discrete procedures directly to a data
-set of contingency tables.
-
-We also provide the \code{amnesia} data set, used in our examples and in our
-paper. It is basically the \code{amnesia} data set of package \code{discreteMTP} (no
-longer on CRAN), but slightly reformatted.
-
-No other function of the package should be used directly, as they are only
-internal functions called by the main ones.
+The same applies for the function \code{\link[=fast.Discrete]{fast.Discrete()}}, which is a wrapper for
+\code{\link[=fisher.pvalues.support]{fisher.pvalues.support()}} and \code{\link[=discrete.BH]{discrete.BH()}} and allows to apply
+discrete procedures directly to a data set of contingency tables and do some
+transformations before p-values are computed. It has been replaced by
+\code{\link[=direct.discrete.BH]{direct.discrete.BH()}}, but for more flexibility, users should employ
+pipelines, e.g.\cr
+\verb{data |>}\cr
+\verb{  DiscreteDatasets::reconstruct_*(<args>) |>}\cr
+\verb{  DiscreteTests::*.test.pv(<args>) |>}\cr
+\verb{  discrete.BH(<args>)}.
 }
 \references{
 Döhler, S., Durand, G., & Roquain, E. (2018). New FDR bounds for discrete

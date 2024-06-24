@@ -2,7 +2,10 @@
 title: "Introduction to DiscreteFDR"
 #author: "Florian Junge, Christina Kihn"
 #date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: 
+  rmarkdown::html_vignette:
+    df_print: kable
+    toc: true
 vignette: >
   %\VignetteIndexEntry{Introduction to DiscreteFDR}
   %\VignetteEngine{knitr::rmarkdown}

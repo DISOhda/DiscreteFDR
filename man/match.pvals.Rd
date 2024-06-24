@@ -21,8 +21,8 @@ necessary.
 #'
 Constructs the observed p-values from the raw observed p-values, by rounding
 them to their nearest neighbor matching with the supports of their
-respective CDFs (as in function \code{p.discrete.adjust} of package \code{discreteMTP},
-which is no longer available on CRAN).
+respective CDFs (as in function \code{p.discrete.adjust()} of package
+\code{discreteMTP}, which is no longer available on CRAN).
 
 \strong{Note}: This is an internal function and has to be called directly via
 \code{:::}, i.e. \code{DiscreteFDR:::match.pvals()}.
@@ -35,13 +35,16 @@ support. So this function is called at the beginning of \code{\link[=discrete.BH
 For each raw p-value that needs to be rounded, a warning is issued.
 }
 \examples{
+\dontrun{
 toyList <- list(c(0.3,0.7,1),c(0.1,0.65,1))
 toyRaw1 <- c(0.3,0.65)
 match.pvals(toyList,toyRaw1)
 toyRaw2 <- c(0.31,0.6)
 match.pvals(toyList,toyRaw2)
+}
 
 }
 \seealso{
 \code{\link[=discrete.BH]{discrete.BH()}}, \code{\link[=DBR]{DBR()}}
 }
+\keyword{internal}

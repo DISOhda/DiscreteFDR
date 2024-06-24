@@ -1,13 +1,15 @@
 #' @name match.pvals
-
+#' 
+#' @keywords internal
+#' 
 #' @title
 #' Matching raw p-values with supports 
 #' 
 #' @description#' 
 #' Constructs the observed p-values from the raw observed p-values, by rounding
 #' them to their nearest neighbor matching with the supports of their
-#' respective CDFs (as in function `p.discrete.adjust` of package `discreteMTP`,
-#' which is no longer available on CRAN).
+#' respective CDFs (as in function `p.discrete.adjust()` of package
+#' `discreteMTP`, which is no longer available on CRAN).
 #' 
 #' **Note**: This is an internal function and has to be called directly via
 #' `:::`, i.e. `DiscreteFDR:::match.pvals()`.
@@ -20,19 +22,20 @@
 #' For each raw p-value that needs to be rounded, a warning is issued.
 #'
 #' @seealso
-#' [discrete.BH()], [DBR()]
+#' [`discrete.BH()`], [`DBR()`]
 #'
 #' @templateVar pCDFlist TRUE
 #' @templateVar raw.pvalues TRUE
 #' @templateVar pCDFlist.indices TRUE
 #' @template param
 #' 
-#' @examples
+#' @examples \dontrun{
 #' toyList <- list(c(0.3,0.7,1),c(0.1,0.65,1))
 #' toyRaw1 <- c(0.3,0.65)
 #' match.pvals(toyList,toyRaw1)
 #' toyRaw2 <- c(0.31,0.6)
 #' match.pvals(toyList,toyRaw2)
+#' }
 #'
 #' @return
 #' A vector where each raw p-value has been replaced by its nearest neighbor, if

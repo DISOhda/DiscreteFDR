@@ -6,3 +6,5 @@
 ^.*\src-x64$
 ^CRAN-RELEASE$
 ^CRAN-SUBMISSION$
+^doc$
+^Meta$

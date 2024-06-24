@@ -12,11 +12,9 @@
 #' @return
 #' The respective input object is invisibly returned via `invisible(x)`.
 #' 
-#' @template example
+#' @template exampleGPV
 #' @examples
-#' 
-#' DBH.su.crit <- DBH(raw.pvalues, pCDFlist, direction = "su",
-#'                    ret.crit.consts = TRUE)
+#' DBH.su.crit <- DBH(raw.pvalues, pCDFlist, direction = "su", ret.crit.consts = TRUE)
 #' print(DBH.su.crit)
 #' 
 #' @importFrom stats p.adjust

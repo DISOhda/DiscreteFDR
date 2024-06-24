@@ -6,17 +6,18 @@
 \alias{discrete.BH.DiscreteTestResults}
 \title{Discrete Benjamini-Hochberg procedure}
 \usage{
-discrete.BH(x, ...)
+discrete.BH(test.results, ...)
 
 \method{discrete.BH}{default}(
-  raw.pvalues,
+  test.results,
   pCDFlist,
   alpha = 0.05,
   direction = "su",
   adaptive = FALSE,
   ret.crit.consts = FALSE,
   threshold = 1,
-  pCDFlist.indices = NULL
+  pCDFlist.indices = NULL,
+  ...
 )
 
 \method{discrete.BH}{DiscreteTestResults}(
@@ -25,13 +26,14 @@ discrete.BH(x, ...)
   direction = "su",
   adaptive = FALSE,
   ret.crit.consts = FALSE,
-  threshold = 1
+  threshold = 1,
+  ...
 )
 }
 \arguments{
-\item{x}{either a numeric vector with p-values between 0 and 1 or an R6 object of class \code{\link[DiscreteTests]{DiscreteTestResults}} from package \link[DiscreteTests]{DiscreteTests} for which a discrete FDR procedure is to be performed.}
+\item{test.results}{either a numeric vector with observed p-values or an R6 object of class \code{\link[DiscreteTests]{DiscreteTestResults}} from package \link[DiscreteTests]{DiscreteTests} for which a discrete FDR procedure is to be performed.}
 
-\item{raw.pvalues}{numeric vector of the raw observed p-values.}
+\item{...}{further arguments to be passed to or from other methods. They are ignored in these functions.}
 
 \item{pCDFlist}{list of the supports of the CDFs of the p-values; each list item must be a numeric vector, which is sorted in increasing order and whose last element equals 1.}
 
@@ -92,33 +94,41 @@ Y2 <- N2 - X2
 df <- data.frame(X1, Y1, X2, Y2)
 df
 
-#Construction of the p-values and their support
-df.formatted <- fisher.pvalues.support(counts = df, input = "noassoc")
-raw.pvalues <- df.formatted$raw
-pCDFlist <- df.formatted$support
+# Compute p-values and their supports of Fisher's exact test
+test.result <- generate.pvalues(df, "fisher")
+raw.pvalues <- test.result$get_pvalues()
+pCDFlist <- test.result$get_pvalue_supports()
 
+# DBH (SU) without critical values; using extracted p-values and supports
 DBH.su.fast <- discrete.BH(raw.pvalues, pCDFlist)
 summary(DBH.su.fast)
+
+# DBH (SD) without critical values; using extracted p-values and supports
 DBH.sd.fast <- discrete.BH(raw.pvalues, pCDFlist, direction = "sd")
 summary(DBH.sd.fast)
 
-DBH.su.crit <- discrete.BH(raw.pvalues, pCDFlist, ret.crit.consts = TRUE)
+# DBH (SU) with critical values; using test results
+DBH.su.crit <- discrete.BH(test.result, ret.crit.consts = TRUE)
 summary(DBH.su.crit)
-DBH.sd.crit <- discrete.BH(raw.pvalues, pCDFlist, direction = "sd",
-                           ret.crit.consts = TRUE)
+
+# DBH (SD) with critical values; using test results
+DBH.sd.crit <- discrete.BH(test.result, direction = "sd", ret.crit.consts = TRUE)
 summary(DBH.sd.crit)
 
+# ADBH (SU) without critical values; using extracted p-values and supports
 ADBH.su.fast <- discrete.BH(raw.pvalues, pCDFlist, adaptive = TRUE)
 summary(ADBH.su.fast)
-ADBH.sd.fast <- discrete.BH(raw.pvalues, pCDFlist, direction = "sd",
-                            adaptive = TRUE)
+
+# ADBH (SD) without critical values; using extracted p-values and supports
+ADBH.sd.fast <- discrete.BH(raw.pvalues, pCDFlist, direction = "sd", adaptive = TRUE)
 summary(ADBH.sd.fast)
 
-ADBH.su.crit <- discrete.BH(raw.pvalues, pCDFlist, adaptive = TRUE, 
-                            ret.crit.consts = TRUE)
+# ADBH (SU) with critical values; using test results
+ADBH.su.crit <- discrete.BH(test.result, adaptive = TRUE, ret.crit.consts = TRUE)
 summary(ADBH.su.crit)
-ADBH.sd.crit <- discrete.BH(raw.pvalues, pCDFlist, direction = "sd", 
-                            adaptive = TRUE, ret.crit.consts = TRUE)
+
+# ADBH (SD) with critical values; using test results
+ADBH.sd.crit <- discrete.BH(test.result, direction = "sd", adaptive = TRUE, ret.crit.consts = TRUE)
 summary(ADBH.sd.crit)
 
 }

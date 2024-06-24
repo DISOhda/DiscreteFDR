@@ -1,3 +1,5 @@
+#' @name discrete.BH
+#' 
 #' @title
 #' Discrete Benjamini-Hochberg procedure
 #' 
@@ -13,10 +15,9 @@
 #' @template details_crit
 #' 
 #' @seealso
-#' [DBH()], [ADBH()], [DBR()]
+#' [`DBH()`], [`ADBH()`], [`DBR()`]
 #' 
-#' @templateVar x TRUE
-#' @templateVar raw.pvalues TRUE
+#' @templateVar test.results TRUE
 #' @templateVar pCDFlist TRUE
 #' @templateVar alpha TRUE
 #' @templateVar direction TRUE
@@ -24,6 +25,7 @@
 #' @templateVar ret.crit.consts TRUE
 #' @templateVar threshold TRUE
 #' @templateVar pCDFlist.indices TRUE
+#' @templateVar triple.dots TRUE
 #' @template param
 #' 
 #' @templateVar DBR FALSE
@@ -34,56 +36,63 @@
 #'   and heterogeneous tests. *Electronic Journal of Statistics*, *12*(1),
 #'   pp. 1867-1900. \doi{10.1214/18-EJS1441}
 #'   
-#' @template example
+#' @template exampleGPV
 #' @examples
-#' 
+#' # DBH (SU) without critical values; using extracted p-values and supports
 #' DBH.su.fast <- discrete.BH(raw.pvalues, pCDFlist)
 #' summary(DBH.su.fast)
+#' 
+#' # DBH (SD) without critical values; using extracted p-values and supports
 #' DBH.sd.fast <- discrete.BH(raw.pvalues, pCDFlist, direction = "sd")
 #' summary(DBH.sd.fast)
 #' 
-#' DBH.su.crit <- discrete.BH(raw.pvalues, pCDFlist, ret.crit.consts = TRUE)
+#' # DBH (SU) with critical values; using test results
+#' DBH.su.crit <- discrete.BH(test.result, ret.crit.consts = TRUE)
 #' summary(DBH.su.crit)
-#' DBH.sd.crit <- discrete.BH(raw.pvalues, pCDFlist, direction = "sd",
-#'                            ret.crit.consts = TRUE)
+#' 
+#' # DBH (SD) with critical values; using test results
+#' DBH.sd.crit <- discrete.BH(test.result, direction = "sd", ret.crit.consts = TRUE)
 #' summary(DBH.sd.crit)
 #' 
+#' # ADBH (SU) without critical values; using extracted p-values and supports
 #' ADBH.su.fast <- discrete.BH(raw.pvalues, pCDFlist, adaptive = TRUE)
 #' summary(ADBH.su.fast)
-#' ADBH.sd.fast <- discrete.BH(raw.pvalues, pCDFlist, direction = "sd",
-#'                             adaptive = TRUE)
+#' 
+#' # ADBH (SD) without critical values; using extracted p-values and supports
+#' ADBH.sd.fast <- discrete.BH(raw.pvalues, pCDFlist, direction = "sd", adaptive = TRUE)
 #' summary(ADBH.sd.fast)
 #'
-#' ADBH.su.crit <- discrete.BH(raw.pvalues, pCDFlist, adaptive = TRUE, 
-#'                             ret.crit.consts = TRUE)
+#' # ADBH (SU) with critical values; using test results
+#' ADBH.su.crit <- discrete.BH(test.result, adaptive = TRUE, ret.crit.consts = TRUE)
 #' summary(ADBH.su.crit)
-#' ADBH.sd.crit <- discrete.BH(raw.pvalues, pCDFlist, direction = "sd", 
-#'                             adaptive = TRUE, ret.crit.consts = TRUE)
+#' 
+#' # ADBH (SD) with critical values; using test results
+#' ADBH.sd.crit <- discrete.BH(test.result, direction = "sd", adaptive = TRUE, ret.crit.consts = TRUE)
 #' summary(ADBH.sd.crit)
 #' 
-#' @name discrete.BH
 #' @export
-discrete.BH <- function(x, ...) UseMethod("discrete.BH")
+discrete.BH <- function(test.results, ...) UseMethod("discrete.BH")
 
 #' @rdname discrete.BH
 #' @importFrom checkmate assert_character assert_integerish assert_list assert_numeric qassert
 #' @export
 discrete.BH.default <- function(
-  raw.pvalues,
+  test.results,
   pCDFlist,
   alpha = 0.05,
   direction = "su",
   adaptive = FALSE,
   ret.crit.consts = FALSE,
   threshold = 1,
-  pCDFlist.indices = NULL
+  pCDFlist.indices = NULL, 
+  ...
 ) {
   #----------------------------------------------------
   #       check arguments
   #----------------------------------------------------
   # raw p-values
-  qassert(x = raw.pvalues, rules = "N+[0, 1]")
-  n <- length(raw.pvalues)
+  qassert(x = test.results, rules = "N+[0, 1]")
+  n <- length(test.results)
   
   # list structure of p-value distributions
   assert_list(
@@ -144,7 +153,7 @@ discrete.BH.default <- function(
       stop(
         paste(
           "If no counts for the p-value CDFs are provided, the lengths of",
-          "'raw.pvalues' and 'pCDFlist' must be equal!"
+          "'test.results' and 'pCDFlist' must be equal!"
         )
       )
     }
@@ -174,21 +183,21 @@ discrete.BH.default <- function(
   #----------------------------------------------------
   #       check and prepare p-values for processing
   #----------------------------------------------------
-  pvec <- match.pvals(pCDFlist, raw.pvalues, pCDFlist.indices)
+  pvec <- match.pvals(pCDFlist, test.results, pCDFlist.indices)
   
   #----------------------------------------------------
   #       execute computations
   #----------------------------------------------------
-  output <- discrete_fdr_int(
-    pvec = pvec,
-    pCDFlist = pCDFlist,
-    pCDFlist_indices = pCDFlist.indices,
-    method = ifelse(adaptive, "ADBH", "DBH"),
-    alpha = alpha,
-    method_parameter = (direction == "su"),
-    crit_consts = ret.crit.consts,
-    threshold = threshold,
-    data_name = paste(deparse(substitute(raw.pvalues)), "and", deparse(substitute(pCDFlist)))
+  output <- discrete.fdr.int(
+    pvec             = pvec,
+    pCDFlist         = pCDFlist,
+    pCDFlist.indices = pCDFlist.indices,
+    method           = ifelse(adaptive, "ADBH", "DBH"),
+    alpha            = alpha,
+    method.parameter = (direction == "su"),
+    crit.consts      = ret.crit.consts,
+    threshold        = threshold,
+    data.name        = paste(deparse(substitute(test.results)), "and", deparse(substitute(pCDFlist)))
   )
   
   return(output)
@@ -203,7 +212,8 @@ discrete.BH.DiscreteTestResults <- function(
   direction = "su",
   adaptive = FALSE,
   ret.crit.consts = FALSE,
-  threshold = 1
+  threshold = 1, 
+  ...
 ) {
   #----------------------------------------------------
   #       check arguments
@@ -239,16 +249,16 @@ discrete.BH.DiscreteTestResults <- function(
   #----------------------------------------------------
   #       execute computations
   #----------------------------------------------------
-  output <- discrete_fdr_int(
+  output <- discrete.fdr.int(
     pvec             = test.results$get_pvalues(),
     pCDFlist         = test.results$get_pvalue_supports(unique = TRUE),
-    pCDFlist_indices = test.results$get_support_indices(),
+    pCDFlist.indices = test.results$get_support_indices(),
     method           = ifelse(adaptive, "ADBH", "DBH"),
     alpha            = alpha,
-    method_parameter = (direction == "su"),
-    crit_consts      = ret.crit.consts,
+    method.parameter = (direction == "su"),
+    crit.consts      = ret.crit.consts,
     threshold        = threshold,
-    data_name        = deparse(substitute(test.results))
+    data.name        = deparse(substitute(test.results))
   )
   
   return(output)

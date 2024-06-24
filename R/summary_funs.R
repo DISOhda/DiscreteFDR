@@ -29,11 +29,9 @@
 #'              values (if present), their adjusted p-values (if present) and a
 #'              logical column to indicate rejection.}
 #' 
-#' @template example
-#' @examples
-#' 
-#' DBH.sd.crit <- DBH(raw.pvalues, pCDFlist, direction = "sd",
-#'                    ret.crit.consts = TRUE)
+#' @template exampleGPV
+#' @examples 
+#' DBH.sd.crit <- DBH(raw.pvalues, pCDFlist, direction = "sd", ret.crit.consts = TRUE)
 #' summary(DBH.sd.crit)
 #' 
 #' @rdname summary.DiscreteFDR

@@ -8,3 +8,7 @@
 #' df <- data.frame(X1, Y1, X2, Y2)
 #' df
 #' 
+#' # Compute p-values and their supports of Fisher's exact test
+#' df.formatted <- fisher.pvalues.support(counts = df, input = "noassoc")
+#' raw.pvalues <- df.formatted$raw
+#' pCDFlist <- df.formatted$support

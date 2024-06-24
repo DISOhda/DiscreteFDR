@@ -58,15 +58,15 @@ Y2 <- N2 - X2
 df <- data.frame(X1, Y1, X2, Y2)
 df
 
-#Construction of the p-values and their support
-df.formatted <- fisher.pvalues.support(counts = df, input = "noassoc")
-raw.pvalues <- df.formatted$raw
-pCDFlist <- df.formatted$support
+# Compute p-values and their supports of Fisher's exact test
+test.result <- generate.pvalues(df, "fisher")
+raw.pvalues <- test.result$get_pvalues()
+pCDFlist <- test.result$get_pvalue_supports()
 
 DBH.su.fast <- DBH(raw.pvalues, pCDFlist)
 DBH.su.crit <- DBH(raw.pvalues, pCDFlist, ret.crit.consts = TRUE)
-DBH.sd.fast <- DBH(raw.pvalues, pCDFlist, direction = "sd")
-DBH.sd.crit <- DBH(raw.pvalues, pCDFlist, direction = "sd", ret.crit.consts = TRUE)
+DBH.sd.fast <- DBH(test.result, direction = "sd")
+DBH.sd.crit <- DBH(test.result, direction = "sd", ret.crit.consts = TRUE)
 
 plot(DBH.sd.fast)
 plot(DBH.sd.crit, xlim = c(1, 5), ylim = c(0, 0.4))

@@ -1,92 +1,68 @@
-#' @title Fast application of discrete procedures
+#' @title Fast Application of Discrete Multiple Testing Procedures
 #' 
 #' @description
 #' `r lifecycle::badge('deprecated')`
 #' 
 #' Apply the \[HSU\], \[HSD\], \[AHSU\] or \[AHSD\] procedure,
 #' without computing the critical constants,
-#' to a data set of 2x2 contingency tables using Fisher's exact tests.
+#' to a data set of 2x2 contingency tables using Fisher's exact tests which
+#' may have to be transformed before computing p-values.
 #' 
-#' **Note**: In future versions, this function will be removed and replaced by a
-#'  more flexible one, which will not be limited to Fisher's exact test.
+#' **Note**: This function is deprecated and will be removed in a future
+#' version. Please use [`direct.discrete.BH()`] with
+#' `test.fun = DiscreteTests::fisher.test.pv` and (optional) 
+#' `preprocess.fun = DiscreteDatasets::reconstruct_two` or 
+#' `preprocess.fun = DiscreteDatasets::reconstruct_four` instead. Alternatively,
+#' use a pipeline, e.g.\cr
+#' `data |>`\cr
+#' `  DiscreteDatasets::reconstruct_*(<args>) |>`\cr
+#' `  DiscreteTests::*.test.pv(<args>) |>`\cr
+#' `  discrete.BH(<args>)`.
 #'
 #' @param counts        a data frame of two or four columns and any number of
 #'                      lines; each line representing a 2x2 contingency table to
 #'                      test. The number of columns and what they must contain
 #'                      depend on the value of the `input` argument (see Details
-#'                      section of [fisher.pvalues.support]).
-#' @param alternative   same argument as in [fisher.test]. The three
+#'                      section of [`fisher.pvalues.support()`]).
+#' @param alternative   same argument as in [`stats::fisher.test()`]. The three
 #'                      possible values are `"greater"` (default), `"two.sided"`
 #'                      or `"less"` (may be abbreviated).
 #' @param input         the format of the input data frame (see Details section
-#'                      of [fisher.pvalues.support]. The three possible values
-#'                      are `"noassoc"` (default), `"marginal"` or `"HG2011"`
-#'                      (may be abbreviated).
+#'                      of [`fisher.pvalues.support()`]. The three possible
+#'                      values are `"noassoc"` (default), `"marginal"` or
+#'                      `"HG2011"` (may be abbreviated).
 #'
-#' @templateVar stepf FALSE
-#' @templateVar pv.numer FALSE
-#' @templateVar pv.denom FALSE
+#' @template param
 #' @templateVar alpha TRUE
-#' @templateVar sorted.pv FALSE
-#' @templateVar pCDFlist FALSE
-#' @templateVar raw.pvalues FALSE
 #' @templateVar direction TRUE
-#' @templateVar ret.crit.consts FALSE
-#' @templateVar sorted.num FALSE
-#' @templateVar t FALSE
-#' @templateVar lambda FALSE
 #' @templateVar adaptive TRUE
 #' @templateVar threshold TRUE
-#' @template param
 #' 
-#' @return 
-#' A `DiscreteFDR` S3 class object whose elements are:
-#' \item{Rejected}{Rejected raw p-values}
-#' \item{Indices}{Indices of rejected hypotheses}
-#' \item{Num.rejected}{Number of rejections}
-#' \item{Adjusted}{Adjusted p-values (only for step-down direction).}
-#' \item{Method}{Character string describing the used algorithm, e.g. 'Discrete Benjamini-Hochberg procedure (step-up)'}
-#' \item{Signif.level}{Significance level `alpha`}
-#' \item{Data$raw.pvalues}{The values of `raw.pvalues`}
-#' \item{Data$pCDFlist}{The values of `pCDFlist`}
-#' \item{Data$data.name}{The variable name of the `counts` dataset}
+#' @template return
 #' 
 #' @seealso
-#' [fisher.pvalues.support], [discrete.BH]
+#' [`fisher.pvalues.support()`], [`discrete.BH()`]
 #' 
-#' @examples 
-#' X1 <- c(4, 2, 2, 14, 6, 9, 4, 0, 1)
-#' X2 <- c(0, 0, 1, 3, 2, 1, 2, 2, 2)
-#' N1 <- rep(148, 9)
-#' N2 <- rep(132, 9)
-#' Y1 <- N1 - X1
-#' Y2 <- N2 - X2
-#' df <- data.frame(X1, Y1, X2, Y2)
-#' df
-#' 
-#' DBH.su <- fast.Discrete(counts = df, input = "noassoc", direction = "su")
+#' @template example
+#' @examples
+#' DBH.su <- fast.Discrete(df, input = "noassoc", direction = "su")
 #' summary(DBH.su)
 #' 
-#' DBH.sd <- fast.Discrete(counts = df, input = "noassoc", direction = "sd")
+#' DBH.sd <- fast.Discrete(df, input = "noassoc", direction = "sd")
 #' DBH.sd$Adjusted
 #' summary(DBH.sd)
 #' 
-#' ADBH.su <- fast.Discrete(counts = df, input = "noassoc", direction = "su", adaptive = TRUE)
+#' ADBH.su <- fast.Discrete(df, input = "noassoc", direction = "su", adaptive = TRUE)
 #' summary(ADBH.su)
 #' 
-#' ADBH.sd <- fast.Discrete(counts = df, input = "noassoc", direction = "sd", adaptive = TRUE)
+#' ADBH.sd <- fast.Discrete(df, input = "noassoc", direction = "sd", adaptive = TRUE)
 #' ADBH.sd$Adjusted
 #' summary(ADBH.sd)
 #' 
-#' @name fast.Discrete
 #' @importFrom lifecycle deprecate_soft
 #' @export
 fast.Discrete <- function(counts, alternative = "greater", input = "noassoc", alpha = 0.05, direction = "su", adaptive = FALSE, threshold = 1){
-  deprecate_soft("1.3.7", "fast.Discrete()",
-                 details = paste("In future versions of this package, this",
-                                 "function will be removed and replaced by a",
-                                 "more flexible one, which will not be",
-                                 "limited to Fisher's exact test."))
+  deprecate_soft("1.3.7", "fast.Discrete()", "direct.discrete.BH()")
   
   data.formatted <- fisher.pvalues.support(counts, alternative, input)
   raw.pvalues <- data.formatted$raw
@@ -94,6 +70,77 @@ fast.Discrete <- function(counts, alternative = "greater", input = "noassoc", al
   
   out <- discrete.BH(raw.pvalues, pCDFlist, alpha, direction, adaptive, FALSE, threshold)
   out$Data$data.name <- deparse(substitute(counts)) 
+  
+  return(out)
+}
+
+
+#' @title 
+#' Direct Application of Multiple Testing Procedures to Dataset
+#' 
+#' @description
+#' Apply the \[HSU\], \[HSD\], \[AHSU\] or \[AHSD\] procedure, with or without
+#' computing the critical constants,
+#' to a data set of 2x2 contingency tables using Fisher's exact tests which
+#' may have to be transformed before computing p-values.
+#' 
+#' @templateVar dat TRUE
+#' @templateVar test.fun TRUE
+#' @templateVar test.args TRUE
+#' @templateVar alpha TRUE
+#' @templateVar direction TRUE
+#' @templateVar adaptive TRUE
+#' @templateVar ret.crit.consts TRUE
+#' @templateVar threshold TRUE
+#' @templateVar preprocess.fun TRUE
+#' @templateVar preprocess.args TRUE
+#' @template param
+#' 
+#' @template example
+#' @examples
+#' DBH.su <- direct.discrete.BH(df, "fisher", direction = "su")
+#' summary(DBH.su)
+#' 
+#' DBH.sd <- direct.discrete.BH(df, "fisher", direction = "sd")
+#' DBH.sd$Adjusted
+#' summary(DBH.sd)
+#' 
+#' ADBH.su <- direct.discrete.BH(df, "fisher", direction = "su", adaptive = TRUE)
+#' summary(ADBH.su)
+#' 
+#' ADBH.sd <- direct.discrete.BH(df, "fisher", direction = "sd", adaptive = TRUE)
+#' ADBH.sd$Adjusted
+#' summary(ADBH.sd)
+#' 
+#' @export
+direct.discrete.BH <- function(
+  dat,
+  test.fun, 
+  test.args = NULL,
+  alpha = 0.05, 
+  direction = "su",
+  adaptive = FALSE,
+  ret.crit.consts = FALSE,
+  threshold = 1,
+  preprocess.fun = NULL, 
+  preprocess.args = NULL
+) {
+  out <- discrete.BH.DiscreteTestResults(
+    test.results = generate.pvalues(
+      dat = dat,
+      test.fun = test.fun,
+      test.args = test.args,
+      preprocess.fun = preprocess.fun,
+      preprocess.args = preprocess.args
+    ),
+    alpha = alpha,
+    direction = direction,
+    adaptive = adaptive,
+    ret.crit.consts = ret.crit.consts,
+    threshold = threshold
+  )
+  
+  out$Data$Data.name <- deparse(substitute(dat))
   
   return(out)
 }

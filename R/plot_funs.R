@@ -20,9 +20,8 @@
 #' @return
 #' An object of class `histogram`.
 #'
-#' @template example
-#' @examples
-#' 
+#' @template exampleGPV
+#' @examples 
 #' DBH <- DBH(raw.pvalues, pCDFlist)
 #' hist(DBH)
 #'
@@ -79,13 +78,12 @@ hist.DiscreteFDR <- function(x, breaks = "FD", plot = TRUE, ...){
 #'                   of two elements indicating (x, y) coordinates.
 #' @param ...        further arguments to [plot.default].
 #' 
-#' @template example
-#' @examples
-#' 
+#' @template exampleGPV
+#' @examples 
 #' DBH.su.fast <- DBH(raw.pvalues, pCDFlist)
 #' DBH.su.crit <- DBH(raw.pvalues, pCDFlist, ret.crit.consts = TRUE)
-#' DBH.sd.fast <- DBH(raw.pvalues, pCDFlist, direction = "sd")
-#' DBH.sd.crit <- DBH(raw.pvalues, pCDFlist, direction = "sd", ret.crit.consts = TRUE)
+#' DBH.sd.fast <- DBH(test.result, direction = "sd")
+#' DBH.sd.crit <- DBH(test.result, direction = "sd", ret.crit.consts = TRUE)
 #' 
 #' plot(DBH.sd.fast)
 #' plot(DBH.sd.crit, xlim = c(1, 5), ylim = c(0, 0.4))

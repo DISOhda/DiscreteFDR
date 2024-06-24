@@ -37,6 +37,7 @@
 //' @templateVar support TRUE
 //' @templateVar sorted_pv TRUE
 //' @templateVar lambda2 TRUE
+//' @templateVar pCDFcounts TRUE
 //' @template param 
 //' 
 //' @return

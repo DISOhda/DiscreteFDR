@@ -1,6 +1,5 @@
 #' @title
-#' Computing discrete p-values and their support for binomial and Fisher's
-#' exact tests
+#' Computing Discrete P-Values and Their Supports for Fisher's Exact Test
 #' 
 #' @description
 #' `r lifecycle::badge('deprecated')`
@@ -9,10 +8,15 @@
 #' applied to 2x2 contingency tables summarizing counts coming from two
 #' categorical measurements.
 #'
-#' **Note**: This function is deprecated. Please use
-#' [`DiscreteTests::fisher.test.pv()`] after 
-#' [`DiscreteDatasets::reconstruct_two()`] or
-#' [`DiscreteDatasets::reconstruct_four()`].
+#' **Note**: This function is deprecated and will be removed in a future
+#' version. Please use [`generate.pvalues()`] with
+#' `test.fun = DiscreteTests::fisher.test.pv` and (optional) 
+#' `preprocess.fun = DiscreteDatasets::reconstruct_two` or 
+#' `preprocess.fun = DiscreteDatasets::reconstruct_four` instead. Alternatively,
+#' use a pipeline like\cr
+#' `data |>`\cr
+#' `  DiscreteDatasets::reconstruct_*(<args>) |>`\cr
+#' `  DiscreteTests::fisher.test.pv(<args>)`
 #' 
 #' @details
 #' Assume that each contingency tables compares two variables and resumes the
@@ -51,14 +55,14 @@
 #' `alternative`.
 #'
 #' @seealso
-#' [fisher.test]
+#' [`fisher.test()`]
 #' 
 #' @param counts        a data frame of two or four columns and any number of
 #'                      lines; each line represents a 2x2 contingency table to
 #'                      test. The number of columns and what they must contain
 #'                      depend on the value of the `input` argument, see
 #'                      Details.
-#' @param alternative   same argument as in [stats::fisher.test]. The three
+#' @param alternative   same argument as in [`stats::fisher.test()`]. The three
 #'                      possible values are `"greater"` (default),
 #'                      `"two.sided"` or `"less"` and you can specify
 #'                      just the initial letter.
@@ -67,8 +71,7 @@
 #'                      `"marginal"` or `"HG2011"` and you can specify
 #'                      just the initial letter.
 #' 
-#' @template example
-#' @template exampleHG
+#' @template exampleFPV
 #' 
 #' @return
 #' A list of two elements:
@@ -88,14 +91,10 @@
 #' @importFrom lifecycle deprecate_soft
 #' @importFrom checkmate assert_data_frame qassert
 #' @importFrom DiscreteDatasets reconstruct_four reconstruct_two
-#' @importFrom DiscreteTests fisher.test.pv
+#' @import DiscreteTests
 #' @export
 fisher.pvalues.support <- function(counts, alternative = "greater", input = "noassoc"){
-  deprecate_soft("1.3.7", "fisher.pvalues.support()",
-                 details = paste("Please use",
-                                 "`DiscreteDatasets::reconstruct_*() %>%",
-                                 "DiscreteTests::fisher.test.pv()` or just",
-                                 "`DiscreteTests::fisher.test.pv()` instead."))
+  deprecate_soft("1.3.7", "fisher.pvalues.support()", "generate.pvalues()")
   
   # 'counts' must be a non-empty data frame or a non-empty matrix 
   qassert(x = counts, rules = c("M+", "D+"))
@@ -132,44 +131,132 @@ fisher.pvalues.support <- function(counts, alternative = "greater", input = "noa
   res <- fisher.test.pv(counts, alternative)
   
   # return list of results
-  return(list(raw = res$get_pvalues(),
-              support = res$get_pvalue_supports(unique = FALSE)))
+  return(
+    list(
+      raw = res$get_pvalues(),
+      support = res$get_pvalue_supports(unique = FALSE)
+    )
+  )
 }
 
-#' @importFrom checkmate assert_function assert_list test_r6
+#' @title 
+#' Generation of P-Values and Their Supports After Data Transformations
+#' 
+#' @description
+#' Simple wrapper for generating p-values of discrete tests and their supports
+#' after pre-processing the input data. The user only has to provide 1.) a
+#' function that generates p-values and supports and 2.) an optional function
+#' that pre-processes (i.e. transforms) the input data (if necessary) before it
+#' can be used for p-value calculations. The respective arguments are provided
+#' by named lists.
+#' 
+#' @templateVar dat TRUE
+#' @templateVar test.fun TRUE
+#' @templateVar test.args TRUE
+#' @templateVar preprocess.fun TRUE
+#' @templateVar preprocess.args TRUE
+#' @template param
+#'
+#' @return
+#' A [DiscreteTestResults][DiscreteTests::DiscreteTestResults] R6 class object.
+#' 
+#' @template exampleGPV
+#' @examples
+#' # Compute p-values and their supports of Fisher's exact test with pre-processing
+#' df2 <- data.frame(X1, N1, X2, N2)
+#' generate.pvalues(
+#'   dat = df2,
+#'   test.fun = "fisher.test.pv",
+#'   preprocess.fun = function(tab) {
+#'     for(col in c(2, 4)) tab[, col] <- tab[, col] - tab[, col - 1]
+#'     return(tab)
+#'   }
+#' )
+#' 
+#' # Compute p-values and their supports of a binomial test with pre-processing
+#' generate.pvalues(
+#'   dat = rbind(c(5, 2, 7), c(3, 4, 0)), 
+#'   test.fun = "binom.test.pv",
+#'   test.args = list(n = c(9, 8, 11), p = 0.6, alternative = "two.sided"),
+#'   preprocess.fun = colSums
+#' )
+#' 
+#' @importFrom checkmate assert assert_choice assert_list check_function check_string
+#' @import DiscreteTests
 #' @export
 generate.pvalues <- function(
-  data,
-  test_fun,
-  test_args = NULL,
-  preprocess_fun = NULL,
-  preprocess_args = NULL
+  dat,
+  test.fun,
+  test.args = NULL,
+  preprocess.fun = NULL,
+  preprocess.args = NULL
 ) {
-  assert_function(test_fun)
-  assert_list(test_args, names = "unique", null.ok = TRUE)
-  assert_function(preprocess_fun, null.ok = TRUE)
-  assert_list(preprocess_args, names = "unique", null.ok = TRUE)
-  
-  if(!is.null(preprocess_fun)){
-    xname <- names(as.list(args(preprocess_fun)))[1]
-    preprocess_args <- c(list(x = data), preprocess_args)
-    names(preprocess_args)[1] <- xname
-    
-    data <- do.call(preprocess_fun, preprocess_args)
+  #  make sure test function originates from package 'DiscreteTests'
+  ## make sure it is a function or a string
+  assert(
+    check_function(test.fun),
+    check_string(test.fun)
+  )
+  ## get all functions from package 'DiscreteTests'
+  funs <- ls(asNamespace("DiscreteTests"))
+  ## extract available test functions
+  funs <- funs[endsWith(funs, ".test.pv")]
+  ## make sure input 'test.fun' matches an available test function
+  if(is.character(test.fun)) {
+    ### match input 'test.fun' string to available test functions
+    test.fun <- match.arg(tolower(test.fun), funs)
+    ### convert string to actual function
+    test.fun <- eval(parse(text = paste0("DiscreteTests::", test.fun)))
+  } else {
+    ### make sure input 'test.fun' matches an available test function
+    OK <- FALSE
+    for(fun in funs) {
+      pkg_fun <- eval(parse(text = paste0("DiscreteTests::", fun)))
+      if(all(all.equal(test.fun, pkg_fun) == TRUE)) {
+        OK <- TRUE
+        break;
+      }
+    }
+    if(!OK) stop(paste("'test.fun' must be one of the '*.test.pv' functions of",
+                       "package 'DiscreteTests'."))
   }
   
-  xname <- names(as.list(args(test_fun)))[1]
-  test_args <- c(list(x = data), test_args)
-  names(test_args)[1] <- xname
+  # make sure parameters for 'test.fun' are in a named list or NULL
+  assert_list(test.args, names = "unique", null.ok = TRUE)
   
-  res <- do.call(test_fun, test_args)
-  if(!test_r6(res, "DiscreteTestResults"))
-    warning(
-      paste("Result must be an R6 object of class 'DiscreteTestResults'.",
-            "Use a test function from package 'DiscreteTests' as 'test_fun'."#,
-            #sep = "\n  "
-      )
-    )
+  # make sure date pre-processing function is a function, string or NULL
+  assert(
+    check_function(preprocess.fun, null.ok = TRUE),
+    check_string(preprocess.fun)
+  )
+  ## convert string to actual function (if necessary)
+  if(is.character(preprocess.fun))
+    preprocess.fun <- eval(parse(text = preprocess.fun))
   
+  # make sure parameters for 'preprocess.fun' are in a named list or NULL
+  assert_list(preprocess.args, names = "unique", null.ok = TRUE)
+  
+  if(!is.null(preprocess.fun)){
+    # prepend data to pre-processing function's arguments list
+    preprocess.args <- c(list(dat), preprocess.args)
+    # set data parameter name according to first parameter of 'preprocess.fun'
+    names(preprocess.args)[1] <- names(as.list(args(preprocess.fun)))[1]
+    # perform pre-processing
+    dat <- do.call(preprocess.fun, preprocess.args)
+  }
+  
+  # get original data name
+  data.name <- sapply(match.call(), deparse1)["dat"]
+  # assign data to new variable with original name
+  assign(data.name, dat)
+  
+  # prepend pre-processed data to test function's arguments list
+  test.args <- c(list(as.name(data.name)), test.args)
+  # set data parameter name according to first parameter of 'test.fun'
+  names(test.args)[1] <- names(as.list(args(test.fun)))[1]
+  # perform test(s)
+  res <- do.call(test.fun, test.args)
+  
+  # output results
   return(res)
 }

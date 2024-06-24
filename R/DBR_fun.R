@@ -1,3 +1,5 @@
+#' @name DBR
+#' 
 #' @title
 #' Discrete Blanchard-Roquain procedure
 #' 
@@ -19,52 +21,55 @@
 #'   *10*, pp. 2837-2871.
 #'
 #' @seealso
-#' [discrete.BH()], [DBH()], [ADBH()], [DBR()]
+#' [`discrete.BH()`], [`DBH()`], [`ADBH()`]
 #' 
-#' @templateVar x TRUE
-#' @templateVar raw.pvalues TRUE
+#' @templateVar test.results TRUE
 #' @templateVar pCDFlist TRUE
+#' @templateVar test.results TRUE
 #' @templateVar alpha TRUE
 #' @templateVar lambda TRUE
 #' @templateVar ret.crit.consts TRUE
 #' @templateVar threshold TRUE
 #' @templateVar pCDFlist.indices TRUE
+#' @templateVar triple.dots TRUE
 #' @template param
 #' 
-#' @templateVar DBR TRUE
+#' @templateVar BR TRUE
 #' @template return
 #' 
-#' @template example
+#' @template exampleGPV
 #' @examples
-#' 
+#' # DBR without critical values; using extracted p-values and supports
 #' DBR.fast <- DBR(raw.pvalues, pCDFlist)
 #' summary(DBR.fast)
-#' DBR.crit <- DBR(raw.pvalues, pCDFlist, ret.crit.consts = TRUE)
+#' 
+#' # DBR with critical values; using test results
+#' DBR.crit <- DBR(test.result, ret.crit.consts = TRUE)
 #' summary(DBR.crit)
 #' 
-#' @name DBR
 #' @export
-DBR <- function(x, ...) UseMethod("DBR")
+DBR <- function(test.results, ...) UseMethod("DBR")
 
 #' @rdname DBR
 #' @importFrom checkmate assert_character assert_integerish assert_list assert_numeric qassert
 #' @export
 DBR.default <- function(
-  raw.pvalues,
+  test.results,
   pCDFlist,
   alpha = 0.05,
   lambda = NULL,
   ret.crit.consts = FALSE,
   threshold = 1,
-  pCDFlist.indices = NULL
+  pCDFlist.indices = NULL, 
+  ...
 ) {
   # check arguments
   #--------------------------------------------
   #       check arguments
   #--------------------------------------------
   # raw p-values
-  qassert(x = raw.pvalues, rules = "N+[0, 1]")
-  n <- length(raw.pvalues)
+  qassert(x = test.results, rules = "N+[0, 1]")
+  n <- length(test.results)
   
   # list structure of p-value distributions
   assert_list(
@@ -119,7 +124,7 @@ DBR.default <- function(
       stop(
         paste(
           "If no counts for the p-value CDFs are provided, the lengths of",
-          "'raw.pvalues' and 'pCDFlist' must be equal!"
+          "'test.results' and 'pCDFlist' must be equal!"
         )
       )
     }
@@ -149,21 +154,21 @@ DBR.default <- function(
   #----------------------------------------------------
   #       check and prepare p-values for processing
   #----------------------------------------------------
-  pvec <- match.pvals(pCDFlist, raw.pvalues, pCDFlist.indices)
+  pvec <- match.pvals(pCDFlist, test.results, pCDFlist.indices)
   
   #----------------------------------------------------
   #       execute computations
   #----------------------------------------------------
-  output <- discrete_fdr_int(
-    pvec = pvec,
-    pCDFlist = pCDFlist,
-    pCDFlist_indices = pCDFlist.indices,
-    method = "DBR",
-    alpha = alpha,
-    method_parameter = lambda,
-    crit_consts = ret.crit.consts,
-    threshold = threshold,
-    data_name = paste(deparse(substitute(raw.pvalues)), "and", deparse(substitute(pCDFlist)))
+  output <- discrete.fdr.int(
+    pvec             = pvec,
+    pCDFlist         = pCDFlist,
+    pCDFlist.indices = pCDFlist.indices,
+    method           = "DBR",
+    alpha            = alpha,
+    method.parameter = lambda,
+    crit.consts      = ret.crit.consts,
+    threshold        = threshold,
+    data.name        = paste(deparse(substitute(test.results)), "and", deparse(substitute(pCDFlist)))
   )
   
   return(output)
@@ -173,11 +178,12 @@ DBR.default <- function(
 #' @importFrom checkmate assert_character assert_r6 qassert
 #' @export
 DBR.DiscreteTestResults <- function(
-    test.results,
-    alpha = 0.05,
-    lambda = NULL,
-    ret.crit.consts = FALSE,
-    threshold = 1
+  test.results,
+  alpha = 0.05,
+  lambda = NULL,
+  ret.crit.consts = FALSE,
+  threshold = 1, 
+  ...
 ) {
   #----------------------------------------------------
   #       check arguments
@@ -207,16 +213,16 @@ DBR.DiscreteTestResults <- function(
   #----------------------------------------------------
   #       execute computations
   #----------------------------------------------------
-  output <- discrete_fdr_int(
+  output <- discrete.fdr.int(
     pvec             = test.results$get_pvalues(),
     pCDFlist         = test.results$get_pvalue_supports(unique = TRUE),
-    pCDFlist_indices = test.results$get_support_indices(),
+    pCDFlist.indices = test.results$get_support_indices(),
     method           = "DBR",
     alpha            = alpha,
-    method_parameter = lambda,
-    crit_consts      = ret.crit.consts,
+    method.parameter = lambda,
+    crit.consts      = ret.crit.consts,
     threshold        = threshold,
-    data_name        = deparse(substitute(test.results))
+    data.name        = deparse(substitute(test.results))
   )
   
   return(output)

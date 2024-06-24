@@ -64,9 +64,11 @@ kernel_DBR_crit(
 
 \item{stepUp}{boolean specifying whether to conduct the step-up (\code{TRUE}) or step-down (\code{FALSE}; the default) procedure.}
 
-\item{alpha}{single real number strictly between 0 and 1 indicating the target FDR level; for \code{*.fast} kernels, it is only necessary, if \code{stepUp = TRUE}.}
+\item{alpha}{single real number strictly between 0 and 1 indicating the target FDR level; for \verb{*.fast} kernels, it is only needed, if \code{stepUp = TRUE}.}
 
-\item{support}{numeric vector, sorted in increasing order, that contains the entirety of all observable values of the p-value supports; for \code{*.fast} kernels, it is ignored if \code{stepUp = FALSE}.}
+\item{support}{numeric vector, sorted in increasing order, that contains the entirety of all observable values of the p-value supports; for \verb{*.fast} kernels, it is ignored if \code{stepUp = FALSE}.}
+
+\item{pCDFcounts}{integer vector of counts that indicates to how many p-values each \strong{unique} p-value distributions belongs.}
 
 \item{sorted_pv}{numeric vector containing the observed p-values, sorted in increasing order.}
 

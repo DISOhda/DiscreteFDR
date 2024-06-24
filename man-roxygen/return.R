@@ -3,7 +3,7 @@
 #' \item{Rejected}{rejected raw p-values.}
 #' \item{Indices}{indices of rejected hypotheses.}
 #' \item{Num.rejected}{number of rejections.}
-#' \item{Adjusted}{adjusted p-values<%=ifelse(exists("DBR") && DBR, ""," (only for step-down direction)")%>.}
+#' \item{Adjusted}{adjusted p-values<%=ifelse(exists("BR") && BR, ""," (only for step-down direction)")%>.}
 #' \item{Critical.constants}{critical constants (if requested).}
 #' \item{Select$Threshold}{p-value selection \code{threshold} (only present if \code{threshold} \eqn{< 1}).}
 #' \item{Select$Effective.Thresholds}{results of each p-value CDF evaluated at the selection threshold (only present if \code{threshold} \eqn{< 1}).}
@@ -17,4 +17,4 @@
 #' \item{Data$pCDFlist.indices}{observed p-value indices of the **unique** p-value supports.}
 #' \item{Data$FDR.level}{FDR level \code{alpha}.}
 #' \item{Data$Data.name}{the respective variable names of the input data.}
-#' <%=ifelse(exists("DBR") && DBR, "\\item{DBR.Tuning}{value of the tuning parameter \\code{lambda}.}","") %>
+#' <%=ifelse(exists("BR") && BR, "\\item{DBR.Tuning}{value of the tuning parameter \\code{lambda}.}","") %> 

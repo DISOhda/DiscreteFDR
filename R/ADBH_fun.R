@@ -1,4 +1,5 @@
 #' @name ADBH
+#' 
 #' @title
 #' Wrapper functions for the adaptive Discrete Benjamini-Hochberg procedure
 #' 
@@ -13,14 +14,15 @@
 #' @seealso
 #' [discrete.BH()], [DBH()], [DBR()]
 #' 
-#' @templateVar x TRUE
-#' @templateVar raw.pvalues TRUE
+#' @templateVar test.results TRUE
 #' @templateVar pCDFlist TRUE
+#' @templateVar test.results TRUE
 #' @templateVar alpha TRUE
 #' @templateVar direction TRUE
 #' @templateVar ret.crit.consts TRUE
 #' @templateVar threshold TRUE
 #' @templateVar pCDFlist.indices TRUE
+#' @templateVar triple.dots TRUE
 #' @template param
 #' 
 #' @templateVar DBR FALSE
@@ -31,36 +33,41 @@
 #'   and heterogeneous tests. *Electronic Journal of Statistics*, *12*(1),
 #'   pp. 1867-1900. \doi{10.1214/18-EJS1441}
 #'   
-#' @template example
+#' @template exampleGPV
 #' @examples
-#' 
+#' # ADBH (SU) without critical values; using extracted p-values and supports
 #' ADBH.su.fast <- ADBH(raw.pvalues, pCDFlist)
 #' summary(ADBH.su.fast)
+#' 
+#' # ADBH (SD) without critical values; using extracted p-values and supports
 #' ADBH.sd.fast <- ADBH(raw.pvalues, pCDFlist, direction = "sd")
 #' summary(ADBH.sd.fast)
 #'
-#' ADBH.su.crit <- ADBH(raw.pvalues, pCDFlist, ret.crit.consts = TRUE)
+#' # ADBH (SU) with critical values; using test results
+#' ADBH.su.crit <- ADBH(test.result, ret.crit.consts = TRUE)
 #' summary(ADBH.su.crit)
-#' ADBH.sd.crit <- ADBH(raw.pvalues, pCDFlist, direction = "sd",
-#'                      ret.crit.consts = TRUE)
+#' 
+#' # ADBH (SD) with critical values; using test results
+#' ADBH.sd.crit <- ADBH(test.result, direction = "sd", ret.crit.consts = TRUE)
 #' summary(ADBH.sd.crit)
 #' 
 #' @export
-ADBH <- function(x, ...) UseMethod("ADBH")
+ADBH <- function(test.results, ...) UseMethod("ADBH")
 
 #' @rdname ADBH
 #' @export
 ADBH.default <- function(
-  raw.pvalues,
+  test.results,
   pCDFlist,
   alpha = 0.05,
   direction = "su",
   ret.crit.consts = FALSE,
   threshold = 1,
-  pCDFlist.indices = NULL
+  pCDFlist.indices = NULL, 
+  ...
 ) {
   out <- discrete.BH.default(
-    raw.pvalues,
+    test.results,
     pCDFlist,
     alpha,
     direction,
@@ -71,7 +78,7 @@ ADBH.default <- function(
   )
   
   out$Data$Data.name <- paste(
-    deparse(substitute(raw.pvalues)),
+    deparse(substitute(test.results)),
     "and",
     deparse(substitute(pCDFlist))
   )
@@ -86,7 +93,8 @@ ADBH.DiscreteTestResults <- function(
   alpha = 0.05,
   direction = "su",
   ret.crit.consts = FALSE,
-  threshold = 1
+  threshold = 1, 
+  ...
 ) {
   out <- discrete.BH.DiscreteTestResults(
     test.results,
