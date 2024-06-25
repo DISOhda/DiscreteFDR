@@ -1,7 +1,7 @@
 #' @name DBR
 #' 
 #' @title
-#' Discrete Blanchard-Roquain procedure
+#' The Discrete Blanchard-Roquain Procedure
 #' 
 #' @description
 #' Apply the \[HBR-\eqn{\lambda}\] procedure, with or without computing the

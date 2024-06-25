@@ -2,7 +2,7 @@
 % Please edit documentation in R/Aux_fun.R
 \name{match.pvals}
 \alias{match.pvals}
-\title{Matching raw p-values with supports}
+\title{Matching Raw P-Values with Supports}
 \usage{
 match.pvals(pCDFlist, raw.pvalues, pCDFlist.indices = NULL)
 }

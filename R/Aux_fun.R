@@ -3,7 +3,7 @@
 #' @keywords internal
 #' 
 #' @title
-#' Matching raw p-values with supports 
+#' Matching Raw P-Values with Supports 
 #' 
 #' @description#' 
 #' Constructs the observed p-values from the raw observed p-values, by rounding

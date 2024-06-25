@@ -1,7 +1,7 @@
 #' @name ADBH
 #' 
 #' @title
-#' Wrapper functions for the adaptive Discrete Benjamini-Hochberg procedure
+#' Wrapper Functions for the Adaptive Discrete Benjamini-Hochberg Procedure
 #' 
 #' @description
 #' `ADBH()` is a wrapper function of [discrete.BH()] for computing \[AHSU\] and

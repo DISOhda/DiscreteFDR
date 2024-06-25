@@ -1,7 +1,7 @@
 #' @name DBH
 #' 
 #' @title
-#' Wrapper functions for the Discrete Benjamini-Hochberg procedure
+#' Wrapper Functions for the Discrete Benjamini-Hochberg Procedure
 #' 
 #' @description
 #' 

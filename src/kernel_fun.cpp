@@ -4,7 +4,7 @@
 //' @rdname kernel
 //' 
 //' @title
-//' Kernel functions
+//' Kernel Functions
 //' 
 //' @description
 //'
@@ -15,7 +15,7 @@
 //' compute and return the critical constants. 
 //' The end user should not use these functions directly.
 //' 
-//' **Note**: As of version 1.4, these functions are purely internal functions!
+//' **Note**: As of version 2.0, these functions are purely internal functions!
 //' As a consequence, they have to be called directly via `:::`, e.g. 
 //' `DiscreteFDR:::kernel_DBH_fast()`. But users should **not** rely on them, as
 //' parameters (including their names, order, etc.) may be changed without
@@ -28,7 +28,7 @@
 //' p-values to compute the adjusted p-values.
 //' 
 //' @seealso
-//' [discrete.BH], [fast.Discrete], [DBR]
+//' [`discrete.BH`], [`fast.Discrete`], [`DBR`]
 //' 
 //' @templateVar pCDFlist TRUE
 //' @templateVar pvalues TRUE
@@ -47,7 +47,50 @@
 //' and transformed p-values (`$pval.transf`), but if `stepUp = FALSE`, there
 //' are critical values only.
 //' 
-
+//' @examples \dontrun{
+//' X1 <- c(4, 2, 2, 14, 6, 9, 4, 0, 1)
+//' X2 <- c(0, 0, 1, 3, 2, 1, 2, 2, 2)
+//' N1 <- rep(148, 9)
+//' N2 <- rep(132, 9)
+//' Y1 <- N1 - X1
+//' Y2 <- N2 - X2
+//' df <- data.frame(X1, Y1, X2, Y2)
+//' df
+//' 
+//' # Compute p-values and their supports of Fisher's exact test
+//' test.result <- generate.pvalues(df, "fisher")
+//' raw.pvalues <- test.result$get_pvalues()
+//' pCDFlist <- test.result$get_pvalue_supports()
+//' 
+//' alpha <- 0.05
+//' 
+//' # Compute the step functions from the supports
+//' 
+//' # If not searching for critical constants, we use only the observed p-values
+//' sorted.pvals   <- sort(raw.pvalues)
+//' y.DBH.sd.fast  <- kernel_DBH_fast(pCDFlist, sorted.pvals)
+//' y.ADBH.sd.fast <- kernel_ADBH_fast(pCDFlist, sorted.pvals)
+//' y.DBR.fast     <- kernel_DBR_fast(pCDFlist, sorted.pvals)
+//' # transformed values
+//' y.DBH.sd.fast
+//' y.ADBH.sd.fast
+//' y.DBR.fast
+//' 
+//' # compute transformed support
+//' pv.list        <- sort(unique(unlist(pCDFlist)))
+//' y.DBH.sd.crit  <- kernel_DBH_crit(pCDFlist, pv.list, sorted.pvals)
+//' y.ADBH.sd.crit <- kernel_ADBH_crit(pCDFlist, pv.list, sorted.pvals)
+//' y.DBR.crit     <- kernel_DBR_crit(pCDFlist, pv.list, sorted.pvals)
+//' # critical constants
+//' y.DBH.sd.crit$crit.consts
+//' y.ADBH.sd.crit$crit.consts
+//' y.DBR.crit$crit.consts
+//' # The following exist only for step-down direction or DBR
+//' y.DBH.sd.crit$pval.transf
+//' y.ADBH.sd.crit$pval.transf
+//' y.DBR.crit$pval.transf
+//' }
+//' 
 struct tau_m_results{
   double value;
   int index;

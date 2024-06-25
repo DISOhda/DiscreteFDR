@@ -4,7 +4,7 @@
 \alias{ADBH}
 \alias{ADBH.default}
 \alias{ADBH.DiscreteTestResults}
-\title{Wrapper functions for the adaptive Discrete Benjamini-Hochberg procedure}
+\title{Wrapper Functions for the Adaptive Discrete Benjamini-Hochberg Procedure}
 \usage{
 ADBH(test.results, ...)
 
@@ -74,8 +74,8 @@ respectively. It simply passes its arguments to \code{\link[=discrete.BH]{discre
 \details{
 Computing critical constants (\code{ret.crit.consts = TRUE}) requires considerably
 more execution time, especially if the number of unique supports is large.
-The user should only have them calculated when he needs them, e.g. for
-illustration the rejection area in a plot or other theoretical reasons.
+Users should only have them calculated when they need them, e.g. for
+illustrating the rejection area in a plot or other theoretical reasons.
 }
 \examples{
 X1 <- c(4, 2, 2, 14, 6, 9, 4, 0, 1)

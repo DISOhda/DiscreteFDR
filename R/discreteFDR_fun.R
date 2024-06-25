@@ -7,8 +7,7 @@ discrete.fdr.int <- function(
   method.parameter = NULL,
   crit.consts = FALSE,
   threshold = 1,
-  data.name = NULL,
-  output.R6 = FALSE
+  data.name = NULL
 ) {
   #--------------------------------------------
   #       prepare output object
@@ -213,6 +212,6 @@ discrete.fdr.int <- function(
   # original test data (often included, e.g. when using 'binom.test()')
   output$Data <- input.data
   
-  class(output) <- "DiscreteFDR"
+  class(output) <- c("DiscreteFDR", class(output))
   return(output)
 }

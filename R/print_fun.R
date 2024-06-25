@@ -10,7 +10,7 @@
 #'                   They are ignored in this function.
 #' 
 #' @return
-#' The respective input object is invisibly returned via `invisible(x)`.
+#' The input object `x` is invisibly returned via `invisible(x)`.
 #' 
 #' @template exampleGPV
 #' @examples
@@ -22,6 +22,9 @@
 #' @export
 ## S3 method for class 'DiscreteFDR'
 print.DiscreteFDR <- function(x, ...){
+  if(!any(c("DiscreteFDR", "summary.DiscreteFDR") %in% class(x)))
+    return(print(x))
+  
   n <- length(x$Data$raw.pvalues)
   k <- x$Num.rejected
   BH <- p.adjust(x$Data$raw.pvalues, "BH")

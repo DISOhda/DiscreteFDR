@@ -10,11 +10,11 @@
 \method{print}{summary.DiscreteFDR}(x, max = NULL, ...)
 }
 \arguments{
-\item{object}{an object of class "\code{DiscreteFDR}".}
+\item{object}{an object of class \code{DiscreteFDR}.}
 
 \item{...}{further arguments passed to or from other methods.}
 
-\item{x}{an object of class "\code{summary.DiscreteFDR}".}
+\item{x}{an object of class \code{summary.DiscreteFDR}.}
 
 \item{max}{numeric or \code{NULL}, specifying the maximal number of
 \emph{rows} of the p-value table to be printed. By default,
@@ -22,14 +22,14 @@ when \code{NULL}, \code{getOption("max.print")} is used.}
 }
 \value{
 \code{summary.DiscreteFDR} computes and returns a list that includes all the
-data of an input \code{DiscreteFDR}, plus
-\item{Table}{a \code{data.frame}, sorted by the raw p-values, that contains the
+data of an input \code{DiscreteFDR} object, plus
+\item{Table}{\code{data.frame}, sorted by the raw p-values, that contains the
 indices, the raw p-values themselves, their respective critical
 values (if present), their adjusted p-values (if present) and a
 logical column to indicate rejection.}
 }
 \description{
-\code{summary} method for class "\code{DiscreteFDR}"
+\code{summary} method for class \code{DiscreteFDR}.
 }
 \details{
 \code{summary.DiscreteFDR} objects contain all data of an \code{DiscreteFDR} object,

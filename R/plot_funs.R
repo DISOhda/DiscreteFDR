@@ -1,21 +1,21 @@
 #' @name hist.DiscreteFDR
 #' 
 #' @title
-#' Histogram of Raw p-Values
+#' Histogram of Raw P-Values
 #' 
 #' @description
 #' Computes a histogram of the raw p-values of a `DiscreteFDR` object.
 #' 
 #' @param x          an object of class "`DiscreteFDR`".
-#' @param breaks     as in [hist]; here, the Friedman-Diaconis algorithm
+#' @param breaks     as in [`hist`]; here, the Friedman-Diaconis algorithm
 #'                   (`"FD"`) is used as default.
 #' @param plot       a boolean; if `TRUE` (the default), a histogram is plotted,
 #'                   otherwise a list of breaks and counts is returned.
-#' @param ...        further arguments to [hist] or [plot.histogram],
+#' @param ...        further arguments to [`hist`] or [`plot.histogram`],
 #'                   respectively.
 #' 
 #' @details
-#' This method simply calls [hist] and passes the raw p-values of the object.
+#' This method simply calls [`hist`] and passes the raw p-values of the object.
 #' 
 #' @return
 #' An object of class `histogram`.
@@ -28,19 +28,24 @@
 #' @importFrom graphics hist
 #' @export
 hist.DiscreteFDR <- function(x, breaks = "FD", plot = TRUE, ...){
+  if(!("DiscreteFDR" %in% class(x)))
+    stop("'x' must be an object of class DiscreteFDR")
+  
   # necessary to appease automated R CMD check on CRAN
   main <- xlab <- NULL
   lst <- list(...)
   
-  # call 'hist' function with raw p.values (default breaks: "FD"); "..." passes
-  # all additional 'hist' arguments to this call
-  if(plot && !exists('main', where = lst) && !exists('xlab', where = lst))
-    r <- hist(x$Data$raw.pvalues, breaks = breaks, main = "Histogram of raw p-values", xlab = "Raw p-values", plot = plot,  ...)
-  else if(plot && !exists('main', where = lst))
-    r <- hist(x$Data$raw.pvalues, breaks = breaks, main = "Histogram of raw p-values", plot = plot,  ...)
-  else if(plot && !exists('xlab', where = lst))
-    r <- hist(x$Data$raw.pvalues, breaks = breaks, xlab = "Raw p-values", plot = plot,  ...)
-  else r <- hist(x$Data$raw.pvalues, breaks = breaks, plot = plot,  ...)
+  # labels
+  if(!exists('main', where = lst)) lst$main <- "Histogram of raw p-values"
+  if(!exists('xlab', where = lst)) lst$xlab <- "Raw p-values"
+  
+  # add 'breaks' and 'plot' to 'lst' for 'do.call'
+  lst$breaks <- breaks
+  lst$plot <- plot
+  lst$x <- x$Data$raw.pvalues
+  
+  # call 'hist'
+  r <- do.call(hist, lst)
   
   r$xname <- deparse(substitute(x))
   
@@ -55,7 +60,7 @@ hist.DiscreteFDR <- function(x, breaks = "FD", plot = TRUE, ...){
 #' Plots raw p-values of a `DiscreteFDR` object and highlights rejected and
 #' accepted p-values. If present, the critical values are plotted, too.
 #'
-#' @param x          an object of class "`DiscreteFDR`".
+#' @param x          an object of class `DiscreteFDR`.
 #' @param col        a numeric or character vector of length 3 indicating the
 #'                   colors of the \enumerate{
 #'                     \item rejected p-values
@@ -72,11 +77,11 @@ hist.DiscreteFDR <- function(x, breaks = "FD", plot = TRUE, ...){
 #' @param lwd        a numeric vector of length 3 indicating the thickness of
 #'                   the points and lines.
 #' @param type.crit  1-character string giving the type of plot desired for the
-#'                   critical values (e.g.: `'p'`, `'l'` etc; see [plot]).
+#'                   critical values (e.g.: `'p'`, `'l'` etc; see [`plot`]).
 #' @param legend     if `NULL`, no legend is plotted; otherwise expecting a
 #'                   character string like `"topleft"` etc. or a numeric vector
 #'                   of two elements indicating (x, y) coordinates.
-#' @param ...        further arguments to [plot.default].
+#' @param ...        further arguments to [`plot.default`].
 #' 
 #' @template exampleGPV
 #' @examples 
@@ -94,6 +99,7 @@ hist.DiscreteFDR <- function(x, breaks = "FD", plot = TRUE, ...){
 #'      ylim = c(0, 0.4))
 #' 
 #' @importFrom graphics plot lines points title
+#' @importFrom checkmate assert assert_string check_character check_choice check_numeric
 #' @export
 plot.DiscreteFDR <- function(
   x,
@@ -104,15 +110,44 @@ plot.DiscreteFDR <- function(
   legend = NULL,
   ...
 ) {
+  if(!("DiscreteFDR" %in% class(x)))
+    stop("'x' must be an object of class DiscreteFDR")
+  
+  # make sure 'col' includes integers or color strings
+  assert(
+    check_character(col, min.len = 1, max.len = 3, null.ok = TRUE),
+    check_numeric(col, min.len = 1, max.len = 3, null.ok = TRUE)
+  )
+  
+  # make sure 'pch' includes integers or color strings
+  assert(
+    check_character(col, min.len = 1, max.len = 3, null.ok = TRUE),
+    check_numeric(col, upper = 25, min.len = 1, max.len = 3, null.ok = TRUE)
+  )
+  
+  # make sure 'type.crit' is a single character string
+  assert_string(type.crit, null.ok = TRUE)
+  
+  # make sure 'legend' is a single string or a numerical vector of two values
+  assert(
+    check_choice(
+      x = legend, 
+      choices = c("bottomright", "bottom", "bottomleft", "left",
+                  "topleft", "top", "topright", "right", "center"),
+      null.ok = TRUE
+    ),
+    check_numeric(legend, len = 2, any.missing = FALSE)
+  )
+  
   # determine number of tests, selections and rejections
   n <- length(x$Data$raw.pvalues)
   select <- exists('Select', x)
   m <- if(select) x$Select$Number else n
   
   # replicate shorter plot parameter vectors to avoid errors
-  col <- rep_len(col, 3)
-  pch <- rep_len(pch, 3)
-  lwd <- rep_len(lwd, 3)
+  col <- if(!is.null(col)) rep_len(col, 3) else c(2, 4, 1)
+  pch <- if(!is.null(pch)) rep_len(pch, 3) else rep(20, 3)
+  lwd <- if(!is.null(lwd)) rep_len(lwd, 3) else rep(1, 3)
   
   # get values of ...-arguments
   lst <- list(...)

@@ -2,10 +2,10 @@
 #' Summarizing Discrete FDR Results
 #' 
 #' @description
-#' `summary` method for class "`DiscreteFDR`"
+#' `summary` method for class `DiscreteFDR`.
 #'
-#' @param object       an object of class "`DiscreteFDR`".
-#' @param x            an object of class "`summary.DiscreteFDR`".
+#' @param object       an object of class `DiscreteFDR`.
+#' @param x            an object of class `summary.DiscreteFDR`.
 #' @param max          numeric or `NULL`, specifying the maximal number of
 #'                     *rows* of the p-value table to be printed. By default,
 #'                     when `NULL`, `getOption("max.print")` is used.
@@ -23,8 +23,8 @@
 #' 
 #' @return
 #' `summary.DiscreteFDR` computes and returns a list that includes all the
-#' data of an input `DiscreteFDR`, plus
-#' \item{Table}{a `data.frame`, sorted by the raw p-values, that contains the
+#' data of an input `DiscreteFDR` object, plus
+#' \item{Table}{`data.frame`, sorted by the raw p-values, that contains the
 #'              indices, the raw p-values themselves, their respective critical
 #'              values (if present), their adjusted p-values (if present) and a
 #'              logical column to indicate rejection.}
@@ -38,6 +38,9 @@
 #' @export
 ## S3 method for class 'DiscreteFDR'
 summary.DiscreteFDR <- function(object, ...){
+  if(!("DiscreteFDR" %in% class(object)))
+    return(summary(object))
+    
   # determine if selection as performed
   select <- exists('Select', object)
   if(select) m <- object$Select$Number
@@ -48,8 +51,6 @@ summary.DiscreteFDR <- function(object, ...){
   o <- order(object$Data$raw.pvalues)
   # ordered indices
   i <- 1:n
-  # raw p-values
-  #y <- object$Data$raw.pvalues
   # determine for each p-value if its corresponding null hypothesis is rejected
   r <- i %in% object$Indices #if(!select) o %in% object$Indices else o %in% object$Select.Indices[object$Indices]
   
@@ -59,7 +60,6 @@ summary.DiscreteFDR <- function(object, ...){
     out$Table$Selected <- i %in% object$Select$Indices #rep(c(TRUE, FALSE), c(m, n - m))
     out$Table$Scaled <- NA
     out$Table$Scaled[out$Table$Selected] <- object$Select$Scaled
-    #out$Table <- data.frame(out$Table, 'Scaled' = c(object$Select$Scaled, rep(NA, n - m)))
   }
   out$Table <- out$Table[o, ]
   if(exists('Critical.values', object)) {
@@ -83,6 +83,9 @@ summary.DiscreteFDR <- function(object, ...){
 #'@export
 ## S3 method for class 'summary.DiscreteFDR'
 print.summary.DiscreteFDR <- function(x, max = NULL, ...){
+  if(!("summary.DiscreteFDR" %in% class(x)))
+    return(print(x))
+  
   # print 'DiscreteFDR' part of the object
   print.DiscreteFDR(x)
   

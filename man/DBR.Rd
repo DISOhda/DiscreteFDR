@@ -4,7 +4,7 @@
 \alias{DBR}
 \alias{DBR.default}
 \alias{DBR.DiscreteTestResults}
-\title{Discrete Blanchard-Roquain procedure}
+\title{The Discrete Blanchard-Roquain Procedure}
 \usage{
 DBR(test.results, ...)
 
@@ -79,8 +79,8 @@ which explains the choice of the default value here.
 
 Computing critical constants (\code{ret.crit.consts = TRUE}) requires considerably
 more execution time, especially if the number of unique supports is large.
-The user should only have them calculated when he needs them, e.g. for
-illustration the rejection area in a plot or other theoretical reasons.
+Users should only have them calculated when they need them, e.g. for
+illustrating the rejection area in a plot or other theoretical reasons.
 }
 \section{References}{
 

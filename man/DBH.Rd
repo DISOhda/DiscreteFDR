@@ -4,7 +4,7 @@
 \alias{DBH}
 \alias{DBH.default}
 \alias{DBH.DiscreteTestResults}
-\title{Wrapper functions for the Discrete Benjamini-Hochberg procedure}
+\title{Wrapper Functions for the Discrete Benjamini-Hochberg Procedure}
 \usage{
 DBH(test.results, ...)
 
@@ -73,8 +73,8 @@ A \code{DiscreteFDR} S3 class object whose elements are:
 \details{
 Computing critical constants (\code{ret.crit.consts = TRUE}) requires considerably
 more execution time, especially if the number of unique supports is large.
-The user should only have them calculated when he needs them, e.g. for
-illustration the rejection area in a plot or other theoretical reasons.
+Users should only have them calculated when they need them, e.g. for
+illustrating the rejection area in a plot or other theoretical reasons.
 }
 \examples{
 X1 <- c(4, 2, 2, 14, 6, 9, 4, 0, 1)

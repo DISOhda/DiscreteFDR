@@ -1,7 +1,7 @@
 #' @name discrete.BH
 #' 
 #' @title
-#' Discrete Benjamini-Hochberg procedure
+#' The Discrete Benjamini-Hochberg Procedure
 #' 
 #' @description
 #' Apply the \[HSU\], \[HSD\], \[AHSU\] and \[AHSD\] procedures at a given FDR

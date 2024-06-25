@@ -13,7 +13,7 @@
 They are ignored in this function.}
 }
 \value{
-The respective input object is invisibly returned via \code{invisible(x)}.
+The input object \code{x} is invisibly returned via \code{invisible(x)}.
 }
 \description{
 Prints the results of discrete FDR analysis, stored in a \code{DiscreteFDR} class
