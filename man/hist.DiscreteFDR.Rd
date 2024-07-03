@@ -7,7 +7,7 @@
 \method{hist}{DiscreteFDR}(x, breaks = "FD", plot = TRUE, ...)
 }
 \arguments{
-\item{x}{an object of class "\code{DiscreteFDR}".}
+\item{x}{an object of class \code{DiscreteFDR}.}
 
 \item{breaks}{as in \code{\link{hist}}; here, the Friedman-Diaconis algorithm
 (\code{"FD"}) is used as default.}

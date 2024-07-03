@@ -5,9 +5,9 @@
 #' 
 #' @description
 #' `ADBH()` is a wrapper function of [discrete.BH()] for computing \[AHSU\] and
-#' \[AHSD\], which are often slightly more powerful than \[HSU\] and \[HSD\],
-#' respectively. It simply passes its arguments to [discrete.BH()] with fixed
-#' `adaptive = TRUE` and is computationally more demanding than [DBH()].
+#' \[AHSD\], which are more powerful than \[HSU\] and \[HSD\], respectively. It
+#' simply passes its arguments to [discrete.BH()] with fixed `adaptive = TRUE`
+#' and is computationally more demanding than [DBH()].
 #' 
 #' @template details_crit
 #'  
@@ -20,7 +20,7 @@
 #' @templateVar alpha TRUE
 #' @templateVar direction TRUE
 #' @templateVar ret.crit.consts TRUE
-#' @templateVar threshold TRUE
+#' @templateVar select.threshold TRUE
 #' @templateVar pCDFlist.indices TRUE
 #' @templateVar triple.dots TRUE
 #' @template param
@@ -62,7 +62,7 @@ ADBH.default <- function(
   alpha = 0.05,
   direction = "su",
   ret.crit.consts = FALSE,
-  threshold = 1,
+  select.threshold = 1,
   pCDFlist.indices = NULL, 
   ...
 ) {
@@ -73,7 +73,7 @@ ADBH.default <- function(
     direction,
     adaptive = TRUE,
     ret.crit.consts,
-    threshold,
+    select.threshold,
     pCDFlist.indices
   )
   
@@ -93,7 +93,7 @@ ADBH.DiscreteTestResults <- function(
   alpha = 0.05,
   direction = "su",
   ret.crit.consts = FALSE,
-  threshold = 1, 
+  select.threshold = 1, 
   ...
 ) {
   out <- discrete.BH.DiscreteTestResults(
@@ -102,7 +102,7 @@ ADBH.DiscreteTestResults <- function(
     direction,
     adaptive = TRUE,
     ret.crit.consts,
-    threshold
+    select.threshold
   )
   
   out$Data$Data.name <- deparse(substitute(test.results))

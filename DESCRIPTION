@@ -1,8 +1,8 @@
 Package: DiscreteFDRTest
 Type: Package
 Title: FDR based Multiple Testing Procedures with Adaptation for Discrete Tests
-Version: 1.3.8-240625
-Date: 2024-06-25
+Version: 1.3.8-240703
+Date: 2024-07-03
 Authors@R: c(
     person("Sebastian", "Döhler", role = c("aut", "ctb")),
     person("Florian", "Junge", role = c("aut", "ctb", "cre"), 
@@ -11,14 +11,15 @@ Authors@R: c(
     person("Etienne", "Roquain", role = "ctb"),
     person("Christina", "Kihn", role = "ctb")
   )
-Description: Multiple testing procedures described in the paper Döhler, Durand 
-    and Roquain (2018) "New FDR bounds for discrete and heterogeneous tests" 
-    <doi:10.1214/18-EJS1441>. The main procedures of the paper (HSU and HSD), 
-    their adaptive counterparts (AHSU and AHSD), and the HBR variant are 
-    available and are coded to take as input a set of observed p-values and 
-    their discrete support under the null. A function to compute such p-values 
-    and supports for Fisher's exact tests is also provided, along with a wrapper
-    allowing to apply discrete procedures directly from contingency tables.
+Description: This package implements the multiple testing procedures for
+    discrete tests described in the paper Döhler, Durand and Roquain (2018) "New
+    FDR bounds for discrete and heterogeneous tests" <doi:10.1214/18-EJS1441>.
+    The main procedures of the paper (HSU and HSD), their adaptive counterparts
+    (AHSU and AHSD), and the HBR variant are available and are coded to take as
+    input the result of a test procedure from package "DiscreteTests", or a set
+    of observed p-values and their discrete support under their nulls. A
+    shortcut function to obtain such p-values and supports is also provided,
+    along with a wrapper allowing to apply discrete procedures directly to data.
 License: GPL-3
 Encoding: UTF-8
 Depends: R (>= 3.00)

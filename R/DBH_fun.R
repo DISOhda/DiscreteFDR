@@ -20,7 +20,7 @@
 #' @templateVar alpha TRUE
 #' @templateVar direction TRUE
 #' @templateVar ret.crit.consts TRUE
-#' @templateVar threshold TRUE
+#' @templateVar select.threshold TRUE
 #' @templateVar pCDFlist.indices TRUE
 #' @templateVar triple.dots TRUE
 #' @template param
@@ -62,7 +62,7 @@ DBH.default <- function(
   alpha = 0.05,
   direction = "su",
   ret.crit.consts = FALSE,
-  threshold = 1,
+  select.threshold = 1,
   pCDFlist.indices = NULL, 
   ...
 ) {
@@ -73,7 +73,7 @@ DBH.default <- function(
     direction, 
     adaptive = FALSE, 
     ret.crit.consts, 
-    threshold, 
+    select.threshold, 
     pCDFlist.indices
   )
   
@@ -93,10 +93,10 @@ DBH.DiscreteTestResults <- function(
   alpha = 0.05,
   direction = "su",
   ret.crit.consts = FALSE,
-  threshold = 1, 
+  select.threshold = 1, 
   ...
 ) {
-  out <- discrete.BH.DiscreteTestResults(test.results, alpha, direction, adaptive = FALSE, ret.crit.consts, threshold)
+  out <- discrete.BH.DiscreteTestResults(test.results, alpha, direction, adaptive = FALSE, ret.crit.consts, select.threshold)
   
   out$Data$Data.name <- deparse(substitute(test.results))
   

@@ -60,7 +60,7 @@ kernel_DBR_crit(
 \arguments{
 \item{pCDFlist}{list of the supports of the CDFs of the p-values; each list item must be a numeric vector, which is sorted in increasing order and whose last element equals 1.}
 
-\item{pvalues}{numeric vector, sorted in increasing order, that either must contain the entirety of all observable values of the p-value supports (when computing critical constants) or only the observed p-values.}
+\item{pvalues}{numeric vector, sorted in increasing order, that either must contain the entirety of all observable values of the p-value supports (when computing critical constants) or only the sorted raw p-values.}
 
 \item{stepUp}{boolean specifying whether to conduct the step-up (\code{TRUE}) or step-down (\code{FALSE}; the default) procedure.}
 
@@ -70,7 +70,7 @@ kernel_DBR_crit(
 
 \item{pCDFcounts}{integer vector of counts that indicates to how many p-values each \strong{unique} p-value distributions belongs.}
 
-\item{sorted_pv}{numeric vector containing the observed p-values, sorted in increasing order.}
+\item{sorted_pv}{numeric vector containing the raw p-values, sorted in increasing order.}
 
 \item{lambda}{real number strictly between 0 and 1 specifying the DBR tuning parameter.}
 }

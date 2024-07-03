@@ -9,9 +9,7 @@ match.pvals(pCDFlist, raw.pvalues, pCDFlist.indices = NULL)
 \arguments{
 \item{pCDFlist}{list of the supports of the CDFs of the p-values; each list item must be a numeric vector, which is sorted in increasing order and whose last element equals 1.}
 
-\item{raw.pvalues}{numeric vector of the raw observed p-values.}
-
-\item{pCDFlist.indices}{list of numeric vectors containing the test indices that indicate to which p-value each \strong{unique} support in \code{pCDFlist} belongs; ignored if the lengths of \code{raw.pvalues} and \code{pCDFlist} are equal.}
+\item{pCDFlist.indices}{list of numeric vectors containing the test indices that indicate to which raw p-value each \strong{unique} support in \code{pCDFlist} belongs; ignored if the lengths of \code{test.results} and \code{pCDFlist} are equal.}
 }
 \value{
 A vector where each raw p-value has been replaced by its nearest neighbor, if

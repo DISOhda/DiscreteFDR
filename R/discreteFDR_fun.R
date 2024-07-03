@@ -9,6 +9,9 @@ discrete.fdr.int <- function(
   threshold = 1,
   data.name = NULL
 ) {
+  # original number of hypotheses
+  n <- length(pvec)
+  
   #--------------------------------------------
   #       prepare output object
   #--------------------------------------------
@@ -23,10 +26,17 @@ discrete.fdr.int <- function(
     )
   }
   input.data$raw.pvalues <- pvec
-  input.data$pCDFlist    <- pCDFlist
-  if(!is.null(pCDFlist.indices)) {
-    input.data$pCDFlist.indices <- pCDFlist.indices
+  if(length(pCDFlist) == n) {
+    input.data$pCDFlist <- pCDFlist
+  } else {
+    idx <- unlist(pCDFlist.indices)
+    pCDFlist.counts <- sapply(pCDFlist.indices, length)
+    input.data$pCDFlist <- rep(pCDFlist, pCDFlist.counts)[order(idx)]
   }
+  #input.data$pCDFlist    <- pCDFlist
+  #if(!is.null(pCDFlist.indices)) {
+  #  input.data$pCDFlist.indices <- pCDFlist.indices
+  #}
   input.data$FDR.level   <- alpha
   input.data$Data.name   <- ifelse(
     !is.null(data.name),
@@ -38,15 +48,13 @@ discrete.fdr.int <- function(
   #--------------------------------------------
   #       apply p-value selection
   #--------------------------------------------
-  # original number of hypotheses
-  n <- length(pvec)
-  if(threshold < 1){
+  if(threshold < 1) {
     # which p-values are not above threshold?
     select <- which(pvec <= threshold)
     # number of selected p-values
     m <- length(select)
     # filter pCDFs, indices and counts of selected p-values
-    if(is.null(pCDFlist.indices)){
+    if(is.null(pCDFlist.indices)) {
       pCDFlist.indices <- as.list(select)
       pCDFlist.counts  <- rep(1, m)
       pCDFlist         <- pCDFlist[select]
@@ -64,7 +72,7 @@ discrete.fdr.int <- function(
     pCDFlist <- sapply(seq_along(pCDFlist), function(k) pCDFlist[[k]] / F.thresh[k])
     # rescale selected p-values
     pvec <- pvec[select] / rep(F.thresh, pCDFlist.counts)[pCDFlist.idx]
-  }else{
+  } else {
     # all p-values were selected
     select <- seq_len(n)
     m <- n

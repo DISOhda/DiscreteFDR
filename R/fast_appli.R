@@ -4,9 +4,9 @@
 #' `r lifecycle::badge('deprecated')`
 #' 
 #' Apply the \[HSU\], \[HSD\], \[AHSU\] or \[AHSD\] procedure,
-#' without computing the critical constants,
-#' to a data set of 2x2 contingency tables using Fisher's exact tests which
-#' may have to be transformed before computing p-values.
+#' without computing the critical constants, to a data set of 2x2 contingency
+#' tables which may have to be pre-processed in order to have the correct
+#' structure for computing p-values using Fisher's exact test.
 #' 
 #' **Note**: This function is deprecated and will be removed in a future
 #' version. Please use [`direct.discrete.BH()`] with
@@ -36,7 +36,7 @@
 #' @templateVar alpha TRUE
 #' @templateVar direction TRUE
 #' @templateVar adaptive TRUE
-#' @templateVar threshold TRUE
+#' @templateVar select.threshold TRUE
 #' 
 #' @template return
 #' 
@@ -61,14 +61,14 @@
 #' 
 #' @importFrom lifecycle deprecate_soft
 #' @export
-fast.Discrete <- function(counts, alternative = "greater", input = "noassoc", alpha = 0.05, direction = "su", adaptive = FALSE, threshold = 1){
+fast.Discrete <- function(counts, alternative = "greater", input = "noassoc", alpha = 0.05, direction = "su", adaptive = FALSE, select.threshold = 1){
   deprecate_soft("1.3.7", "fast.Discrete()", "direct.discrete.BH()")
   
   data.formatted <- fisher.pvalues.support(counts, alternative, input)
   raw.pvalues <- data.formatted$raw
   pCDFlist <- data.formatted$support
   
-  out <- discrete.BH(raw.pvalues, pCDFlist, alpha, direction, adaptive, FALSE, threshold)
+  out <- discrete.BH(raw.pvalues, pCDFlist, alpha, direction, adaptive, FALSE, select.threshold)
   out$Data$data.name <- deparse(substitute(counts)) 
   
   return(out)
@@ -91,7 +91,7 @@ fast.Discrete <- function(counts, alternative = "greater", input = "noassoc", al
 #' @templateVar direction TRUE
 #' @templateVar adaptive TRUE
 #' @templateVar ret.crit.consts TRUE
-#' @templateVar threshold TRUE
+#' @templateVar select.threshold TRUE
 #' @templateVar preprocess.fun TRUE
 #' @templateVar preprocess.args TRUE
 #' @template param
@@ -121,23 +121,23 @@ direct.discrete.BH <- function(
   direction = "su",
   adaptive = FALSE,
   ret.crit.consts = FALSE,
-  threshold = 1,
+  select.threshold = 1,
   preprocess.fun = NULL, 
   preprocess.args = NULL
 ) {
   out <- discrete.BH.DiscreteTestResults(
     test.results = generate.pvalues(
-      dat = dat,
-      test.fun = test.fun,
-      test.args = test.args,
-      preprocess.fun = preprocess.fun,
+      dat             = dat,
+      test.fun        = test.fun,
+      test.args       = test.args,
+      preprocess.fun  = preprocess.fun,
       preprocess.args = preprocess.args
     ),
-    alpha = alpha,
-    direction = direction,
-    adaptive = adaptive,
-    ret.crit.consts = ret.crit.consts,
-    threshold = threshold
+    alpha            = alpha,
+    direction        = direction,
+    adaptive         = adaptive,
+    ret.crit.consts  = ret.crit.consts,
+    select.threshold = select.threshold
   )
   
   out$Data$Data.name <- deparse(substitute(dat))

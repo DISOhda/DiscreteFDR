@@ -12,7 +12,7 @@ direct.discrete.BH(
   direction = "su",
   adaptive = FALSE,
   ret.crit.consts = FALSE,
-  threshold = 1,
+  select.threshold = 1,
   preprocess.fun = NULL,
   preprocess.args = NULL
 )
@@ -26,13 +26,13 @@ direct.discrete.BH(
 
 \item{alpha}{single real number strictly between 0 and 1 indicating the target FDR level.}
 
-\item{direction}{single character string specifying whether to conduct a step-up (\code{"su"}; the default) or step-down procedure (\code{"sd"}).}
+\item{direction}{single character string specifying whether to perform a step-up (\code{"su"}; the default) or step-down procedure (\code{"sd"}).}
 
 \item{adaptive}{single boolean specifying whether to conduct an adaptive procedure or not.}
 
-\item{ret.crit.consts}{single boolean specifying whether critical constants are to be computed and returned.}
+\item{ret.crit.consts}{single boolean specifying whether critical constants are to be computed.}
 
-\item{threshold}{single real number strictly between 0 and 1 indicating the largest observed p-value to be considered, i.e. larger observed p-values are filtered out and subsequent computation of critical values, adjusted p-values and rejection decisions are performed under the condition that raw p-values are smaller than or equal to \code{threshold}.}
+\item{select.threshold}{single real number strictly between 0 and 1 indicating the largest raw p-value to be considered, i.e. only p-values below this threshold ae considered and the procedures are adjusted in order to take this selection effect into account; if \code{threshold = 1} (the default), all raw p-values are selected.}
 
 \item{preprocess.fun}{optional function for pre-processing the input \code{data}; its result must be suitable for the first parameter of the \code{test.fun} function.}
 

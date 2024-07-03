@@ -25,20 +25,20 @@ belong. The latter allows to compute p-values and their respective supports
 for various tests. The objects that contain these results can be used
 directly by the \code{\link[=discrete.BH]{discrete.BH()}}, \code{\link[=DBH]{DBH()}}, \code{\link[=ADBH]{ADBH()}} and \code{\link[=DBR]{DBR()}}
 functions. Alternatively, these functions also accept a vector of raw
-observed p-values and a list of the same length, whose elements are the
-discrete supports of the CDFs of the p-values.
+observed p-values and a list of therespective discrete supports of the CDFs
+of the p-values.
 
-\strong{Note}: The function \code{\link[=fisher.pvalues.support]{fisher.pvalues.support()}}, which allows to compute
-such p-values and supports in the framework of a Fisher's exact test, is now
-deprecated and should not be used anymore. It has been replaced by
+\strong{Note}: The former function \code{\link[=fisher.pvalues.support]{fisher.pvalues.support()}}, which allows to
+compute such p-values and supports in the framework of a Fisher's exact test,
+is now deprecated and should not be used anymore. It has been replaced by
 \code{\link[=generate.pvalues]{generate.pvalues()}}.
 
 The same applies for the function \code{\link[=fast.Discrete]{fast.Discrete()}}, which is a wrapper for
 \code{\link[=fisher.pvalues.support]{fisher.pvalues.support()}} and \code{\link[=discrete.BH]{discrete.BH()}} and allows to apply
-discrete procedures directly to a data set of contingency tables and do some
-transformations before p-values are computed. It has been replaced by
-\code{\link[=direct.discrete.BH]{direct.discrete.BH()}}, but for more flexibility, users should employ
-pipelines, e.g.\cr
+discrete procedures directly to a data set of contingency tables and perform
+data pre-processing before p-values are computed. It is also now deprecated
+and has been replaced by \code{\link[=direct.discrete.BH]{direct.discrete.BH()}}, but for more flexibility,
+users may employ pipes, e.g.\cr
 \verb{data |>}\cr
 \verb{  DiscreteDatasets::reconstruct_*(<args>) |>}\cr
 \verb{  DiscreteTests::*.test.pv(<args>) |>}\cr

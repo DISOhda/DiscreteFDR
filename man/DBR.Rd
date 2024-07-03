@@ -14,7 +14,7 @@ DBR(test.results, ...)
   alpha = 0.05,
   lambda = NULL,
   ret.crit.consts = FALSE,
-  threshold = 1,
+  select.threshold = 1,
   pCDFlist.indices = NULL,
   ...
 )
@@ -24,14 +24,14 @@ DBR(test.results, ...)
   alpha = 0.05,
   lambda = NULL,
   ret.crit.consts = FALSE,
-  threshold = 1,
+  select.threshold = 1,
   ...
 )
 }
 \arguments{
-\item{test.results}{either a numeric vector with observed p-values or an R6 object of class \code{\link[DiscreteTests]{DiscreteTestResults}} from package \link[DiscreteTests]{DiscreteTests} for which a discrete FDR procedure is to be performed.}
+\item{test.results}{either a numeric vector with p-values or an R6 object of class \code{\link[DiscreteTests]{DiscreteTestResults}} from package \link[DiscreteTests]{DiscreteTests} for which a discrete FDR procedure is to be performed.}
 
-\item{...}{further arguments to be passed to or from other methods. They are ignored in these functions.}
+\item{...}{further arguments to be passed to or from other methods. They are ignored here.}
 
 \item{pCDFlist}{list of the supports of the CDFs of the p-values; each list item must be a numeric vector, which is sorted in increasing order and whose last element equals 1.}
 
@@ -39,11 +39,11 @@ DBR(test.results, ...)
 
 \item{lambda}{real number strictly between 0 and 1 specifying the DBR tuning parameter; if \code{lambda = NULL} (the default), \code{lambda} is chosen to be equal to \code{alpha}.}
 
-\item{ret.crit.consts}{single boolean specifying whether critical constants are to be computed and returned.}
+\item{ret.crit.consts}{single boolean specifying whether critical constants are to be computed.}
 
-\item{threshold}{single real number strictly between 0 and 1 indicating the largest observed p-value to be considered, i.e. larger observed p-values are filtered out and subsequent computation of critical values, adjusted p-values and rejection decisions are performed under the condition that raw p-values are smaller than or equal to \code{threshold}.}
+\item{select.threshold}{single real number strictly between 0 and 1 indicating the largest raw p-value to be considered, i.e. only p-values below this threshold ae considered and the procedures are adjusted in order to take this selection effect into account; if \code{threshold = 1} (the default), all raw p-values are selected.}
 
-\item{pCDFlist.indices}{list of numeric vectors containing the test indices that indicate to which p-value each \strong{unique} support in \code{pCDFlist} belongs; ignored if the lengths of \code{raw.pvalues} and \code{pCDFlist} are equal.}
+\item{pCDFlist.indices}{list of numeric vectors containing the test indices that indicate to which raw p-value each \strong{unique} support in \code{pCDFlist} belongs; ignored if the lengths of \code{test.results} and \code{pCDFlist} are equal.}
 }
 \value{
 A \code{DiscreteFDR} S3 class object whose elements are:
@@ -51,23 +51,22 @@ A \code{DiscreteFDR} S3 class object whose elements are:
 \item{Indices}{indices of rejected hypotheses.}
 \item{Num.rejected}{number of rejections.}
 \item{Adjusted}{adjusted p-values.}
-\item{Critical.constants}{critical constants (if requested).}
-\item{Select$Threshold}{p-value selection \code{threshold} (only present if \code{threshold} \eqn{< 1}).}
-\item{Select$Effective.Thresholds}{results of each p-value CDF evaluated at the selection threshold (only present if \code{threshold} \eqn{< 1}).}
-\item{Select$Pvalues}{selected p-values that are \eqn{\leq} selection \code{threshold} (only present if \code{threshold} \eqn{< 1}).}
-\item{Select$Indices}{indices of p-values \eqn{\leq} selection \code{threshold} (only present if \code{threshold} \eqn{< 1}).}
-\item{Select$Scaled}{scaled selected p-values, i.e. \eqn{\frac{i-th p-value}{i-th effective threshold}} (only present if \code{threshold} \eqn{< 1}).}
-\item{Select$Number}{number of selected p-values \eqn{\leq} \code{threshold} (only present if \code{threshold} \eqn{< 1}).}
+\item{Critical.constants}{critical values (only exists if computations where performed with \code{ret.crit.consts = TRUE}).}
+\item{Select$Threshold}{p-value selection \code{threshold} (only exists if \code{threshold < 1}).}
+\item{Select$Effective.Thresholds}{results of each p-value CDF evaluated at the selection threshold (only exists if \code{threshold < 1}).}
+\item{Select$Pvalues}{selected p-values that are \eqn{\leq} selection \code{threshold} (only exists if \code{threshold < 1}).}
+\item{Select$Indices}{indices of p-values \eqn{\leq} selection \code{threshold} (only exists if \code{threshold < 1}).}
+\item{Select$Scaled}{scaled selected p-values (only exists if \code{threshold < 1}).}
+\item{Select$Number}{number of selected p-values \eqn{\leq} \code{threshold} (only exists if \code{threshold < 1}).}
 \item{Data$Method}{character string describing the used algorithm, e.g. 'Discrete Benjamini-Hochberg procedure (step-up)'}
 \item{Data$raw.pvalues}{observed p-values.}
-\item{Data$pCDFlist}{p-value supports.}
-\item{Data$pCDFlist.indices}{observed p-value indices of the \strong{unique} p-value supports.}
+\item{Data$pCDFlist}{list of the p-value supports.}
 \item{Data$FDR.level}{FDR level \code{alpha}.}
 \item{Data$Data.name}{the respective variable names of the input data.}
 \item{DBR.Tuning}{value of the tuning parameter \code{lambda}.}
 }
 \description{
-Apply the [HBR-\eqn{\lambda}] procedure, with or without computing the
+Applies the [HBR-\eqn{\lambda}] procedure, with or without computing the
 critical constants, to a set of p-values and their respective discrete
 supports.
 }
@@ -79,8 +78,9 @@ which explains the choice of the default value here.
 
 Computing critical constants (\code{ret.crit.consts = TRUE}) requires considerably
 more execution time, especially if the number of unique supports is large.
-Users should only have them calculated when they need them, e.g. for
-illustrating the rejection area in a plot or other theoretical reasons.
+We recoomend that users should only have them calculated when they need them,
+e.g. for illustrating the rejection area in a plot or other theoretical
+reasons.
 }
 \section{References}{
 

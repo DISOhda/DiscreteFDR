@@ -11,7 +11,7 @@ fast.Discrete(
   alpha = 0.05,
   direction = "su",
   adaptive = FALSE,
-  threshold = 1
+  select.threshold = 1
 )
 }
 \arguments{
@@ -32,11 +32,11 @@ values are \code{"noassoc"} (default), \code{"marginal"} or
 
 \item{alpha}{single real number strictly between 0 and 1 indicating the target FDR level.}
 
-\item{direction}{single character string specifying whether to conduct a step-up (\code{"su"}; the default) or step-down procedure (\code{"sd"}).}
+\item{direction}{single character string specifying whether to perform a step-up (\code{"su"}; the default) or step-down procedure (\code{"sd"}).}
 
 \item{adaptive}{single boolean specifying whether to conduct an adaptive procedure or not.}
 
-\item{threshold}{single real number strictly between 0 and 1 indicating the largest observed p-value to be considered, i.e. larger observed p-values are filtered out and subsequent computation of critical values, adjusted p-values and rejection decisions are performed under the condition that raw p-values are smaller than or equal to \code{threshold}.}
+\item{select.threshold}{single real number strictly between 0 and 1 indicating the largest raw p-value to be considered, i.e. only p-values below this threshold ae considered and the procedures are adjusted in order to take this selection effect into account; if \code{threshold = 1} (the default), all raw p-values are selected.}
 }
 \value{
 A \code{DiscreteFDR} S3 class object whose elements are:
@@ -44,17 +44,16 @@ A \code{DiscreteFDR} S3 class object whose elements are:
 \item{Indices}{indices of rejected hypotheses.}
 \item{Num.rejected}{number of rejections.}
 \item{Adjusted}{adjusted p-values (only for step-down direction).}
-\item{Critical.constants}{critical constants (if requested).}
-\item{Select$Threshold}{p-value selection \code{threshold} (only present if \code{threshold} \eqn{< 1}).}
-\item{Select$Effective.Thresholds}{results of each p-value CDF evaluated at the selection threshold (only present if \code{threshold} \eqn{< 1}).}
-\item{Select$Pvalues}{selected p-values that are \eqn{\leq} selection \code{threshold} (only present if \code{threshold} \eqn{< 1}).}
-\item{Select$Indices}{indices of p-values \eqn{\leq} selection \code{threshold} (only present if \code{threshold} \eqn{< 1}).}
-\item{Select$Scaled}{scaled selected p-values, i.e. \eqn{\frac{i-th p-value}{i-th effective threshold}} (only present if \code{threshold} \eqn{< 1}).}
-\item{Select$Number}{number of selected p-values \eqn{\leq} \code{threshold} (only present if \code{threshold} \eqn{< 1}).}
+\item{Critical.constants}{critical values (only exists if computations where performed with \code{ret.crit.consts = TRUE}).}
+\item{Select$Threshold}{p-value selection \code{threshold} (only exists if \code{threshold < 1}).}
+\item{Select$Effective.Thresholds}{results of each p-value CDF evaluated at the selection threshold (only exists if \code{threshold < 1}).}
+\item{Select$Pvalues}{selected p-values that are \eqn{\leq} selection \code{threshold} (only exists if \code{threshold < 1}).}
+\item{Select$Indices}{indices of p-values \eqn{\leq} selection \code{threshold} (only exists if \code{threshold < 1}).}
+\item{Select$Scaled}{scaled selected p-values (only exists if \code{threshold < 1}).}
+\item{Select$Number}{number of selected p-values \eqn{\leq} \code{threshold} (only exists if \code{threshold < 1}).}
 \item{Data$Method}{character string describing the used algorithm, e.g. 'Discrete Benjamini-Hochberg procedure (step-up)'}
 \item{Data$raw.pvalues}{observed p-values.}
-\item{Data$pCDFlist}{p-value supports.}
-\item{Data$pCDFlist.indices}{observed p-value indices of the \strong{unique} p-value supports.}
+\item{Data$pCDFlist}{list of the p-value supports.}
 \item{Data$FDR.level}{FDR level \code{alpha}.}
 \item{Data$Data.name}{the respective variable names of the input data.}
 }
@@ -62,9 +61,9 @@ A \code{DiscreteFDR} S3 class object whose elements are:
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 
 Apply the [HSU], [HSD], [AHSU] or [AHSD] procedure,
-without computing the critical constants,
-to a data set of 2x2 contingency tables using Fisher's exact tests which
-may have to be transformed before computing p-values.
+without computing the critical constants, to a data set of 2x2 contingency
+tables which may have to be pre-processed in order to have the correct
+structure for computing p-values using Fisher's exact test.
 
 \strong{Note}: This function is deprecated and will be removed in a future
 version. Please use \code{\link[=direct.discrete.BH]{direct.discrete.BH()}} with

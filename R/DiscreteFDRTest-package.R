@@ -26,20 +26,20 @@
 #' for various tests. The objects that contain these results can be used
 #' directly by the [`discrete.BH()`], [`DBH()`], [`ADBH()`] and [`DBR()`]
 #' functions. Alternatively, these functions also accept a vector of raw
-#' observed p-values and a list of the same length, whose elements are the
-#' discrete supports of the CDFs of the p-values.
+#' observed p-values and a list of therespective discrete supports of the CDFs
+#' of the p-values.
 #' 
-#' **Note**: The function [`fisher.pvalues.support()`], which allows to compute
-#' such p-values and supports in the framework of a Fisher's exact test, is now
-#' deprecated and should not be used anymore. It has been replaced by
+#' **Note**: The former function [`fisher.pvalues.support()`], which allows to
+#' compute such p-values and supports in the framework of a Fisher's exact test,
+#' is now deprecated and should not be used anymore. It has been replaced by
 #' [`generate.pvalues()`].
 #' 
 #' The same applies for the function [`fast.Discrete()`], which is a wrapper for
 #' [`fisher.pvalues.support()`] and [`discrete.BH()`] and allows to apply
-#' discrete procedures directly to a data set of contingency tables and do some
-#' transformations before p-values are computed. It has been replaced by
-#' [`direct.discrete.BH()`], but for more flexibility, users should employ
-#' pipelines, e.g.\cr
+#' discrete procedures directly to a data set of contingency tables and perform
+#' data pre-processing before p-values are computed. It is also now deprecated
+#' and has been replaced by [`direct.discrete.BH()`], but for more flexibility,
+#' users may employ pipes, e.g.\cr
 #' `data |>`\cr
 #' `  DiscreteDatasets::reconstruct_*(<args>) |>`\cr
 #' `  DiscreteTests::*.test.pv(<args>) |>`\cr

@@ -4,7 +4,7 @@
 #' The Discrete Blanchard-Roquain Procedure
 #' 
 #' @description
-#' Apply the \[HBR-\eqn{\lambda}\] procedure, with or without computing the
+#' Applies the \[HBR-\eqn{\lambda}\] procedure, with or without computing the
 #' critical constants, to a set of p-values and their respective discrete
 #' supports.
 #' 
@@ -29,7 +29,7 @@
 #' @templateVar alpha TRUE
 #' @templateVar lambda TRUE
 #' @templateVar ret.crit.consts TRUE
-#' @templateVar threshold TRUE
+#' @templateVar select.threshold TRUE
 #' @templateVar pCDFlist.indices TRUE
 #' @templateVar triple.dots TRUE
 #' @template param
@@ -59,7 +59,7 @@ DBR.default <- function(
   alpha = 0.05,
   lambda = NULL,
   ret.crit.consts = FALSE,
-  threshold = 1,
+  select.threshold = 1,
   pCDFlist.indices = NULL, 
   ...
 ) {
@@ -107,7 +107,7 @@ DBR.default <- function(
   qassert(ret.crit.consts, "B1")
   
   # selection threshold
-  qassert(x = threshold, rules = "N1(0, 1]")
+  qassert(x = select.threshold, rules = "N1(0, 1]")
   
   # list structure of indices
   assert_list(
@@ -167,7 +167,7 @@ DBR.default <- function(
     alpha            = alpha,
     method.parameter = lambda,
     crit.consts      = ret.crit.consts,
-    threshold        = threshold,
+    threshold        = select.threshold,
     data.name        = paste(deparse(substitute(test.results)), "and", deparse(substitute(pCDFlist)))
   )
   
@@ -182,7 +182,7 @@ DBR.DiscreteTestResults <- function(
   alpha = 0.05,
   lambda = NULL,
   ret.crit.consts = FALSE,
-  threshold = 1, 
+  select.threshold = 1, 
   ...
 ) {
   #----------------------------------------------------
@@ -208,7 +208,7 @@ DBR.DiscreteTestResults <- function(
   qassert(ret.crit.consts, "B1")
   
   # selection threshold
-  qassert(x = threshold, rules = "N1(0, 1]")
+  qassert(x = select.threshold, rules = "N1(0, 1]")
   
   #----------------------------------------------------
   #       execute computations
@@ -221,7 +221,7 @@ DBR.DiscreteTestResults <- function(
     alpha            = alpha,
     method.parameter = lambda,
     crit.consts      = ret.crit.consts,
-    threshold        = threshold,
+    threshold        = select.threshold,
     data.name        = deparse(substitute(test.results))
   )
   

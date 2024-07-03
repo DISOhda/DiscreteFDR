@@ -4,7 +4,7 @@
 #' The Discrete Benjamini-Hochberg Procedure
 #' 
 #' @description
-#' Apply the \[HSU\], \[HSD\], \[AHSU\] and \[AHSD\] procedures at a given FDR
+#' Applies the \[HSU\], \[HSD\], \[AHSU\] and \[AHSD\] procedures at a given FDR
 #' level, with or without computing the critical constants, to a set of p-values
 #' and their respective discrete supports.
 #' 
@@ -23,7 +23,7 @@
 #' @templateVar direction TRUE
 #' @templateVar adaptive TRUE
 #' @templateVar ret.crit.consts TRUE
-#' @templateVar threshold TRUE
+#' @templateVar select.threshold TRUE
 #' @templateVar pCDFlist.indices TRUE
 #' @templateVar triple.dots TRUE
 #' @template param
@@ -83,7 +83,7 @@ discrete.BH.default <- function(
   direction = "su",
   adaptive = FALSE,
   ret.crit.consts = FALSE,
-  threshold = 1,
+  select.threshold = 1,
   pCDFlist.indices = NULL, 
   ...
 ) {
@@ -136,7 +136,7 @@ discrete.BH.default <- function(
   qassert(ret.crit.consts, "B1")
   
   # selection threshold
-  qassert(x = threshold, rules = "N1(0, 1]")
+  qassert(x = select.threshold, rules = "N1(0, 1]")
   
   # list structure of indices
   assert_list(
@@ -152,7 +152,7 @@ discrete.BH.default <- function(
     if(n != m){
       stop(
         paste(
-          "If no counts for the p-value CDFs are provided, the lengths of",
+          "If no indices for the p-value CDFs are provided, the lengths of",
           "'test.results' and 'pCDFlist' must be equal!"
         )
       )
@@ -196,7 +196,7 @@ discrete.BH.default <- function(
     alpha            = alpha,
     method.parameter = (direction == "su"),
     crit.consts      = ret.crit.consts,
-    threshold        = threshold,
+    threshold        = select.threshold,
     data.name        = paste(deparse(substitute(test.results)), "and", deparse(substitute(pCDFlist)))
   )
   
@@ -212,7 +212,7 @@ discrete.BH.DiscreteTestResults <- function(
   direction = "su",
   adaptive = FALSE,
   ret.crit.consts = FALSE,
-  threshold = 1, 
+  select.threshold = 1, 
   ...
 ) {
   #----------------------------------------------------
@@ -244,7 +244,7 @@ discrete.BH.DiscreteTestResults <- function(
   qassert(ret.crit.consts, "B1")
   
   # selection threshold
-  qassert(x = threshold, rules = "N1(0, 1]")
+  qassert(x = select.threshold, rules = "N1(0, 1]")
   
   #----------------------------------------------------
   #       execute computations
@@ -257,7 +257,7 @@ discrete.BH.DiscreteTestResults <- function(
     alpha            = alpha,
     method.parameter = (direction == "su"),
     crit.consts      = ret.crit.consts,
-    threshold        = threshold,
+    threshold        = select.threshold,
     data.name        = deparse(substitute(test.results))
   )
   
