@@ -11,10 +11,10 @@ Authors@R: c(
     person("Etienne", "Roquain", role = "ctb"),
     person("Christina", "Kihn", role = "ctb")
   )
-Description: This package implements the multiple testing procedures for
-    discrete tests described in the paper Döhler, Durand and Roquain (2018) "New
-    FDR bounds for discrete and heterogeneous tests" <doi:10.1214/18-EJS1441>.
-    The main procedures of the paper (HSU and HSD), their adaptive counterparts
+Description: Implementations of the multiple testing procedures for discrete
+    tests described in the paper Döhler, Durand and Roquain (2018) "New FDR
+    bounds for discrete and heterogeneous tests" <doi:10.1214/18-EJS1441>. The
+    main procedures of the paper (HSU and HSD), their adaptive counterparts
     (AHSU and AHSD), and the HBR variant are available and are coded to take as
     input the result of a test procedure from package "DiscreteTests", or a set
     of observed p-values and their discrete support under their nulls. A
