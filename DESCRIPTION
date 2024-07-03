@@ -16,7 +16,7 @@ Description: Implementations of the multiple testing procedures for discrete
     bounds for discrete and heterogeneous tests" <doi:10.1214/18-EJS1441>. The
     main procedures of the paper (HSU and HSD), their adaptive counterparts
     (AHSU and AHSD), and the HBR variant are available and are coded to take as
-    input the result of a test procedure from package "DiscreteTests", or a set
+    input the results of a test procedure from package "DiscreteTests", or a set
     of observed p-values and their discrete support under their nulls. A
     shortcut function to obtain such p-values and supports is also provided,
     along with a wrapper allowing to apply discrete procedures directly to data.
