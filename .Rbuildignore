@@ -1,5 +1,6 @@
 ^man-roxygen$
 ^.*\.Rproj$
+^.*\.github$
 ^\.Rproj\.user$
 ^cran-comments\.md$
 ^.*\src-i386$
