@@ -1,0 +1,296 @@
+---
+title: "Further Analyses"
+#author: "Florian Junge, Christina Kihn"
+#date: "2023-09-24"
+output: html_document
+vignette: >
+  %\VignetteIndexEntry{Further Analyses}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# 2. Further Analyses
+
+## 2.1. Analysis of Pharmacovigilance Data
+
+To illustrate how the procedures in **DiscreteFDR** can be used for real data, we revisit the analysis of the pharmacovigilance data from [Heller and Gur (2011)](https://arxiv.org/abs/1112.4627v2) performed in [[DDR]](https://doi.org/10.1214/18-EJS1441). This data set is obtained from a database for reporting, investigating and monitoring adverse drug reactions due to the Medicines and Healthcare products Regulatory Agency in the United Kingdom. It contains the number of reported cases of amnesia as well as the total number of adverse events reported for each of the $m = 2446$ drugs in the database. For more details we refer to [Heller and Gur (2011)](https://arxiv.org/abs/1112.4627v2) and to the accompanying R-package **discreteMTP** ([Heller et al. (2012)](https://CRAN.R-project.org/package=discreteMTP)) (no longer available on CRAN), which also contains the data. [Heller and Gur (2011)](https://arxiv.org/abs/1112.4627v2) investigate the association between reports of amnesia and suspected drugs by performing for each drug a Fisher's exact test (one-sided) for testing association between the drug and amnesia while adjusting for multiplicity by using several (discrete) FDR procedures. In what follows we present code that reproduces parts of Figure 2 and Table 1 in [[DDR]](https://doi.org/10.1214/18-EJS1441).
+
+We proceed as in the example in Section 1. Since we need to access the critical values, we first determine the $p$-values and their support for the data set `amnesia` contained for convenience in the package **DiscreteFDR**. For this, we use `generate.pvalues` in conjunction with the pre-processing function `reconstruct_two` from package `DiscreteDatasets`, which rebuilds $2 \times 2$ tables from single columns or rows by using additional knowledge of the marginals.
+
+```{r format-am}
+library(DiscreteFDRTest)
+library(DiscreteDatasets)
+data(amnesia)
+amnesia.formatted <- generate.pvalues(amnesia, "fisher", list(alternative = "greater"), reconstruct_two)
+```
+
+A more comprehensible way is the use of a pipe:
+
+```{r}
+library(DiscreteDatasets)
+library(DiscreteTests)
+amnesia.formatted <- amnesia |>
+  reconstruct_two() |>
+  fisher.test.pv(alternative = "greater")
+```
+
+Then we perform the FDR analysis with functions `DBH` and `ADBH` (SU and SD) and `DBR` at level $\alpha = 0.05$ including critical values.
+
+```{r DFDR-Pharmacovigilance}
+DBH.su  <-  DBH(amnesia.formatted, ret.crit.consts = TRUE)
+DBH.sd  <-  DBH(amnesia.formatted, direction = "sd", ret.crit.consts = TRUE)
+ADBH.su <- ADBH(amnesia.formatted, ret.crit.consts = TRUE)
+ADBH.sd <- ADBH(amnesia.formatted, direction = "sd", ret.crit.consts = TRUE)
+DBR     <-  DBR(amnesia.formatted, ret.crit.consts = TRUE)
+```
+
+It is helpful to have a histogram of the observed $p$-pvalues. For this, this package provides a `hist` method for `DiscreteFDR` class objects, too.
+
+```{r Hist-Pharmaco}
+hist(DBH.sd)
+```
+
+This histogram indicates a highly discrete $p$-value distribution, which strongly suggests the use of discrete methods.
+
+By accessing the critical values we can now generate a plot similar to Figure 2 from [[DDR]](https://doi.org/10.1214/18-EJS1441). Note that both [DBH-SU] and [DBH-SD] are visually indistinguishable from their adaptive counterparts.
+
+```{r Plot-Pharmaco}
+raw.pvalues <- amnesia.formatted$get_pvalues()
+m <- length(raw.pvalues)
+crit.values.BH <- 0.05 * seq_len(m) / m
+scale.points <- 0.7
+
+plot(DBH.su, col = c("black", "black", "orange"), pch = NA, type.crit = 'p', xlim = c(1, 100),
+     ylim = c(0, DBH.su$Critical.values[100]), ylab = "critical values", cex = scale.points, main = "")
+
+points(crit.values.BH[1:105],          col = "green",  pch = 19, cex = scale.points)
+points(DBH.sd$Critical.values[1:105],  col = "red",    pch = 19, cex = scale.points)
+points(ADBH.su$Critical.values[1:105], col = "blue",   pch = 19, cex = scale.points)
+points(ADBH.sd$Critical.values[1:105], col = "purple", pch = 19, cex = scale.points)
+points(DBR$Critical.values[1:105],     col = "yellow", pch = 19, cex = scale.points)
+points(sort(raw.pvalues),                              pch = 4,  cex = scale.points)
+mtext("Figure 2", 1, outer = TRUE, line = -1)
+```
+
+Critical values for [BH] (green dots), [DBH-SU] (orange dots), [DBH-SD] (red dots), [A-DBH-SU] (blue dots), [A-DBH-SD] (purple dots), [DBR] (yellow dots). The sorted raw $p$-values are represented by asterisks.
+
+The rejected hypotheses can be accessed via the command `$Indices`. The following code yields some of the values from Table 1 in [[DDR]](https://doi.org/10.1214/18-EJS1441):
+
+```{r Reject-Pharmaco}
+rej.BH      <- length(which(p.adjust(raw.pvalues, method = "BH") <= 0.05))
+rej.DBH.su  <- length(DBH.su$Indices)
+rej.DBH.sd  <- length(DBH.sd$Indices)
+rej.ADBH.su <- length(ADBH.su$Indices)
+rej.ADBH.sd <- length(ADBH.sd$Indices)
+rej.DBR     <- length(DBR$Indices)
+c(rej.BH, rej.DBH.su, rej.DBH.sd, rej.ADBH.su, rej.ADBH.sd, rej.DBR)
+```
+
+The (continuous) BH rejects only 24 hypotheses whereas all the discrete procedures implemented in **DiscreteFDR** are able to identify three additional drug candidates potentially associated with amnesia.
+
+
+## 2.2. Other Types of Discrete Tests
+
+In this section we sketch how \pkg{DiscreteFDR} can be used to analyze arbitrary multiple discrete tests. [Jiménez-Otero et al. (2018)](https://doi.org/10.1002/bimj.201700284) used **DiscreteFDR** to detect disorder in NGS experiments based on one-sample tests of the Poisson mean. Rather than reproducing their analysis in detail, we illustrate the general approach by using a toy example similar to the one in Section 1 and show how the test of the Poisson mean can be accommodated by **DiscreteFDR**.
+
+To fix ideas, suppose we observe $m = 9$ independent Poisson distributed counts $N_1, \ldots, N_9$  ([Jiménez-Otero et al. (2018)](https://doi.org/10.1002/bimj.201700284) used this to model the read counts of different DNA bases). We assume that $N_i \sim \text{Pois}(\lambda_i)$ and the goal is to identify cases where $\lambda_i$ is larger than some pre-specified value $\lambda^0_i$, i.e., we have the (one-sided) multiple testing problem
+$$H_{0i}: \lambda_i = \lambda^0_i \qquad \text{vs.} \qquad H_{1i}: \lambda_i > \lambda^0_i.$$
+As in Section 1, the goal is to adjust for multiple testing by using the [DBH-SD] procedure at FDR-level $\alpha = 5\%$. In our example the observations $n_1,\ldots, n_9$ and parameters $\lambda^0_1, \ldots, \lambda^0_9$ are given as follows:
+
+```{r Poisson-Setup}
+lambda.vector <- c(0.6, 1.2, 0.7, 1.3, 1.0, 0.2, 0.8, 1.3, 0.9)
+observations <- c(3, 3, 1, 2, 3, 3, 1, 2, 4)
+configuration <- cbind(observations, lambda.vector)
+alpha <- 0.05
+m <- length(observations)
+print(configuration)
+```
+
+Denote by $G_i$ the distribution of $N_i$ under $H_{0i}$  i.e., $G_i(x) = P(N_i \le x)$. For observations $n_1,\ldots, n_9$ of $N_1, \ldots, N_9$ the $p$-values for the above one-sided test are given by
+$$p_i = P(N_i \ge n_i) = P(N_i > n_i - 1) = \overline{G_i}(n_i - 1),$$
+where $\overline{G_i}(x) = P(N_i > x) = 1 - G_i(x)$ denotes the survival function of the Poisson distribution with parameter $\lambda^0_i$. Thus the  raw $p$-values are determined by the following **R** code:
+
+```{r Poisson-RawPValues}
+raw.pvalues <- ppois(observations - 1, lambda.vector, lower.tail = FALSE)
+poisson.p <- poisson.test.pv(observations, lambda.vector, "greater")
+raw.pvalues.2 <- poisson.p$get_pvalues()
+print(raw.pvalues.2)
+```
+
+Following the definition of the \code{qpois} function in **R** we define the inverse function of $\overline{G_i}$ by
+$$\left(\overline{G_i}\right)^{-1}(p) = \min\{n \in \mathbb{N}: \overline{G_i}(n) \le  p\}$$
+and obtain for the distribution function of the $i$-th $p$-value under the null
+$$F_i(x) = \overline{G_i}\left(\left(\overline{G_i}\right)^{-1}(x)\right).$$
+Each function $F_i$ is a step function with $F_i(0) = 0$, $F_i(1) = 1$ and there exists an infinite sequence of jumps at locations $1 = x_1 > x_2 > \ldots > x_n > x_{n + 1} > \ldots > 0$ such that $F(x_j) = x_j$ for $j \in \mathbb{N}$.
+
+Initially it seems that we run into a problem if we want to determine the critical values of [DBH-SD] since the supports of $F_1, \ldots, F_9$ are no longer finite (but still discrete). We can deal with this problem by using the observation from Section \ref{subsec:CritConsts} that it is sufficient to consider new, restricted supports $\mathcal{A}_i \cap [s^{\tiny \mbox{min}},1]$ where the lower threshold satisfies
+\begin{align}
+  s^{\tiny \mbox{min}} &\le \tau^{\tiny \mbox{min}}_1 = \max \left\{t \in \mathcal{A}\::\: t \leq y^{\tiny \mbox{min}} \right\} \qquad \text{where} \qquad y^{\tiny \mbox{min}} = \frac{\alpha}{m} \cdot \left(1 + \frac{\alpha}{m} \right)^{-1}.
+\end{align}
+To determine such an $s^{\tiny \mbox{min}}$ we proceed as follows. Define $n^{\tiny \mbox{max}}_i = \left(\overline{G_i}\right)^{-1}(y^{\tiny \mbox{min}}) + 1$, $t^{\tiny \mbox{min}}_i = \overline{G_i}(n^{\tiny \mbox{max}}_i - 1)$ and set $s^{\tiny \mbox{min}} = \min\left(t^{\tiny \mbox{min}}_1, \ldots, t^{\tiny \mbox{min}}_9 \right)$. It is easily checked that this choice of $s^{\tiny \mbox{min}}$ satisfies the above equation. We can determine  $s^{\tiny \mbox{min}}$ by the following code
+
+```{r Poisson-tauMin}
+y.min <- alpha/m * (1 + alpha/m)^(-1)
+n.max <- qpois(y.min,     lambda.vector, lower.tail = FALSE) + 1
+t.min <- ppois(n.max - 1, lambda.vector, lower.tail = FALSE)
+s.min <- min(t.min)
+print(s.min)
+```
+
+The `poisson.test.pv` function from package `DiscreteTests` computes the support with $y^{\tiny \mbox{min}}$ being the smallest observable p-value which can be represented by double precision, i.e. the smallest one that is not rounded to 0.
+
+```{r}
+sapply(poisson.p$get_pvalue_supports(), min)
+```
+
+For determining the restricted supports it is actually more convenient to work with $n^{\tiny \mbox{max}}_i$ than $s^{\tiny \mbox{min}}$. We can subsequently use these supports as the `pCDFlist` argument in the usual way when calling the `DBH` function:
+
+```{r Poisson-Supports}
+supports <- lapply(1:m, function(w){sort(ppois(0:n.max[w] - 1, lambda.vector[w], lower.tail = FALSE))})
+DBH.sd <- DBH(raw.pvalues, supports, direction = "sd", ret.crit.consts = TRUE)
+print(DBH.sd)
+```
+
+We can also use the results object of `poisson.test.pv`:
+
+```{r Poisson-Supports-with-object}
+DBH.sd.2 <- DBH(poisson.p, direction = "sd", ret.crit.consts = TRUE)
+print(DBH.sd.2)
+```
+
+Figure 3 shows a summary similar to Figure 1. Applying the continuous BH procedure
+
+```{r Poisson-BH}
+p.adjust(raw.pvalues, method = "BH")
+```
+
+results in one rejection at FDR-level $\alpha = 5\%$, whereas the DBH step-down procedure can reject three hypotheses:
+
+```{r Poisson-DBH}
+DBH.sd$Adjusted
+```
+
+This information can also be obtained by our `print` or `summary` methods:
+
+```{r Poisson-Print}
+print(DBH.sd)
+summary(DBH.sd)
+```
+
+
+As in Figure 1, Panel (c) presents a graphical comparison between the two procedures applied to the $p$-values.
+
+```{r Poisson-Rejections}
+stepf <- lapply(supports, function(x) stepfun(x, c(0, x)))
+par(mfcol = c(1, 3), mai = c(1, 0.5, 0.3, 0.1))
+
+plot(stepf[[1]], xlim = c(0,1), ylim = c(0,1), do.points = FALSE, lwd = 1, lty = 1, ylab = "F(x)", 
+     main = "(a)")
+for(i in (2:9)){
+  plot(stepf[[i]], add = TRUE, do.points = FALSE, lwd = 1, col = i)
+}
+segments(0, 0, 1, 1, col = "grey", lty = 2)
+
+#   Plot xi
+support <- sort(unique(unlist(supports)))
+components <- lapply(stepf, function(s){s(support) / (1 - s(support))}) 
+xi.values <- 1/9 * Reduce('+', components)
+xi <- stepfun(support, c(0, xi.values))
+plot(xi, xlim = c(0, 0.10), ylim = c(0, 0.10), do.points = FALSE, ylab = expression(xi), main = "(b)")
+segments(0, 0, 0.1, 0.1, col = "grey", lty = 2)
+
+#   Plot discrete critical values as well a BH constants
+DBH.sd <- DBH(raw.pvalues, supports, direction = "sd", ret.crit.consts = TRUE)
+plot(DBH.sd, col = c("black", "black", "red"), pch = c(4, 4, 19), type.crit = 'p', ylim = c(0, 0.15),
+     cex = 1.3, main = "(c)", ylab = "Critical Values")
+points(1:9, 0.05 * (1:9) / 9, col = "green", pch = 19, cex = 1.3)
+
+mtext("Figure 3", 1, outer = TRUE, line = -2)
+```
+
+Panel (a) depicts the distribution functions $F_1, \ldots, F_9$ in various colors, (b) is a graph of the transformation function $\xi_{\text{SD}}$. The uniform distribution function is shown in light grey in (a) and (b). Panel (c) shows the [BH] critical values (green dots), the DBH step-down critical values (red dots) and the sorted raw $p$-values (asterisks).
+
+<!-- # Ab hier gibt es keine Texte mehr -->
+<!--
+```{r}
+library(DiscreteDatasets)
+library(DiscreteFDRTest)
+
+lambda.0 <- disorderdetection[,2]
+lambda.vector <- lambda.0
+observations <- disorderdetection[,1]
+configuration <- cbind(observations, lambda.0)
+alpha <- 0.05
+m <- length(observations)
+
+raw.pvalues <- sapply(1:m,function(i){ppois(observations[i] , lambda.vector[i], lower.tail = TRUE)})
+
+pvalues_a3=p.adjust(raw.pvalues, method="BH",n=m)
+BH_NumRejected <- length(pvalues_a3[pvalues_a3<0.05])
+BH_NumRejected
+
+#pvalues_a=SB_SU(raw.pvalues,hu,gg,alt="del")#AHSU correction
+#pvalues_a$Num.rejected
+
+```
+
+
+```{r}
+
+n.max <- qpois(2^-1074, lambda.vector, FALSE)
+
+supports <- lapply(1:m, function(i){sort(ppois(0:n.max[i], lambda.vector[i]))})
+```
+
+```{r other-procedures}
+# rc = real case
+
+library(DiscreteFDRTest)
+raw.pvalues.rc <- raw.pvalues
+pCDFlist.rc <- supports
+
+DBH.su.rc  <-  DBH(raw.pvalues.rc, pCDFlist.rc, ret.crit.consts = TRUE)
+DBH.sd.rc  <-  DBH(raw.pvalues.rc, pCDFlist.rc, direction = "sd", ret.crit.consts = TRUE)
+ADBH.su.rc <- ADBH(raw.pvalues.rc, pCDFlist.rc, ret.crit.consts = TRUE)
+ADBH.sd.rc <- ADBH(raw.pvalues.rc, pCDFlist.rc, direction = "sd", ret.crit.consts = TRUE)
+DBR.su.rc  <-  DBR(raw.pvalues.rc, pCDFlist.rc, ret.crit.consts = TRUE)
+```
+
+```{r plot}
+
+
+num.plot<-60
+index.plot<-1:num.plot
+m <- length(raw.pvalues.rc)
+crit.values.BH <- 0.05 * (1:m) / m
+
+plot(index.plot,sort(raw.pvalues.rc)[index.plot],pch=3,lwd=1.5,ylim=c(0,0.02),ylab="critical values / p-values",col="black")
+points(index.plot, ADBH.su.rc$Critical.values[index.plot],pch = 19, col="blue")
+points(crit.values.BH[1:105],             col = "green",  pch = 19)
+points(DBH.sd.rc$Critical.values[1:105],  col = "red",   pch = 19)
+points(ADBH.sd.rc$Critical.values[1:105], col = "purple", pch = 19)
+points(DBR.su.rc$Critical.values[1:105],  col = "cyan", pch = 19)
+
+legend("topleft",inset=0.05, legend=c("raw p-values (sorted)",   "[A-DBH-SU]","[A-DBH-SD]","[DBH-SU]","[DBH-SD]", "[DBR-SU]","BH"),
+       col=c("black","blue","purple","orange", "red", "cyan", "green"), pch=c(3, 19, 19, 19, 19, 19, 19), cex=0.75)
+title(expression("NGS Disorder Detection: critical values for " ~  "FDR" <=0.05),line=1)
+
+```
+
+```{r table}
+df.rc <- c("FDR<=0.05")
+
+table_rc <- cbind("FDR <= 0.05",ADBH.su.rc$Num.rejected, ADBH.sd.rc$Num.rejected, DBH.su.rc$Num.rejected, DBH.sd.rc$Num.rejected, DBR.su.rc$Num.rejected, BH_NumRejected )
+
+```
+
+
+```{r rc-table, echo=FALSE}
+library(knitr)
+library(kableExtra)
+kable(table_rc, col.names = c("procedure controls", "[A-DBH-SU]", "[A-DBH-SD]", "[DBH-SU]", "[DBH-SD]", "[DBR-SU]", "[BH]" ),caption = "*Number of rejections for the disorder detection data.*")%>%
+  kable_styling(latex_options = "striped")
+
+```
+
+-->

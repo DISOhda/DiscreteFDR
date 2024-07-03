@@ -7,24 +7,25 @@
 \method{plot}{DiscreteFDR}(
   x,
   col = c(2, 4, 1),
-  pch = c(1, 1, 1),
-  lwd = c(1, 1, 1),
+  pch = c(20, 20, 17),
+  lwd = rep(par()$lwd, 3),
+  cex = rep(par()$cex, 3),
   type.crit = "b",
   legend = NULL,
   ...
 )
 }
 \arguments{
-\item{x}{an object of class "\code{DiscreteFDR}".}
+\item{x}{object of class \code{DiscreteFDR}.}
 
-\item{col}{a numeric or character vector of length 3 indicating the
+\item{col}{numeric or character vector of length 3 indicating the
 colors of the \enumerate{
 \item rejected p-values
 \item accepted p-values
 \item critical values (if present).
 }}
 
-\item{pch}{a numeric or character vector of length 3 indicating the
+\item{pch}{numeric or character vector of length 3 indicating the
 point characters of the \enumerate{
 \item rejected p-values
 \item accepted p-values
@@ -32,17 +33,25 @@ point characters of the \enumerate{
 is a plot type like \code{'p'}, \code{'b'} etc.).
 }}
 
-\item{lwd}{a numeric vector of length 3 indicating the thickness of
-the points and lines.}
+\item{lwd}{numeric vector of length 3 indicating the thickness of the
+points and lines; defaults to current \code{par()$lwd} setting.}
+
+\item{cex}{numeric vector of length 3 indicating the size of point
+characters or lines of the \enumerate{
+\item rejected p-values
+\item accepted p-values
+\item critical values (if present).
+}
+defaults to current \code{par()$cex} setting.}
 
 \item{type.crit}{1-character string giving the type of plot desired for the
-critical values (e.g.: \code{'p'}, \code{'l'} etc; see \link{plot}).}
+critical values (e.g.: \code{'p'}, \code{'l'} etc; see \code{\link[=plot]{plot()}}).}
 
-\item{legend}{if NULL, no legend is plotted; otherwise expecting a
-character string like "topleft" etc. or a numeric vector
+\item{legend}{if \code{NULL}, no legend is plotted; otherwise expecting a
+character string like \code{"topleft"} etc. or a numeric vector
 of two elements indicating (x, y) coordinates.}
 
-\item{...}{further arguments to \link{plot.default}.}
+\item{...}{further arguments to \code{\link[=plot.default]{plot.default()}}.}
 }
 \description{
 Plots raw p-values of a \code{DiscreteFDR} object and highlights rejected and
@@ -58,22 +67,22 @@ Y2 <- N2 - X2
 df <- data.frame(X1, Y1, X2, Y2)
 df
 
-#Construction of the p-values and their support
-df.formatted <- fisher.pvalues.support(counts = df, input = "noassoc")
-raw.pvalues <- df.formatted$raw
-pCDFlist <- df.formatted$support
+# Compute p-values and their supports of Fisher's exact test
+test.result <- generate.pvalues(df, "fisher")
+raw.pvalues <- test.result$get_pvalues()
+pCDFlist <- test.result$get_pvalue_supports()
 
 DBH.su.fast <- DBH(raw.pvalues, pCDFlist)
 DBH.su.crit <- DBH(raw.pvalues, pCDFlist, ret.crit.consts = TRUE)
-DBH.sd.fast <- DBH(raw.pvalues, pCDFlist, direction = "sd")
-DBH.sd.crit <- DBH(raw.pvalues, pCDFlist, direction = "sd", ret.crit.consts = TRUE)
+DBH.sd.fast <- DBH(test.result, direction = "sd")
+DBH.sd.crit <- DBH(test.result, direction = "sd", ret.crit.consts = TRUE)
 
 plot(DBH.sd.fast)
 plot(DBH.sd.crit, xlim = c(1, 5), ylim = c(0, 0.4))
 plot(DBH.su.fast, col = c(2, 4), pch = c(2, 3), lwd = c(2, 2), 
-    legend = "topleft", xlim = c(1, 5), ylim = c(0, 0.4))
+     legend = "topleft", xlim = c(1, 5), ylim = c(0, 0.4))
 plot(DBH.su.crit, col = c(2, 4, 1), pch = c(1, 1, 4), lwd = c(1, 1, 2), 
-    type.crit = 'o', legend = c(1, 0.4), lty = 1, xlim = c(1, 5), 
-    ylim = c(0, 0.4))
+     type.crit = 'o', legend = c(1, 0.4), lty = 1, xlim = c(1, 5), 
+     ylim = c(0, 0.4))
 
 }

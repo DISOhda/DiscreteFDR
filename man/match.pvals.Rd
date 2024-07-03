@@ -2,47 +2,47 @@
 % Please edit documentation in R/Aux_fun.R
 \name{match.pvals}
 \alias{match.pvals}
-\title{Matching raw p-values with supports}
+\title{Matching Raw P-Values with Supports}
 \usage{
-match.pvals(pCDFlist, raw.pvalues)
+match.pvals(pCDFlist, raw.pvalues, pCDFlist.indices = NULL)
 }
 \arguments{
-\item{pCDFlist}{a list of the supports of the CDFs of the p-values. Each support is represented by a vector that must be in increasing order.}
+\item{pCDFlist}{list of the supports of the CDFs of the p-values; each list item must be a numeric vector, which is sorted in increasing order and whose last element equals 1.}
 
-\item{raw.pvalues}{vector of the raw observed p-values, as provided by the end user and before matching with their nearest neighbor in the CDFs supports.}
+\item{pCDFlist.indices}{list of numeric vectors containing the test indices that indicate to which raw p-value each \strong{unique} support in \code{pCDFlist} belongs; ignored if the lengths of \code{test.results} and \code{pCDFlist} are equal.}
 }
 \value{
-A vector where each raw p-value has been
-replaced by its nearest neighbor.
+A vector where each raw p-value has been replaced by its nearest neighbor, if
+necessary.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
-
+#'
 Constructs the observed p-values from the raw observed p-values, by rounding
 them to their nearest neighbor matching with the supports of their
-respective CDFs (as in function \code{p.discrete.adjust} of package \code{discreteMTP},
-which is no longer available on CRAN).
-The end user should not use it directly.
+respective CDFs (as in function \code{p.discrete.adjust()} of package
+\code{discreteMTP}, which is no longer available on CRAN).
 
-\strong{Note}: In future versions, this function will no longer be exported to the
-global namespace. Instead, it will be a purely internal function and will
-have to be called directly via \code{:::}, i.e. \code{DiscreteFDR:::match.pvals()}.
+\strong{Note}: This is an internal function and has to be called directly via
+\code{:::}, i.e. \code{DiscreteFDR:::match.pvals()}.
 }
 \details{
 Well computed raw p-values should already belong to their respective CDF
-support. So this function is called at the beginning of \link{discrete.BH},
-\link{DBH}, \link{ADBH} and \link{DBR}, just in case raw p-values are biased.
+support. So this function is called at the beginning of \code{\link[=discrete.BH]{discrete.BH()}},
+\code{\link[=DBH]{DBH()}}, \code{\link[=ADBH]{ADBH()}} and \code{\link[=DBR]{DBR()}}, just in case raw p-values are biased.
 
 For each raw p-value that needs to be rounded, a warning is issued.
 }
 \examples{
+\dontrun{
 toyList <- list(c(0.3,0.7,1),c(0.1,0.65,1))
 toyRaw1 <- c(0.3,0.65)
 match.pvals(toyList,toyRaw1)
 toyRaw2 <- c(0.31,0.6)
 match.pvals(toyList,toyRaw2)
+}
 
 }
 \seealso{
-\link{discrete.BH}, \link{DBR}
+\code{\link[=discrete.BH]{discrete.BH()}}, \code{\link[=DBR]{DBR()}}
 }
+\keyword{internal}

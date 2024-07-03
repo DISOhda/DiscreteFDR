@@ -7,10 +7,10 @@
 ## R CMD check results
 
 ### local
-0 errors | 0 warnings | 1 note
+0 errors | 0 warnings | 0 notes
 
 ### R-hub
-0 errors | 0 warnings | 2 notes
+0 errors | 0 warnings | 0 notes
 
 ### win-builder
-0 errors | 0 warnings | 2 notes
+0 errors | 0 warnings | 0 notes

@@ -2,71 +2,87 @@
 % Please edit documentation in R/discreteBH_fun.R
 \name{discrete.BH}
 \alias{discrete.BH}
-\alias{DBH}
-\alias{ADBH}
-\title{[HSU], [HSD], [AHSU] and [AHSD] procedures}
+\alias{discrete.BH.default}
+\alias{discrete.BH.DiscreteTestResults}
+\title{The Discrete Benjamini-Hochberg Procedure}
 \usage{
-discrete.BH(
-  raw.pvalues,
+discrete.BH(test.results, ...)
+
+\method{discrete.BH}{default}(
+  test.results,
   pCDFlist,
   alpha = 0.05,
   direction = "su",
   adaptive = FALSE,
-  ret.crit.consts = FALSE
+  ret.crit.consts = FALSE,
+  select.threshold = 1,
+  pCDFlist.indices = NULL,
+  ...
 )
 
-DBH(
-  raw.pvalues,
-  pCDFlist,
+\method{discrete.BH}{DiscreteTestResults}(
+  test.results,
   alpha = 0.05,
   direction = "su",
-  ret.crit.consts = FALSE
-)
-
-ADBH(
-  raw.pvalues,
-  pCDFlist,
-  alpha = 0.05,
-  direction = "su",
-  ret.crit.consts = FALSE
+  adaptive = FALSE,
+  ret.crit.consts = FALSE,
+  select.threshold = 1,
+  ...
 )
 }
 \arguments{
-\item{raw.pvalues}{vector of the raw observed p-values, as provided by the end user and before matching with their nearest neighbor in the CDFs supports.}
+\item{test.results}{either a numeric vector with p-values or an R6 object of class \code{\link[DiscreteTests]{DiscreteTestResults}} from package \link[DiscreteTests]{DiscreteTests} for which a discrete FDR procedure is to be performed.}
 
-\item{pCDFlist}{a list of the supports of the CDFs of the p-values. Each support is represented by a vector that must be in increasing order.}
+\item{...}{further arguments to be passed to or from other methods. They are ignored here.}
 
-\item{alpha}{the target FDR level, a number strictly between 0 and 1.}
+\item{pCDFlist}{list of the supports of the CDFs of the p-values; each list item must be a numeric vector, which is sorted in increasing order and whose last element equals 1.}
 
-\item{direction}{a character string specifying whether to conduct a step-up (\code{direction="su"}, by default) or step-down procedure (\code{direction="sd"}).}
+\item{alpha}{single real number strictly between 0 and 1 indicating the target FDR level.}
 
-\item{adaptive}{a boolean specifying whether to conduct an adaptive procedure or not.}
+\item{direction}{single character string specifying whether to perform a step-up (\code{"su"}; the default) or step-down procedure (\code{"sd"}).}
 
-\item{ret.crit.consts}{a boolean. If \code{TRUE}, critical constants are computed and returned (this is computationally intensive).}
+\item{adaptive}{single boolean specifying whether to conduct an adaptive procedure or not.}
+
+\item{ret.crit.consts}{single boolean specifying whether critical constants are to be computed.}
+
+\item{select.threshold}{single real number strictly between 0 and 1 indicating the largest raw p-value to be considered, i.e. only p-values below this threshold ae considered and the procedures are adjusted in order to take this selection effect into account; if \code{threshold = 1} (the default), all raw p-values are selected.}
+
+\item{pCDFlist.indices}{list of numeric vectors containing the test indices that indicate to which raw p-value each \strong{unique} support in \code{pCDFlist} belongs; ignored if the lengths of \code{test.results} and \code{pCDFlist} are equal.}
 }
 \value{
 A \code{DiscreteFDR} S3 class object whose elements are:
-\item{Rejected}{Rejected raw p-values}
-\item{Indices}{Indices of rejected hypotheses}
-\item{Num.rejected}{Number of rejections}
-\item{Adjusted}{Adjusted p-values (only for step-down direction).}
-\item{Critical.constants}{Critical constants (if requested)}
-\item{Method}{Character string describing the used algorithm, e.g. 'Discrete Benjamini-Hochberg procedure (step-up)'}
-\item{Signif.level}{Significance level \code{alpha}}
-
-\item{Data$raw.pvalues}{The values of \code{raw.pvalues}}
-\item{Data$pCDFlist}{The values of \code{pCDFlist}}
-\item{Data$data.name}{The respective variable names of \code{raw.pvalues} and \code{pCDFlist}}
+\item{Rejected}{rejected raw p-values.}
+\item{Indices}{indices of rejected hypotheses.}
+\item{Num.rejected}{number of rejections.}
+\item{Adjusted}{adjusted p-values (only for step-down direction).}
+\item{Critical.constants}{critical values (only exists if computations where performed with \code{ret.crit.consts = TRUE}).}
+\item{Select$Threshold}{p-value selection \code{threshold} (only exists if \code{threshold < 1}).}
+\item{Select$Effective.Thresholds}{results of each p-value CDF evaluated at the selection threshold (only exists if \code{threshold < 1}).}
+\item{Select$Pvalues}{selected p-values that are \eqn{\leq} selection \code{threshold} (only exists if \code{threshold < 1}).}
+\item{Select$Indices}{indices of p-values \eqn{\leq} selection \code{threshold} (only exists if \code{threshold < 1}).}
+\item{Select$Scaled}{scaled selected p-values (only exists if \code{threshold < 1}).}
+\item{Select$Number}{number of selected p-values \eqn{\leq} \code{threshold} (only exists if \code{threshold < 1}).}
+\item{Data$Method}{character string describing the used algorithm, e.g. 'Discrete Benjamini-Hochberg procedure (step-up)'}
+\item{Data$raw.pvalues}{observed p-values.}
+\item{Data$pCDFlist}{list of the p-value supports.}
+\item{Data$FDR.level}{FDR level \code{alpha}.}
+\item{Data$Data.name}{the respective variable names of the input data.}
 }
 \description{
-Apply the [HSU], [HSD], [AHSU] and [AHSD] procedures, with or without
-computing the critical constants, to a set of p-values and their discrete
-support.
+Applies the [HSU], [HSD], [AHSU] and [AHSD] procedures at a given FDR
+level, with or without computing the critical constants, to a set of p-values
+and their respective discrete supports.
 }
 \details{
-\code{DBH} and \code{ADBH} are wrapper functions for \code{discrete.BH}. \code{DBH} simply passes
-all its parameters to \code{discrete.BH} with \code{adaptive = FALSE}. \code{ADBH} does the
-same with \code{adaptive = TRUE}.
+The adaptive variants [AHSU] and [AHSD], which are executed via
+\code{adaptive = TRUE}, are often slightly more powerful than [HSU] and [HSD],
+respectively. But they are also computationally more demanding.
+
+Computing critical constants (\code{ret.crit.consts = TRUE}) requires considerably
+more execution time, especially if the number of unique supports is large.
+We recoomend that users should only have them calculated when they need them,
+e.g. for illustrating the rejection area in a plot or other theoretical
+reasons.
 }
 \examples{
 X1 <- c(4, 2, 2, 14, 6, 9, 4, 0, 1)
@@ -78,34 +94,41 @@ Y2 <- N2 - X2
 df <- data.frame(X1, Y1, X2, Y2)
 df
 
-#Construction of the p-values and their support
-df.formatted <- fisher.pvalues.support(counts = df, input = "noassoc")
-raw.pvalues <- df.formatted$raw
-pCDFlist <- df.formatted$support
-DBH.su.fast <- DBH(raw.pvalues, pCDFlist)
+# Compute p-values and their supports of Fisher's exact test
+test.result <- generate.pvalues(df, "fisher")
+raw.pvalues <- test.result$get_pvalues()
+pCDFlist <- test.result$get_pvalue_supports()
+
+# DBH (SU) without critical values; using extracted p-values and supports
+DBH.su.fast <- discrete.BH(raw.pvalues, pCDFlist)
 summary(DBH.su.fast)
-DBH.sd.fast <- DBH(raw.pvalues, pCDFlist, direction = "sd")
-DBH.sd.fast$Adjusted
+
+# DBH (SD) without critical values; using extracted p-values and supports
+DBH.sd.fast <- discrete.BH(raw.pvalues, pCDFlist, direction = "sd")
 summary(DBH.sd.fast)
 
-DBH.su.crit <- DBH(raw.pvalues, pCDFlist, ret.crit.consts = TRUE)
+# DBH (SU) with critical values; using test results
+DBH.su.crit <- discrete.BH(test.result, ret.crit.consts = TRUE)
 summary(DBH.su.crit)
-DBH.sd.crit <- DBH(raw.pvalues, pCDFlist, direction = "sd",
-                   ret.crit.consts = TRUE)
-DBH.sd.crit$Adjusted
+
+# DBH (SD) with critical values; using test results
+DBH.sd.crit <- discrete.BH(test.result, direction = "sd", ret.crit.consts = TRUE)
 summary(DBH.sd.crit)
 
-ADBH.su.fast <- ADBH(raw.pvalues, pCDFlist)
+# ADBH (SU) without critical values; using extracted p-values and supports
+ADBH.su.fast <- discrete.BH(raw.pvalues, pCDFlist, adaptive = TRUE)
 summary(ADBH.su.fast)
-ADBH.sd.fast <- ADBH(raw.pvalues, pCDFlist, direction = "sd")
-ADBH.sd.fast$Adjusted
+
+# ADBH (SD) without critical values; using extracted p-values and supports
+ADBH.sd.fast <- discrete.BH(raw.pvalues, pCDFlist, direction = "sd", adaptive = TRUE)
 summary(ADBH.sd.fast)
 
-ADBH.su.crit <- ADBH(raw.pvalues, pCDFlist, ret.crit.consts = TRUE)
+# ADBH (SU) with critical values; using test results
+ADBH.su.crit <- discrete.BH(test.result, adaptive = TRUE, ret.crit.consts = TRUE)
 summary(ADBH.su.crit)
-ADBH.sd.crit <- ADBH(raw.pvalues, pCDFlist, direction = "sd",
-                     ret.crit.consts = TRUE)
-ADBH.sd.crit$Adjusted
+
+# ADBH (SD) with critical values; using test results
+ADBH.sd.crit <- discrete.BH(test.result, direction = "sd", adaptive = TRUE, ret.crit.consts = TRUE)
 summary(ADBH.sd.crit)
 
 }
@@ -115,5 +138,5 @@ and heterogeneous tests. \emph{Electronic Journal of Statistics}, \emph{12}(1),
 pp. 1867-1900. \doi{10.1214/18-EJS1441}
 }
 \seealso{
-\link{fast.Discrete}, \link{DBR}
+\code{\link[=DBH]{DBH()}}, \code{\link[=ADBH]{ADBH()}}, \code{\link[=DBR]{DBR()}}
 }

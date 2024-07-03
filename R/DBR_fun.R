@@ -1,15 +1,19 @@
+#' @name DBR
+#' 
 #' @title
-#' \[HBR-\eqn{\lambda}\] procedure
+#' The Discrete Blanchard-Roquain Procedure
 #' 
 #' @description
-#' Apply the \[HBR-\eqn{\lambda}\] procedure, with or without computing the
-#' critical constants, to a set of p-values and their discrete support.
+#' Applies the \[HBR-\eqn{\lambda}\] procedure, with or without computing the
+#' critical constants, to a set of p-values and their respective discrete
+#' supports.
 #' 
 #' @details
 #' \[DBR-\eqn{\lambda}\] is the discrete version of the 
 #' \[Blanchard-Roquain-\eqn{\lambda}\] procedure (see References). The authors
 #' of the latter suggest to take `lambda = alpha` (see their Proposition 17),
-#' which explains the choice of the default value here. 
+#' which explains the choice of the default value here.
+#' @template details_crit 
 #' 
 #' @section References:
 #' G. Blanchard and E. Roquain (2009). Adaptive false discovery rate control
@@ -17,119 +21,209 @@
 #'   *10*, pp. 2837-2871.
 #'
 #' @seealso
-#' [discrete.BH]
+#' [`discrete.BH()`], [`DBH()`], [`ADBH()`]
 #' 
-#' @templateVar pvalues FALSE
-#' @templateVar stepUp FALSE
-#' @templateVar alpha TRUE
-#' @templateVar sorted_pv FALSE
-#' @templateVar support FALSE
-#' @templateVar raw.pvalues TRUE
+#' @templateVar test.results TRUE
 #' @templateVar pCDFlist TRUE
-#' @templateVar direction FALSE
-#' @templateVar ret.crit.consts TRUE
+#' @templateVar test.results TRUE
+#' @templateVar alpha TRUE
 #' @templateVar lambda TRUE
-#' @templateVar adaptive FALSE
-#' @template param 
+#' @templateVar ret.crit.consts TRUE
+#' @templateVar select.threshold TRUE
+#' @templateVar pCDFlist.indices TRUE
+#' @templateVar triple.dots TRUE
+#' @template param
 #' 
-#' @template example
-#' @examples
-#' 
-#' DBR.fast <- DBR(raw.pvalues, pCDFlist)
-#' summary(DBR.fast)
-#' DBR.crit <- DBR(raw.pvalues, pCDFlist, ret.crit.consts = TRUE)
-#' summary(DBR.crit)
-#' 
-#' @templateVar DBR TRUE
+#' @templateVar BR TRUE
 #' @template return
 #' 
-#' @name DBR
+#' @template exampleGPV
+#' @examples
+#' # DBR without critical values; using extracted p-values and supports
+#' DBR.fast <- DBR(raw.pvalues, pCDFlist)
+#' summary(DBR.fast)
+#' 
+#' # DBR with critical values; using test results
+#' DBR.crit <- DBR(test.result, ret.crit.consts = TRUE)
+#' summary(DBR.crit)
+#' 
 #' @export
-DBR <- function(raw.pvalues, pCDFlist, alpha = 0.05, lambda = NULL, ret.crit.consts = FALSE){
+DBR <- function(test.results, ...) UseMethod("DBR")
+
+#' @rdname DBR
+#' @importFrom checkmate assert_character assert_integerish assert_list assert_numeric qassert
+#' @export
+DBR.default <- function(
+  test.results,
+  pCDFlist,
+  alpha = 0.05,
+  lambda = NULL,
+  ret.crit.consts = FALSE,
+  select.threshold = 1,
+  pCDFlist.indices = NULL, 
+  ...
+) {
   # check arguments
-  if(is.null(alpha) || is.na(alpha) || !is.numeric(alpha) || alpha < 0 || alpha > 1)
-    stop("'alpha' must be a probability between 0 and 1!")
-  if (is.null(lambda)){
+  #--------------------------------------------
+  #       check arguments
+  #--------------------------------------------
+  # raw p-values
+  qassert(x = test.results, rules = "N+[0, 1]")
+  n <- length(test.results)
+  
+  # list structure of p-value distributions
+  assert_list(
+    x = pCDFlist,
+    types = "numeric",
+    any.missing = FALSE,
+    min.len = 1,
+    max.len = n
+  )
+  # individual p-value distributions
+  for(i in seq_along(pCDFlist)){
+    assert_numeric(
+      x = pCDFlist[[i]],
+      lower = 0,
+      upper = 1,
+      any.missing = FALSE,
+      min.len = 1,
+      sorted = TRUE
+    )
+    if(max(pCDFlist[[i]]) != 1)
+      stop("Last value of each vector in 'pCDFlist' must be 1!")
+  }
+  m <- length(pCDFlist)
+  
+  # significance level
+  qassert(x = alpha, rules = "N1(0, 1]")
+  
+  # lambda
+  if(is.null(lambda) || is.na(lambda)){
     # if lambda is not provided, set lambda = alpha
     lambda <- alpha
-  }else{
-    if(is.na(lambda) || !is.numeric(lambda) || lambda < 0 || lambda > 1)
-      stop("'lambda' must be a probability between 0 and 1!")
+  }else qassert(x = lambda, rules = "N1[0, 1]")
+  
+  # compute and return critical values?
+  qassert(ret.crit.consts, "B1")
+  
+  # selection threshold
+  qassert(x = select.threshold, rules = "N1(0, 1]")
+  
+  # list structure of indices
+  assert_list(
+    x = pCDFlist.indices,
+    types = "numeric",
+    any.missing = FALSE,
+    len = m,
+    unique = TRUE,
+    null.ok = TRUE
+  )
+  # individual index vectors (if not NULL)
+  if(is.null(pCDFlist.indices)){
+    if(n != m) {
+      stop(
+        paste(
+          "If no counts for the p-value CDFs are provided, the lengths of",
+          "'test.results' and 'pCDFlist' must be equal!"
+        )
+      )
+    }
+    pCDFlist.indices <- as.list(1:n)
+    pCDFlist.counts <- rep(1, n)
+  } else {
+    set <- 1L:n
+    for(i in seq_along(pCDFlist.indices)){
+      pCDFlist.indices[[i]] <- assert_integerish(
+        x = pCDFlist.indices[[i]],
+        lower = 1,
+        upper = n,
+        any.missing = FALSE,
+        min.len = 1,
+        max.len = n,
+        unique = TRUE,
+        sorted = TRUE,
+        coerce = TRUE
+      )
+      set <- setdiff(set, pCDFlist.indices[[i]])
+    }
+    if(length(set))
+      stop("'pCDFlist.indices' must contain each p-value index exactly once!")
+    pCDFlist.counts <- sapply(pCDFlist.indices, length)
   }
   
-  m <- length(raw.pvalues)
-  if(m != length(pCDFlist)) stop("The lengths of 'raw.pvalues' and 'pCDFlist' must be equal!")
-  #--------------------------------------------
-  #       prepare p-values for processing
-  #--------------------------------------------
-  pvec <- match.pvals(pCDFlist, raw.pvalues)
-  #--------------------------------------------
-  #       Determine sort order and do sorting
-  #--------------------------------------------
-  o <- order(pvec)                                                                                       
-  sorted.pvals <- pvec[o]
-  #--------------------------------------------
-  #       construct the vector of all values of all supports of the p-values
-  #--------------------------------------------
-  pv.list.all <- sort(unique(as.numeric(unlist(pCDFlist))))
-  #--------------------------------------------
-  #        Compute [DBR-lambda] significant p-values,
-  #        their indices and the number of rejections
-  #--------------------------------------------
-  if(ret.crit.consts){
-    # compute transformed support
-    y <- kernel_DBR_crit(pCDFlist, pv.list.all, sorted.pvals, lambda, alpha)
-    # find critical constants
-    crit.constants <- y$crit.consts
-    idx <- which(sorted.pvals <= crit.constants)   
-  }
-  else{
-    # compute transformed p-values
-    y <- kernel_DBR_fast(pCDFlist, sorted.pvals, lambda)
-    idx <- which(y <= alpha)
-  }
-  m.rej <- length(idx)
-  if(m.rej){
-    idx <- which(pvec <= sorted.pvals[m.rej]) 
-    pvec.rej <- raw.pvalues[idx]
-  }else{
-    idx <- integer(0)
-    pvec.rej <- numeric(0)
-  }
-  #--------------------------------------------
-  #       Create output list
-  #--------------------------------------------
-  output <- list(Rejected = pvec.rej, Indices = idx, Alpha = m.rej * alpha / m, Num.rejected = m.rej, Lambda = lambda)
-  if(ret.crit.consts){
-    # add critical values to output list
-    output$Critical.values = crit.constants
-    # compute adjusted p-values
-    # recall that transformed p-values where max_i F_i(p) > lambda,
-    # that is for indices > y$m.lambda, are set to 1
-    pv.adj <- rev(cummin(rev(pmin(y$pval.transf, 1)))) # / c(seq_len(y$m.lambda), rep(1, m - y$m.lambda))
-  }
-  else{
-    # compute adjusted p-values
-    pv.adj <- rev(cummin(rev(pmin(y, 1))))
-  }
-  # add adjusted p-values to output list
-  ro <- order(o)
-  output$Adjusted = pv.adj[ro]
+  #----------------------------------------------------
+  #       check and prepare p-values for processing
+  #----------------------------------------------------
+  pvec <- match.pvals(pCDFlist, test.results, pCDFlist.indices)
   
-  # include details of the used algorithm as strings
-  output$Method <- paste("Discrete Blanchard-Roquain procedure (lambda = ", lambda, ")", sep = "")
-  output$Signif.level <- alpha
-  output$Tuning <- lambda
+  #----------------------------------------------------
+  #       execute computations
+  #----------------------------------------------------
+  output <- discrete.fdr.int(
+    pvec             = pvec,
+    pCDFlist         = pCDFlist,
+    pCDFlist.indices = pCDFlist.indices,
+    method           = "DBR",
+    alpha            = alpha,
+    method.parameter = lambda,
+    crit.consts      = ret.crit.consts,
+    threshold        = select.threshold,
+    data.name        = paste(deparse(substitute(test.results)), "and", deparse(substitute(pCDFlist)))
+  )
   
-  # original test data (often included, e.g. when using 'binom.test()')
-  output$Data <- list()
-  output$Data$raw.pvalues <- raw.pvalues
-  output$Data$pCDFlist <- pCDFlist
-  # object names of the data as strings
-  output$Data$data.name <- paste(deparse(substitute(raw.pvalues)), "and", deparse(substitute(pCDFlist)))
-  
-  class(output) <- "DiscreteFDR"
   return(output)
+}
+
+#' @rdname DBR
+#' @importFrom checkmate assert_character assert_r6 qassert
+#' @export
+DBR.DiscreteTestResults <- function(
+  test.results,
+  alpha = 0.05,
+  lambda = NULL,
+  ret.crit.consts = FALSE,
+  select.threshold = 1, 
+  ...
+) {
+  #----------------------------------------------------
+  #       check arguments
+  #----------------------------------------------------
+  # discrete test results object
+  assert_r6(
+    x = test.results,
+    classes = "DiscreteTestResults",
+    public = c("get_pvalues", "get_pvalue_supports", "get_support_indices")
+  )
+  
+  # significance level
+  qassert(x = alpha, rules = "N1(0, 1]")
+  
+  # lambda
+  if(is.null(lambda) || is.na(lambda)){
+    # if lambda is not provided, set lambda = alpha
+    lambda <- alpha
+  }else qassert(x = lambda, rules = "N1[0, 1]")
+  
+  # compute and return critical values?
+  qassert(ret.crit.consts, "B1")
+  
+  # selection threshold
+  qassert(x = select.threshold, rules = "N1(0, 1]")
+  
+  #----------------------------------------------------
+  #       execute computations
+  #----------------------------------------------------
+  output <- discrete.fdr.int(
+    pvec             = test.results$get_pvalues(),
+    pCDFlist         = test.results$get_pvalue_supports(unique = TRUE),
+    pCDFlist.indices = test.results$get_support_indices(),
+    method           = "DBR",
+    alpha            = alpha,
+    method.parameter = lambda,
+    crit.consts      = ret.crit.consts,
+    threshold        = select.threshold,
+    data.name        = deparse(substitute(test.results))
+  )
   
   return(output)
 }

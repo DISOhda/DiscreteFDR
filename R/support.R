@@ -1,17 +1,22 @@
 #' @title
-#' Computing discrete p-values and their support for binomial and Fisher's
-#' exact tests
+#' Computing Discrete P-Values and Their Supports for Fisher's Exact Test
 #' 
 #' @description
 #' `r lifecycle::badge('deprecated')`
 #' 
-#' Computes discrete raw p-values and their support
-#' for binomial test or Fisher's exact test applied to 2x2 contingency tables
-#' summarizing counts coming from two categorical measurements.
+#' Computes discrete raw p-values and their support for Fisher's exact test
+#' applied to 2x2 contingency tables summarizing counts coming from two
+#' categorical measurements.
 #'
-#' **Note**: In future versions, this function will be removed. Generation of
-#' p-value supports for different exact tests, including Fisher's, will be
-#' moved to a separate package.
+#' **Note**: This function is deprecated and will be removed in a future
+#' version. Please use [`generate.pvalues()`] with
+#' `test.fun = DiscreteTests::fisher.test.pv` and (optional) 
+#' `preprocess.fun = DiscreteDatasets::reconstruct_two` or 
+#' `preprocess.fun = DiscreteDatasets::reconstruct_four` instead. Alternatively,
+#' use a pipeline like\cr
+#' `data |>`\cr
+#' `  DiscreteDatasets::reconstruct_*(<args>) |>`\cr
+#' `  DiscreteTests::fisher.test.pv(<args>)`
 #' 
 #' @details
 #' Assume that each contingency tables compares two variables and resumes the
@@ -50,14 +55,14 @@
 #' `alternative`.
 #'
 #' @seealso
-#' [fisher.test]
+#' [`fisher.test()`]
 #' 
 #' @param counts        a data frame of two or four columns and any number of
 #'                      lines; each line represents a 2x2 contingency table to
 #'                      test. The number of columns and what they must contain
 #'                      depend on the value of the `input` argument, see
 #'                      Details.
-#' @param alternative   same argument as in [stats::fisher.test]. The three
+#' @param alternative   same argument as in [`stats::fisher.test()`]. The three
 #'                      possible values are `"greater"` (default),
 #'                      `"two.sided"` or `"less"` and you can specify
 #'                      just the initial letter.
@@ -66,8 +71,7 @@
 #'                      `"marginal"` or `"HG2011"` and you can specify
 #'                      just the initial letter.
 #' 
-#' @template example
-#' @template exampleHG
+#' @template exampleFPV
 #' 
 #' @return
 #' A list of two elements:
@@ -85,115 +89,174 @@
 #' 
 #' @importFrom stats dhyper phyper pbinom
 #' @importFrom lifecycle deprecate_soft
+#' @importFrom checkmate assert_data_frame qassert
+#' @importFrom DiscreteDatasets reconstruct_four reconstruct_two
+#' @import DiscreteTests
 #' @export
 fisher.pvalues.support <- function(counts, alternative = "greater", input = "noassoc"){
-  deprecate_soft("1.3.7", "fast.Discrete()",
-                 details = paste("In future versions of this package, this",
-                                 "function will be removed. Generation of",
-                                 "p-value supports for different exact tests,",
-                                 "including Fisher's, will be moved to a",
-                                 "separate package."))
+  deprecate_soft("1.3.7", "fisher.pvalues.support()", "generate.pvalues()")
   
+  # 'counts' must be a non-empty data frame or a non-empty matrix 
+  qassert(x = counts, rules = c("M+", "D+"))
+  # convert to data frame, if it is a matrix
+  if(is.matrix(counts))
+    counts <- as.data.frame(counts)
+  # check if it contains only integer-like values and between two and four columns
+  assert_data_frame(
+    x = counts,
+    types = "integerish",
+    any.missing = FALSE,
+    min.rows = 1,
+    min.cols = 2,
+    max.cols = 4
+  )
+  # round to integer
+  counts <- round(counts)
+  # ensure that the data frame has exactly two or exactly four columns
+  qassert(x = counts, rules = c("D2", "D4"))
+  
+  # check and match 'input' parameter
+  qassert(x = input, rules = "S1")
   input <- match.arg(input, c("noassoc", "marginal", "HG2011"))
-  alternative <- match.arg(alternative, c("two.sided", "less", "greater"))
   
-  number.items <- nrow(counts)
-  switch (input, 
-          noassoc = {
-            A11 <- counts[, 1]
-            A12 <- counts[, 2]
-            n <- A11 + A12
-            #A21 <- counts[, 3]
-            #A22 <- counts[, 4]
-            A1. <- A11 + counts[, 3]
-            A2. <- A12 + counts[, 4]
-            #N <- A1. + A2.
-            # Entry j in each of the above vectors is a count for the j-th test of no association
-            # between two variables and a condition :  
-            #                   Association    No association   Marginal counts
-            #  Variable 1       A11[j]         A12[j]           n[j]
-            #  Variable 2       A21[j]         A22[j]           N[j]-n[j]
-            #  All variables    A1.[j]         A2.[j]           N[j]
-          },
-          marginal = {
-            A11 <- counts[, 1]
-            n <- counts[, 2]
-            A12 <- n - A11
-            #A21 <- counts[, 3]
-            #A22 <- counts[, 4] - A21
-            A1. <- A11 + counts[, 3]
-            A2. <- counts[, 4] + n - A1.
-            #N <- A1. + A2.
-            # Entry j in each of the above vectors is a count for the j-th test of no association
-            # between two variables and a condition :  
-            #                   Association    No association   Marginal counts
-            #  Variable 1       A11[j]         A12[j]           n[j]
-            #  Variable 2       A21[j]         A22[j]           N[j]-n[j]
-            #  All variables    A1.[j]         A2.[j]           N[j]
-          },
-          HG2011 = {
-            A11 <- counts[, 1]
-            #A21 <- sum(counts[, 1]) - A11
-            A12 <- counts[, 2]
-            #A22 <- sum(counts[, 2]) - A12
-            A1. <- rep(sum(counts[, 1]), number.items)
-            A2. <- rep(sum(counts[, 2]), number.items)
-            n <- A11 + A12
-            #N <- A1. + A2.
-            # Entry j in each of the above vectors is a count for the test of no association
-            # between variable j and the condition, compared to all other variables :  
-            #                    Association    No association   Marginal counts
-            #  Variable j        A11[j]         A12[j]           n[j]
-            #  Other variables   A21[j]         A22[j]           N[j]-n[j]
-            #  All variables     A1.[j]         A2.[j]           N[j]
-          }
+  # transform 'counts' according to 'input'
+  counts <- switch(
+    EXPR = input,
+    HG2011 = reconstruct_two(counts),
+    marginal = reconstruct_four(counts),
+    counts
   )
   
-  pCDFlist <- vector("list", number.items)
-  raw.pvalues <- numeric(number.items)
+  # compute p-values and supports
+  res <- fisher.test.pv(counts, alternative)
   
-  k <- pmin(n, A1.)
-  l <- pmax(0, n - A2.)
-  switch(alternative, greater =
-           for (i in 1:number.items){
-             x <- l[i]:k[i]
-             # the "-1" below is because lower.tail = FALSE computes P[X > x],
-             # and we want P[X >= x]=P[X > x-1]
-			       # pmin/pmax below is to account for machine rounding issues
-             pCDFlist[[i]] <- pmax(0, pmin(1, phyper(x-1, A1.[i], A2.[i], n[i], lower.tail = FALSE)))
-             # the "+1" below is because vectors start with index 1 in R: x[A11[i]+1]=A11[i]
-             raw.pvalues[i] <- pCDFlist[[i]][A11[i] - l[i] + 1]
-             # we want to have pCDFlist[[i]] in increasing order:
-             pCDFlist[[i]] <- rev(pCDFlist[[i]])
-           },
-         less =
-           for (i in 1:number.items){
-             x <- l[i]:k[i]
-			       # pmin/pmax below is to account for machine rounding issues
-             pCDFlist[[i]] <- pmax(0, pmin(1, phyper(x, A1.[i], A2.[i], n[i], lower.tail = TRUE)))
-             # the "+1" below is because vectors start with index 1 in R: x[A11[i]+1]=A11[i]
-             raw.pvalues[i] <- pCDFlist[[i]][A11[i] - l[i] + 1]
-           },
-         two.sided =
-           for (i in 1:number.items){
-             x <- l[i]:k[i]
-             atoms <- dhyper(x, A1.[i], A2.[i], n[i])
-             # ensure that probabilities sum up to 1 (sometimes, needs to be done multiple times)
-             newsum <- sum(atoms)
-             while(newsum < 1){
-               oldsum <- newsum
-               atoms <- atoms/newsum
-               newsum <- sum(atoms)
-               if(oldsum == newsum) break;
-             }
-			       # pmin/pmax below is to account for machine rounding issues
-             pCDFlist[[i]] <- pmax(0, pmin(1, sapply(x, function(nu){sum(atoms[which(atoms <= atoms[nu + 1 - l[i]])])})))
-             # the "+1" above and below is because vectors start with index 1 in R: x[A11[i]+1]=A11[i]
-             raw.pvalues[i] <- pCDFlist[[i]][A11[i] - l[i] + 1]
-             # we want to have pCDFlist[[i]] in increasing order:
-             pCDFlist[[i]] <- sort(pCDFlist[[i]])
-           }
+  # return list of results
+  return(
+    list(
+      raw = res$get_pvalues(),
+      support = res$get_pvalue_supports(unique = FALSE)
+    )
   )
+}
+
+#' @title 
+#' Generation of P-Values and Their Supports After Data Transformations
+#' 
+#' @description
+#' Simple wrapper for generating p-values of discrete tests and their supports
+#' after pre-processing the input data. The user only has to provide 1.) a
+#' function that generates p-values and supports and 2.) an optional function
+#' that pre-processes (i.e. transforms) the input data (if necessary) before it
+#' can be used for p-value calculations. The respective arguments are provided
+#' by named lists.
+#' 
+#' @templateVar dat TRUE
+#' @templateVar test.fun TRUE
+#' @templateVar test.args TRUE
+#' @templateVar preprocess.fun TRUE
+#' @templateVar preprocess.args TRUE
+#' @template param
+#'
+#' @return
+#' A [DiscreteTestResults][DiscreteTests::DiscreteTestResults] R6 class object.
+#' 
+#' @template exampleGPV
+#' @examples
+#' # Compute p-values and their supports of Fisher's exact test with pre-processing
+#' df2 <- data.frame(X1, N1, X2, N2)
+#' generate.pvalues(
+#'   dat = df2,
+#'   test.fun = "fisher.test.pv",
+#'   preprocess.fun = function(tab) {
+#'     for(col in c(2, 4)) tab[, col] <- tab[, col] - tab[, col - 1]
+#'     return(tab)
+#'   }
+#' )
+#' 
+#' # Compute p-values and their supports of a binomial test with pre-processing
+#' generate.pvalues(
+#'   dat = rbind(c(5, 2, 7), c(3, 4, 0)), 
+#'   test.fun = "binom.test.pv",
+#'   test.args = list(n = c(9, 8, 11), p = 0.6, alternative = "two.sided"),
+#'   preprocess.fun = colSums
+#' )
+#' 
+#' @importFrom checkmate assert assert_choice assert_list check_function check_string
+#' @import DiscreteTests
+#' @export
+generate.pvalues <- function(
+  dat,
+  test.fun,
+  test.args = NULL,
+  preprocess.fun = NULL,
+  preprocess.args = NULL
+) {
+  #  make sure test function originates from package 'DiscreteTests'
+  ## make sure it is a function or a string
+  assert(
+    check_function(test.fun),
+    check_string(test.fun)
+  )
+  ## get all functions from package 'DiscreteTests'
+  funs <- ls(asNamespace("DiscreteTests"))
+  ## extract available test functions
+  funs <- funs[endsWith(funs, ".test.pv")]
+  ## make sure input 'test.fun' matches an available test function
+  if(is.character(test.fun)) {
+    ### match input 'test.fun' string to available test functions
+    test.fun <- match.arg(tolower(test.fun), funs)
+    ### convert string to actual function
+    test.fun <- eval(parse(text = paste0("DiscreteTests::", test.fun)))
+  } else {
+    ### make sure input 'test.fun' matches an available test function
+    OK <- FALSE
+    for(fun in funs) {
+      pkg_fun <- eval(parse(text = paste0("DiscreteTests::", fun)))
+      if(all(all.equal(test.fun, pkg_fun) == TRUE)) {
+        OK <- TRUE
+        break;
+      }
+    }
+    if(!OK) stop(paste("'test.fun' must be one of the '*.test.pv' functions of",
+                       "package 'DiscreteTests'."))
+  }
   
-  return(list(raw = raw.pvalues, support = pCDFlist))
+  # make sure parameters for 'test.fun' are in a named list or NULL
+  assert_list(test.args, names = "unique", null.ok = TRUE)
+  
+  # make sure date pre-processing function is a function, string or NULL
+  assert(
+    check_function(preprocess.fun, null.ok = TRUE),
+    check_string(preprocess.fun)
+  )
+  ## convert string to actual function (if necessary)
+  if(is.character(preprocess.fun))
+    preprocess.fun <- eval(parse(text = preprocess.fun))
+  
+  # make sure parameters for 'preprocess.fun' are in a named list or NULL
+  assert_list(preprocess.args, names = "unique", null.ok = TRUE)
+  
+  if(!is.null(preprocess.fun)){
+    # prepend data to pre-processing function's arguments list
+    preprocess.args <- c(list(dat), preprocess.args)
+    # set data parameter name according to first parameter of 'preprocess.fun'
+    names(preprocess.args)[1] <- names(as.list(args(preprocess.fun)))[1]
+    # perform pre-processing
+    dat <- do.call(preprocess.fun, preprocess.args)
+  }
+  
+  # get original data name
+  data.name <- sapply(match.call(), deparse1)["dat"]
+  # assign data to new variable with original name
+  assign(data.name, dat)
+  
+  # prepend pre-processed data to test function's arguments list
+  test.args <- c(list(as.name(data.name)), test.args)
+  # set data parameter name according to first parameter of 'test.fun'
+  names(test.args)[1] <- names(as.list(args(test.fun)))[1]
+  # perform test(s)
+  res <- do.call(test.fun, test.args)
+  
+  # output results
+  return(res)
 }

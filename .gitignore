@@ -6,3 +6,5 @@ doc
 .Rproj.user
 .Rhistory
 CRAN-SUBMISSION
+/doc/
+/Meta/

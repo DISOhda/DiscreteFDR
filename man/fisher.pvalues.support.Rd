@@ -2,8 +2,7 @@
 % Please edit documentation in R/support.R
 \name{fisher.pvalues.support}
 \alias{fisher.pvalues.support}
-\title{Computing discrete p-values and their support for binomial and Fisher's
-exact tests}
+\title{Computing Discrete P-Values and Their Supports for Fisher's Exact Test}
 \usage{
 fisher.pvalues.support(counts, alternative = "greater", input = "noassoc")
 }
@@ -14,7 +13,7 @@ test. The number of columns and what they must contain
 depend on the value of the \code{input} argument, see
 Details.}
 
-\item{alternative}{same argument as in \link[stats:fisher.test]{stats::fisher.test}. The three
+\item{alternative}{same argument as in \code{\link[stats:fisher.test]{stats::fisher.test()}}. The three
 possible values are \code{"greater"} (default),
 \code{"two.sided"} or \code{"less"} and you can specify
 just the initial letter.}
@@ -33,13 +32,19 @@ Each support is represented by a vector in increasing order.}
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 
-Computes discrete raw p-values and their support
-for binomial test or Fisher's exact test applied to 2x2 contingency tables
-summarizing counts coming from two categorical measurements.
+Computes discrete raw p-values and their support for Fisher's exact test
+applied to 2x2 contingency tables summarizing counts coming from two
+categorical measurements.
 
-\strong{Note}: In future versions, this function will be removed. Generation of
-p-value supports for different exact tests, including Fisher's, will be
-moved to a separate package.
+\strong{Note}: This function is deprecated and will be removed in a future
+version. Please use \code{\link[=generate.pvalues]{generate.pvalues()}} with
+\code{test.fun = DiscreteTests::fisher.test.pv} and (optional)
+\code{preprocess.fun = DiscreteDatasets::reconstruct_two} or
+\code{preprocess.fun = DiscreteDatasets::reconstruct_four} instead. Alternatively,
+use a pipeline like\cr
+\verb{data |>}\cr
+\verb{  DiscreteDatasets::reconstruct_*(<args>) |>}\cr
+\verb{  DiscreteTests::fisher.test.pv(<args>)}
 }
 \details{
 Assume that each contingency tables compares two variables and resumes the
@@ -87,20 +92,10 @@ Y2 <- N2 - X2
 df <- data.frame(X1, Y1, X2, Y2)
 df
 
-#Construction of the p-values and their support
+# Compute p-values and their supports of Fisher's exact test
 df.formatted <- fisher.pvalues.support(counts = df, input = "noassoc")
 raw.pvalues <- df.formatted$raw
 pCDFlist <- df.formatted$support
-
-data(amnesia)
-#We only keep the first 100 lines to keep the computations fast.
-#We also drop the first column to keep only columns of counts, in the Heller & Gur (2011) setting.
-amnesia <- amnesia[1:100,2:3]
-
-#Construction of the p-values and their support
-amnesia.formatted <- fisher.pvalues.support(counts = amnesia, input = "HG2011")
-raw.pvalues <- amnesia.formatted$raw
-pCDFlist <- amnesia.formatted$support
 }
 \references{
 R. Heller and H. Gur (2011). False discovery rate controlling procedures for
@@ -111,5 +106,5 @@ discrete tests. arXiv preprint.
 \href{https://en.wikipedia.org/w/index.php?title=Fisher's_exact_test&oldid=823327889}{link}.
 }
 \seealso{
-\link{fisher.test}
+\code{\link[=fisher.test]{fisher.test()}}
 }

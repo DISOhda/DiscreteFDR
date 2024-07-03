@@ -2,7 +2,7 @@
 % Please edit documentation in R/fast_appli.R
 \name{fast.Discrete}
 \alias{fast.Discrete}
-\title{Fast application of discrete procedures}
+\title{Fast Application of Discrete Multiple Testing Procedures}
 \usage{
 fast.Discrete(
   counts,
@@ -10,7 +10,8 @@ fast.Discrete(
   input = "noassoc",
   alpha = 0.05,
   direction = "su",
-  adaptive = FALSE
+  adaptive = FALSE,
+  select.threshold = 1
 )
 }
 \arguments{
@@ -18,44 +19,62 @@ fast.Discrete(
 lines; each line representing a 2x2 contingency table to
 test. The number of columns and what they must contain
 depend on the value of the \code{input} argument (see Details
-section of \link{fisher.pvalues.support}).}
+section of \code{\link[=fisher.pvalues.support]{fisher.pvalues.support()}}).}
 
-\item{alternative}{same argument as in \link{fisher.test}. The three
+\item{alternative}{same argument as in \code{\link[stats:fisher.test]{stats::fisher.test()}}. The three
 possible values are \code{"greater"} (default), \code{"two.sided"}
 or \code{"less"} (may be abbreviated).}
 
 \item{input}{the format of the input data frame (see Details section
-of \link{fisher.pvalues.support}. The three possible values
-are \code{"noassoc"} (default), \code{"marginal"} or \code{"HG2011"}
-(may be abbreviated).}
+of \code{\link[=fisher.pvalues.support]{fisher.pvalues.support()}}. The three possible
+values are \code{"noassoc"} (default), \code{"marginal"} or
+\code{"HG2011"} (may be abbreviated).}
 
-\item{alpha}{the target FDR level, a number strictly between 0 and 1.}
+\item{alpha}{single real number strictly between 0 and 1 indicating the target FDR level.}
 
-\item{direction}{a character string specifying whether to conduct a step-up (\code{direction="su"}, by default) or step-down procedure (\code{direction="sd"}).}
+\item{direction}{single character string specifying whether to perform a step-up (\code{"su"}; the default) or step-down procedure (\code{"sd"}).}
 
-\item{adaptive}{a boolean specifying whether to conduct an adaptive procedure or not.}
+\item{adaptive}{single boolean specifying whether to conduct an adaptive procedure or not.}
+
+\item{select.threshold}{single real number strictly between 0 and 1 indicating the largest raw p-value to be considered, i.e. only p-values below this threshold ae considered and the procedures are adjusted in order to take this selection effect into account; if \code{threshold = 1} (the default), all raw p-values are selected.}
 }
 \value{
 A \code{DiscreteFDR} S3 class object whose elements are:
-\item{Rejected}{Rejected raw p-values}
-\item{Indices}{Indices of rejected hypotheses}
-\item{Num.rejected}{Number of rejections}
-\item{Adjusted}{Adjusted p-values (only for step-down direction).}
-\item{Method}{Character string describing the used algorithm, e.g. 'Discrete Benjamini-Hochberg procedure (step-up)'}
-\item{Signif.level}{Significance level \code{alpha}}
-\item{Data$raw.pvalues}{The values of \code{raw.pvalues}}
-\item{Data$pCDFlist}{The values of \code{pCDFlist}}
-\item{Data$data.name}{The variable name of the \code{counts} dataset}
+\item{Rejected}{rejected raw p-values.}
+\item{Indices}{indices of rejected hypotheses.}
+\item{Num.rejected}{number of rejections.}
+\item{Adjusted}{adjusted p-values (only for step-down direction).}
+\item{Critical.constants}{critical values (only exists if computations where performed with \code{ret.crit.consts = TRUE}).}
+\item{Select$Threshold}{p-value selection \code{threshold} (only exists if \code{threshold < 1}).}
+\item{Select$Effective.Thresholds}{results of each p-value CDF evaluated at the selection threshold (only exists if \code{threshold < 1}).}
+\item{Select$Pvalues}{selected p-values that are \eqn{\leq} selection \code{threshold} (only exists if \code{threshold < 1}).}
+\item{Select$Indices}{indices of p-values \eqn{\leq} selection \code{threshold} (only exists if \code{threshold < 1}).}
+\item{Select$Scaled}{scaled selected p-values (only exists if \code{threshold < 1}).}
+\item{Select$Number}{number of selected p-values \eqn{\leq} \code{threshold} (only exists if \code{threshold < 1}).}
+\item{Data$Method}{character string describing the used algorithm, e.g. 'Discrete Benjamini-Hochberg procedure (step-up)'}
+\item{Data$raw.pvalues}{observed p-values.}
+\item{Data$pCDFlist}{list of the p-value supports.}
+\item{Data$FDR.level}{FDR level \code{alpha}.}
+\item{Data$Data.name}{the respective variable names of the input data.}
 }
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 
 Apply the [HSU], [HSD], [AHSU] or [AHSD] procedure,
-without computing the critical constants,
-to a data set of 2x2 contingency tables using Fisher's exact tests.
+without computing the critical constants, to a data set of 2x2 contingency
+tables which may have to be pre-processed in order to have the correct
+structure for computing p-values using Fisher's exact test.
 
-\strong{Note}: In future versions, this function will be removed and replaced by a
-more flexible one, which will not be limited to Fisher's exact test.
+\strong{Note}: This function is deprecated and will be removed in a future
+version. Please use \code{\link[=direct.discrete.BH]{direct.discrete.BH()}} with
+\code{test.fun = DiscreteTests::fisher.test.pv} and (optional)
+\code{preprocess.fun = DiscreteDatasets::reconstruct_two} or
+\code{preprocess.fun = DiscreteDatasets::reconstruct_four} instead. Alternatively,
+use a pipeline, e.g.\cr
+\verb{data |>}\cr
+\verb{  DiscreteDatasets::reconstruct_*(<args>) |>}\cr
+\verb{  DiscreteTests::*.test.pv(<args>) |>}\cr
+\verb{  discrete.BH(<args>)}.
 }
 \examples{
 X1 <- c(4, 2, 2, 14, 6, 9, 4, 0, 1)
@@ -67,21 +86,21 @@ Y2 <- N2 - X2
 df <- data.frame(X1, Y1, X2, Y2)
 df
 
-DBH.su <- fast.Discrete(counts = df, input = "noassoc", direction = "su")
+DBH.su <- fast.Discrete(df, input = "noassoc", direction = "su")
 summary(DBH.su)
 
-DBH.sd <- fast.Discrete(counts = df, input = "noassoc", direction = "sd")
+DBH.sd <- fast.Discrete(df, input = "noassoc", direction = "sd")
 DBH.sd$Adjusted
 summary(DBH.sd)
 
-ADBH.su <- fast.Discrete(counts = df, input = "noassoc", direction = "su", adaptive = TRUE)
+ADBH.su <- fast.Discrete(df, input = "noassoc", direction = "su", adaptive = TRUE)
 summary(ADBH.su)
 
-ADBH.sd <- fast.Discrete(counts = df, input = "noassoc", direction = "sd", adaptive = TRUE)
+ADBH.sd <- fast.Discrete(df, input = "noassoc", direction = "sd", adaptive = TRUE)
 ADBH.sd$Adjusted
 summary(ADBH.sd)
 
 }
 \seealso{
-\link{fisher.pvalues.support}, \link{discrete.BH}
+\code{\link[=fisher.pvalues.support]{fisher.pvalues.support()}}, \code{\link[=discrete.BH]{discrete.BH()}}
 }

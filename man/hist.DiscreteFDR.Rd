@@ -2,20 +2,20 @@
 % Please edit documentation in R/plot_funs.R
 \name{hist.DiscreteFDR}
 \alias{hist.DiscreteFDR}
-\title{Histogram of Raw p-Values}
+\title{Histogram of Raw P-Values}
 \usage{
 \method{hist}{DiscreteFDR}(x, breaks = "FD", plot = TRUE, ...)
 }
 \arguments{
-\item{x}{an object of class "\code{DiscreteFDR}".}
+\item{x}{an object of class \code{DiscreteFDR}.}
 
-\item{breaks}{as in \link{hist}; here, the Friedman-Diaconis
-algorithm(\code{"FD"}) is used as default.}
+\item{breaks}{as in \code{\link{hist}}; here, the Friedman-Diaconis algorithm
+(\code{"FD"}) is used as default.}
 
-\item{plot}{a boolean If \code{TRUE} (the default), a histogram is plotted,
+\item{plot}{a boolean; if \code{TRUE} (the default), a histogram is plotted,
 otherwise a list of breaks and counts is returned.}
 
-\item{...}{further arguments to \link{hist} or \link{plot.histogram},
+\item{...}{further arguments to \code{\link{hist}} or \code{\link{plot.histogram}},
 respectively.}
 }
 \value{
@@ -25,7 +25,7 @@ An object of class \code{histogram}.
 Computes a histogram of the raw p-values of a \code{DiscreteFDR} object.
 }
 \details{
-This method simply calls \link{hist} and passes the raw p-values of the object.
+This method simply calls \code{\link{hist}} and passes the raw p-values of the object.
 }
 \examples{
 X1 <- c(4, 2, 2, 14, 6, 9, 4, 0, 1)
@@ -37,10 +37,10 @@ Y2 <- N2 - X2
 df <- data.frame(X1, Y1, X2, Y2)
 df
 
-#Construction of the p-values and their support
-df.formatted <- fisher.pvalues.support(counts = df, input = "noassoc")
-raw.pvalues <- df.formatted$raw
-pCDFlist <- df.formatted$support
+# Compute p-values and their supports of Fisher's exact test
+test.result <- generate.pvalues(df, "fisher")
+raw.pvalues <- test.result$get_pvalues()
+pCDFlist <- test.result$get_pvalue_supports()
 
 DBH <- DBH(raw.pvalues, pCDFlist)
 hist(DBH)
