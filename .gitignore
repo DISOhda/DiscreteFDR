@@ -8,3 +8,5 @@ doc
 CRAN-SUBMISSION
 /doc/
 /Meta/
+cran-comments.md
+.gitignore
