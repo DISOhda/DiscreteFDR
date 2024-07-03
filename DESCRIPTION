@@ -1,6 +1,6 @@
 Package: DiscreteFDR
 Type: Package
-Title: FDR based Multiple Testing Procedures with Adaptation for Discrete Tests
+Title: FDR Based Multiple Testing Procedures with Adaptation for Discrete Tests
 Version: 2.0.0
 Date: 2024-07-03
 Authors@R: c(
