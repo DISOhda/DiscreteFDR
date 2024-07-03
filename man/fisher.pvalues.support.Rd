@@ -61,7 +61,7 @@ If \code{input="noassoc"}, \code{counts} has four columns which respectively con
 \code{counts} has four columns which respectively contain \eqn{X_1}, \eqn{N_1},
 \eqn{X_2} and \eqn{N_2}.
 
-If \code{input="HG2011"}, we are in the situation of the \link{amnesia} data set as
+If \code{input="HG2011"}, we are in the situation of the \code{amnesia} data set as
 in Heller & Gur (2011, see References). Each contingency table is obtained
 from one variable which is compared to all other variables of the study. That
 is, counts for "second variable" are replaced by the sum of the counts of the
