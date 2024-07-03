@@ -2,7 +2,7 @@
 * local Manjaro Linux 24.0.2 install, R 4.4.1
 * win-builder (release, oldrelease, devel)
 * mac-builder
-* R-hub (configurations: "with sanitizers", "with valgrind" and "check for CRAN")
+* R-hub (configurations: linux, macos, macos-arm64, windows, valgrind)
 
 
 ## R CMD check results
@@ -16,7 +16,7 @@
 Possibly misspelled words in DESCRIPTION:
   DiscreteTests (20:56)
   
-Nope, it is the name of another package
+Nope, it is the name of another package.
 
 ### mac-builder
 0 errors | 0 warnings | 0 notes
