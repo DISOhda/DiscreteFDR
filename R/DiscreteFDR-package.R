@@ -8,8 +8,8 @@
 #'
 #' @docType package
 #' @import Rcpp
-#' @useDynLib DiscreteFDRTest
-#' @name DiscreteFDRTest
+#' @useDynLib DiscreteFDR
+#' @name DiscreteFDR
 #'
 #' @details
 #' The functions are reorganized from the reference paper in the following way.

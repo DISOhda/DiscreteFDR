@@ -13,7 +13,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 
 // kernel_DBH_fast
 NumericVector kernel_DBH_fast(const List& pCDFlist, const NumericVector& pvalues, const bool stepUp, const double& alpha, const NumericVector& support, const Nullable<NumericVector>& pCDFcounts);
-RcppExport SEXP _DiscreteFDRTest_kernel_DBH_fast(SEXP pCDFlistSEXP, SEXP pvaluesSEXP, SEXP stepUpSEXP, SEXP alphaSEXP, SEXP supportSEXP, SEXP pCDFcountsSEXP) {
+RcppExport SEXP _DiscreteFDR_kernel_DBH_fast(SEXP pCDFlistSEXP, SEXP pvaluesSEXP, SEXP stepUpSEXP, SEXP alphaSEXP, SEXP supportSEXP, SEXP pCDFcountsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -29,7 +29,7 @@ END_RCPP
 }
 // kernel_DBH_crit
 List kernel_DBH_crit(const List& pCDFlist, const NumericVector& support, const NumericVector& sorted_pv, const bool stepUp, const double& alpha, const Nullable<NumericVector>& pCDFcounts);
-RcppExport SEXP _DiscreteFDRTest_kernel_DBH_crit(SEXP pCDFlistSEXP, SEXP supportSEXP, SEXP sorted_pvSEXP, SEXP stepUpSEXP, SEXP alphaSEXP, SEXP pCDFcountsSEXP) {
+RcppExport SEXP _DiscreteFDR_kernel_DBH_crit(SEXP pCDFlistSEXP, SEXP supportSEXP, SEXP sorted_pvSEXP, SEXP stepUpSEXP, SEXP alphaSEXP, SEXP pCDFcountsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -45,7 +45,7 @@ END_RCPP
 }
 // kernel_ADBH_fast
 NumericVector kernel_ADBH_fast(const List& pCDFlist, const NumericVector& sorted_pv, const bool stepUp, const double alpha, const NumericVector& support, const Nullable<NumericVector>& pCDFcounts);
-RcppExport SEXP _DiscreteFDRTest_kernel_ADBH_fast(SEXP pCDFlistSEXP, SEXP sorted_pvSEXP, SEXP stepUpSEXP, SEXP alphaSEXP, SEXP supportSEXP, SEXP pCDFcountsSEXP) {
+RcppExport SEXP _DiscreteFDR_kernel_ADBH_fast(SEXP pCDFlistSEXP, SEXP sorted_pvSEXP, SEXP stepUpSEXP, SEXP alphaSEXP, SEXP supportSEXP, SEXP pCDFcountsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -61,7 +61,7 @@ END_RCPP
 }
 // kernel_ADBH_crit
 List kernel_ADBH_crit(const List& pCDFlist, const NumericVector& support, const NumericVector& sorted_pv, const bool stepUp, const double alpha, const Nullable<NumericVector> pCDFcounts);
-RcppExport SEXP _DiscreteFDRTest_kernel_ADBH_crit(SEXP pCDFlistSEXP, SEXP supportSEXP, SEXP sorted_pvSEXP, SEXP stepUpSEXP, SEXP alphaSEXP, SEXP pCDFcountsSEXP) {
+RcppExport SEXP _DiscreteFDR_kernel_ADBH_crit(SEXP pCDFlistSEXP, SEXP supportSEXP, SEXP sorted_pvSEXP, SEXP stepUpSEXP, SEXP alphaSEXP, SEXP pCDFcountsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -77,7 +77,7 @@ END_RCPP
 }
 // kernel_DBR_fast
 NumericVector kernel_DBR_fast(const List& pCDFlist, const NumericVector& sorted_pv, const double& lambda, const Nullable<NumericVector> pCDFcounts);
-RcppExport SEXP _DiscreteFDRTest_kernel_DBR_fast(SEXP pCDFlistSEXP, SEXP sorted_pvSEXP, SEXP lambdaSEXP, SEXP pCDFcountsSEXP) {
+RcppExport SEXP _DiscreteFDR_kernel_DBR_fast(SEXP pCDFlistSEXP, SEXP sorted_pvSEXP, SEXP lambdaSEXP, SEXP pCDFcountsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -91,7 +91,7 @@ END_RCPP
 }
 // kernel_DBR_crit
 List kernel_DBR_crit(const List& pCDFlist, const NumericVector& support, const NumericVector& sorted_pv, const double& lambda, const double& alpha, const Nullable<NumericVector> pCDFcounts);
-RcppExport SEXP _DiscreteFDRTest_kernel_DBR_crit(SEXP pCDFlistSEXP, SEXP supportSEXP, SEXP sorted_pvSEXP, SEXP lambdaSEXP, SEXP alphaSEXP, SEXP pCDFcountsSEXP) {
+RcppExport SEXP _DiscreteFDR_kernel_DBR_crit(SEXP pCDFlistSEXP, SEXP supportSEXP, SEXP sorted_pvSEXP, SEXP lambdaSEXP, SEXP alphaSEXP, SEXP pCDFcountsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -107,16 +107,16 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_DiscreteFDRTest_kernel_DBH_fast", (DL_FUNC) &_DiscreteFDRTest_kernel_DBH_fast, 6},
-    {"_DiscreteFDRTest_kernel_DBH_crit", (DL_FUNC) &_DiscreteFDRTest_kernel_DBH_crit, 6},
-    {"_DiscreteFDRTest_kernel_ADBH_fast", (DL_FUNC) &_DiscreteFDRTest_kernel_ADBH_fast, 6},
-    {"_DiscreteFDRTest_kernel_ADBH_crit", (DL_FUNC) &_DiscreteFDRTest_kernel_ADBH_crit, 6},
-    {"_DiscreteFDRTest_kernel_DBR_fast", (DL_FUNC) &_DiscreteFDRTest_kernel_DBR_fast, 4},
-    {"_DiscreteFDRTest_kernel_DBR_crit", (DL_FUNC) &_DiscreteFDRTest_kernel_DBR_crit, 6},
+    {"_DiscreteFDR_kernel_DBH_fast", (DL_FUNC) &_DiscreteFDR_kernel_DBH_fast, 6},
+    {"_DiscreteFDR_kernel_DBH_crit", (DL_FUNC) &_DiscreteFDR_kernel_DBH_crit, 6},
+    {"_DiscreteFDR_kernel_ADBH_fast", (DL_FUNC) &_DiscreteFDR_kernel_ADBH_fast, 6},
+    {"_DiscreteFDR_kernel_ADBH_crit", (DL_FUNC) &_DiscreteFDR_kernel_ADBH_crit, 6},
+    {"_DiscreteFDR_kernel_DBR_fast", (DL_FUNC) &_DiscreteFDR_kernel_DBR_fast, 4},
+    {"_DiscreteFDR_kernel_DBR_crit", (DL_FUNC) &_DiscreteFDR_kernel_DBR_crit, 6},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_DiscreteFDRTest(DllInfo *dll) {
+RcppExport void R_init_DiscreteFDR(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }

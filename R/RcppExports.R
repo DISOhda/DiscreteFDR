@@ -96,31 +96,31 @@ NULL
 
 #' @rdname kernel
 kernel_DBH_fast <- function(pCDFlist, pvalues, stepUp = FALSE, alpha = 0.05, support = numeric(), pCDFcounts = NULL) {
-    .Call('_DiscreteFDRTest_kernel_DBH_fast', PACKAGE = 'DiscreteFDRTest', pCDFlist, pvalues, stepUp, alpha, support, pCDFcounts)
+    .Call('_DiscreteFDR_kernel_DBH_fast', PACKAGE = 'DiscreteFDR', pCDFlist, pvalues, stepUp, alpha, support, pCDFcounts)
 }
 
 #' @rdname kernel
 kernel_DBH_crit <- function(pCDFlist, support, sorted_pv, stepUp = FALSE, alpha = 0.05, pCDFcounts = NULL) {
-    .Call('_DiscreteFDRTest_kernel_DBH_crit', PACKAGE = 'DiscreteFDRTest', pCDFlist, support, sorted_pv, stepUp, alpha, pCDFcounts)
+    .Call('_DiscreteFDR_kernel_DBH_crit', PACKAGE = 'DiscreteFDR', pCDFlist, support, sorted_pv, stepUp, alpha, pCDFcounts)
 }
 
 #' @rdname kernel
 kernel_ADBH_fast <- function(pCDFlist, sorted_pv, stepUp = FALSE, alpha = 0.05, support = numeric(), pCDFcounts = NULL) {
-    .Call('_DiscreteFDRTest_kernel_ADBH_fast', PACKAGE = 'DiscreteFDRTest', pCDFlist, sorted_pv, stepUp, alpha, support, pCDFcounts)
+    .Call('_DiscreteFDR_kernel_ADBH_fast', PACKAGE = 'DiscreteFDR', pCDFlist, sorted_pv, stepUp, alpha, support, pCDFcounts)
 }
 
 #' @rdname kernel
 kernel_ADBH_crit <- function(pCDFlist, support, sorted_pv, stepUp = FALSE, alpha = 0.05, pCDFcounts = NULL) {
-    .Call('_DiscreteFDRTest_kernel_ADBH_crit', PACKAGE = 'DiscreteFDRTest', pCDFlist, support, sorted_pv, stepUp, alpha, pCDFcounts)
+    .Call('_DiscreteFDR_kernel_ADBH_crit', PACKAGE = 'DiscreteFDR', pCDFlist, support, sorted_pv, stepUp, alpha, pCDFcounts)
 }
 
 #' @rdname kernel
 kernel_DBR_fast <- function(pCDFlist, sorted_pv, lambda = 0.05, pCDFcounts = NULL) {
-    .Call('_DiscreteFDRTest_kernel_DBR_fast', PACKAGE = 'DiscreteFDRTest', pCDFlist, sorted_pv, lambda, pCDFcounts)
+    .Call('_DiscreteFDR_kernel_DBR_fast', PACKAGE = 'DiscreteFDR', pCDFlist, sorted_pv, lambda, pCDFcounts)
 }
 
 #' @rdname kernel
 kernel_DBR_crit <- function(pCDFlist, support, sorted_pv, lambda = 0.05, alpha = 0.05, pCDFcounts = NULL) {
-    .Call('_DiscreteFDRTest_kernel_DBR_crit', PACKAGE = 'DiscreteFDRTest', pCDFlist, support, sorted_pv, lambda, alpha, pCDFcounts)
+    .Call('_DiscreteFDR_kernel_DBR_crit', PACKAGE = 'DiscreteFDR', pCDFlist, support, sorted_pv, lambda, alpha, pCDFcounts)
 }
 

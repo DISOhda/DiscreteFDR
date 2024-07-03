@@ -41,7 +41,7 @@ kable(df, caption = "Toy Example")
 In this data frame each of the 9 rows represents the data of an observed 2 $\times$ 2 table: e.g., the third row of the data corresponds to $x_{13} = 2, y_{13} = 146, x_{23} = 1, y_{23} = 131$. Even though in this example, the total number of tested hypotheses $m = 9$ is very small, for illustrative purposes we deal with the multiplicity problem here by controlling FDR at level $\alpha = 5\%$. The DBH step-down procedure can be applied directly to the data frame object `df` and perform Fisher's exact test in-between. This yields an S3 object of class `DiscreteFDR`, for which we provide both `print` and `summary` methods:
 
 ```{r toy-example-direct}
-library(DiscreteFDRTest)
+library(DiscreteFDR)
 DBH.sd.fast <- direct.discrete.BH(df, "fisher", direction = "sd")
 print(DBH.sd.fast)
 summary(DBH.sd.fast)

@@ -1,7 +1,7 @@
-Package: DiscreteFDRTest
+Package: DiscreteFDR
 Type: Package
 Title: FDR based Multiple Testing Procedures with Adaptation for Discrete Tests
-Version: 1.3.8-240703
+Version: 2.0.0
 Date: 2024-07-03
 Authors@R: c(
     person("Sebastian", "Döhler", role = c("aut", "ctb")),

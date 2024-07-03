@@ -18,7 +18,7 @@ To illustrate how the procedures in **DiscreteFDR** can be used for real data, w
 We proceed as in the example in Section 1. Since we need to access the critical values, we first determine the $p$-values and their support for the data set `amnesia` contained for convenience in the package **DiscreteFDR**. For this, we use `generate.pvalues` in conjunction with the pre-processing function `reconstruct_two` from package `DiscreteDatasets`, which rebuilds $2 \times 2$ tables from single columns or rows by using additional knowledge of the marginals.
 
 ```{r format-am}
-library(DiscreteFDRTest)
+library(DiscreteFDR)
 library(DiscreteDatasets)
 data(amnesia)
 amnesia.formatted <- generate.pvalues(amnesia, "fisher", list(alternative = "greater"), reconstruct_two)
@@ -214,7 +214,7 @@ Panel (a) depicts the distribution functions $F_1, \ldots, F_9$ in various color
 <!--
 ```{r}
 library(DiscreteDatasets)
-library(DiscreteFDRTest)
+library(DiscreteFDR)
 
 lambda.0 <- disorderdetection[,2]
 lambda.vector <- lambda.0
@@ -245,7 +245,7 @@ supports <- lapply(1:m, function(i){sort(ppois(0:n.max[i], lambda.vector[i]))})
 ```{r other-procedures}
 # rc = real case
 
-library(DiscreteFDRTest)
+library(DiscreteFDR)
 raw.pvalues.rc <- raw.pvalues
 pCDFlist.rc <- supports
 
