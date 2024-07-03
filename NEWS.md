@@ -16,7 +16,7 @@
         supports are then re-scaled, as the p-value distributions are now
         becoming conditional distributions. If no selection is performed (i.e.
         `threshold = 1`), `print()`, `summary()` and `plot()` outputs are as
-        before. Otherwise, the now respect the re-scaled conditinal
+        before. Otherwise, the now respect the re-scaled conditional
         distributions. Additionally, the `DiscreteFDR` S3 class output objects
         of the functions `discrete.BH()`, `DBH()`, `ADBH()` and `DBR()` now
         include a list `Select` with values and information regarding selection.

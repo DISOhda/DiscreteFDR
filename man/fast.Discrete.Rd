@@ -36,7 +36,7 @@ values are \code{"noassoc"} (default), \code{"marginal"} or
 
 \item{adaptive}{single boolean specifying whether to conduct an adaptive procedure or not.}
 
-\item{select.threshold}{single real number strictly between 0 and 1 indicating the largest raw p-value to be considered, i.e. only p-values below this threshold ae considered and the procedures are adjusted in order to take this selection effect into account; if \code{threshold = 1} (the default), all raw p-values are selected.}
+\item{select.threshold}{single real number strictly between 0 and 1 indicating the largest raw p-value to be considered, i.e. only p-values below this threshold are considered and the procedures are adjusted in order to take this selection effect into account; if \code{threshold = 1} (the default), all raw p-values are selected.}
 }
 \value{
 A \code{DiscreteFDR} S3 class object whose elements are:

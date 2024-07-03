@@ -123,7 +123,7 @@ and obtain for the distribution function of the $i$-th $p$-value under the null
 $$F_i(x) = \overline{G_i}\left(\left(\overline{G_i}\right)^{-1}(x)\right).$$
 Each function $F_i$ is a step function with $F_i(0) = 0$, $F_i(1) = 1$ and there exists an infinite sequence of jumps at locations $1 = x_1 > x_2 > \ldots > x_n > x_{n + 1} > \ldots > 0$ such that $F(x_j) = x_j$ for $j \in \mathbb{N}$.
 
-Initially it seems that we run into a problem if we want to determine the critical values of [DBH-SD] since the supports of $F_1, \ldots, F_9$ are no longer finite (but still discrete). We can deal with this problem by using the observation from Section \ref{subsec:CritConsts} that it is sufficient to consider new, restricted supports $\mathcal{A}_i \cap [s^{\tiny \mbox{min}},1]$ where the lower threshold satisfies
+Initially it seems that we run into a problem if we want to determine the critical values of [DBH-SD] since the supports of $F_1, \ldots, F_9$ are no longer finite (but still discrete). We can deal with this problem by using the observation that it is sufficient to consider new, restricted supports $\mathcal{A}_i \cap [s^{\tiny \mbox{min}},1]$ where the lower threshold satisfies
 \begin{align}
   s^{\tiny \mbox{min}} &\le \tau^{\tiny \mbox{min}}_1 = \max \left\{t \in \mathcal{A}\::\: t \leq y^{\tiny \mbox{min}} \right\} \qquad \text{where} \qquad y^{\tiny \mbox{min}} = \frac{\alpha}{m} \cdot \left(1 + \frac{\alpha}{m} \right)^{-1}.
 \end{align}

@@ -26,7 +26,7 @@
 #' for various tests. The objects that contain these results can be used
 #' directly by the [`discrete.BH()`], [`DBH()`], [`ADBH()`] and [`DBR()`]
 #' functions. Alternatively, these functions also accept a vector of raw
-#' observed p-values and a list of therespective discrete supports of the CDFs
+#' observed p-values and a list of the respective discrete supports of the CDFs
 #' of the p-values.
 #' 
 #' **Note**: The former function [`fisher.pvalues.support()`], which allows to

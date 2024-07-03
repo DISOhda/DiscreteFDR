@@ -41,7 +41,7 @@ DBR(test.results, ...)
 
 \item{ret.crit.consts}{single boolean specifying whether critical constants are to be computed.}
 
-\item{select.threshold}{single real number strictly between 0 and 1 indicating the largest raw p-value to be considered, i.e. only p-values below this threshold ae considered and the procedures are adjusted in order to take this selection effect into account; if \code{threshold = 1} (the default), all raw p-values are selected.}
+\item{select.threshold}{single real number strictly between 0 and 1 indicating the largest raw p-value to be considered, i.e. only p-values below this threshold are considered and the procedures are adjusted in order to take this selection effect into account; if \code{threshold = 1} (the default), all raw p-values are selected.}
 
 \item{pCDFlist.indices}{list of numeric vectors containing the test indices that indicate to which raw p-value each \strong{unique} support in \code{pCDFlist} belongs; ignored if the lengths of \code{test.results} and \code{pCDFlist} are equal.}
 }
@@ -78,7 +78,7 @@ which explains the choice of the default value here.
 
 Computing critical constants (\code{ret.crit.consts = TRUE}) requires considerably
 more execution time, especially if the number of unique supports is large.
-We recoomend that users should only have them calculated when they need them,
+We recommend that users should only have them calculated when they need them,
 e.g. for illustrating the rejection area in a plot or other theoretical
 reasons.
 }

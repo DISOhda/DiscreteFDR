@@ -32,7 +32,7 @@ direct.discrete.BH(
 
 \item{ret.crit.consts}{single boolean specifying whether critical constants are to be computed.}
 
-\item{select.threshold}{single real number strictly between 0 and 1 indicating the largest raw p-value to be considered, i.e. only p-values below this threshold ae considered and the procedures are adjusted in order to take this selection effect into account; if \code{threshold = 1} (the default), all raw p-values are selected.}
+\item{select.threshold}{single real number strictly between 0 and 1 indicating the largest raw p-value to be considered, i.e. only p-values below this threshold are considered and the procedures are adjusted in order to take this selection effect into account; if \code{threshold = 1} (the default), all raw p-values are selected.}
 
 \item{preprocess.fun}{optional function for pre-processing the input \code{data}; its result must be suitable for the first parameter of the \code{test.fun} function.}
 

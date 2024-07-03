@@ -25,7 +25,7 @@ belong. The latter allows to compute p-values and their respective supports
 for various tests. The objects that contain these results can be used
 directly by the \code{\link[=discrete.BH]{discrete.BH()}}, \code{\link[=DBH]{DBH()}}, \code{\link[=ADBH]{ADBH()}} and \code{\link[=DBR]{DBR()}}
 functions. Alternatively, these functions also accept a vector of raw
-observed p-values and a list of therespective discrete supports of the CDFs
+observed p-values and a list of the respective discrete supports of the CDFs
 of the p-values.
 
 \strong{Note}: The former function \code{\link[=fisher.pvalues.support]{fisher.pvalues.support()}}, which allows to

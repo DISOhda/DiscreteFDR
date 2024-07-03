@@ -21,6 +21,7 @@ Description: Implementations of the multiple testing procedures for discrete
     shortcut function to obtain such p-values and supports is also provided,
     along with a wrapper allowing to apply discrete procedures directly to data.
 License: GPL-3
+Language: en-US
 Encoding: UTF-8
 Depends: R (>= 3.00)
 RoxygenNote: 7.3.1
