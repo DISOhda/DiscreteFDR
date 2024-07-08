@@ -9,6 +9,8 @@ match.pvals(pCDFlist, raw.pvalues, pCDFlist.indices = NULL)
 \arguments{
 \item{pCDFlist}{list of the supports of the CDFs of the p-values; each list item must be a numeric vector, which is sorted in increasing order and whose last element equals 1.}
 
+\item{raw.pvalues}{numeric vector with raw p-values for which a discrete FDR procedure is to be performed.}
+
 \item{pCDFlist.indices}{list of numeric vectors containing the test indices that indicate to which raw p-value each \strong{unique} support in \code{pCDFlist} belongs; ignored if the lengths of \code{test.results} and \code{pCDFlist} are equal.}
 }
 \value{
@@ -22,8 +24,9 @@ them to their nearest neighbor matching with the supports of their
 respective CDFs (as in function \code{p.discrete.adjust()} of package
 \code{discreteMTP}, which is no longer available on CRAN).
 
-\strong{Note}: This is an internal function and has to be called directly via
-\code{:::}, i.e. \code{DiscreteFDR:::match.pvals()}.
+\strong{Note}: In the next version, this is to become an internal function and
+will have to be called #' directly via \code{:::}, i.e.
+\code{DiscreteFDR:::match.pvals()}.
 }
 \details{
 Well computed raw p-values should already belong to their respective CDF
@@ -45,4 +48,3 @@ match.pvals(toyList,toyRaw2)
 \seealso{
 \code{\link[=discrete.BH]{discrete.BH()}}, \code{\link[=DBR]{DBR()}}
 }
-\keyword{internal}

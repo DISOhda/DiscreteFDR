@@ -1,4 +1,5 @@
 #' <%=ifelse(exists("test.results") && test.results,          "@param test.results       either a numeric vector with p-values or an R6 object of class \\code{\\link[DiscreteTests]{DiscreteTestResults}} from package \\link[DiscreteTests]{DiscreteTests} for which a discrete FDR procedure is to be performed.","") %>
+#' <%=ifelse(exists("raw.pvalues") && raw.pvalues,            "@param raw.pvalues        numeric vector with raw p-values for which a discrete FDR procedure is to be performed.","") %>
 #' <%=ifelse(exists("pCDFlist") && pCDFlist,                  "@param pCDFlist           list of the supports of the CDFs of the p-values; each list item must be a numeric vector, which is sorted in increasing order and whose last element equals 1.","") %>
 #' <%=ifelse(exists("alpha") && alpha,                        "@param alpha              single real number strictly between 0 and 1 indicating the target FDR level.","") %>
 #' <%=ifelse(exists("direction") && direction,                "@param direction          single character string specifying whether to perform a step-up (\\code{\"su\"}; the default) or step-down procedure (\\code{\"sd\"}).","") %>

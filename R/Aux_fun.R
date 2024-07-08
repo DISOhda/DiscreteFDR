@@ -1,7 +1,5 @@
 #' @name match.pvals
 #' 
-#' @keywords internal
-#' 
 #' @title
 #' Matching Raw P-Values with Supports 
 #' 
@@ -11,8 +9,9 @@
 #' respective CDFs (as in function `p.discrete.adjust()` of package
 #' `discreteMTP`, which is no longer available on CRAN).
 #' 
-#' **Note**: This is an internal function and has to be called directly via
-#' `:::`, i.e. `DiscreteFDR:::match.pvals()`.
+#' **Note**: In the next version, this is to become an internal function and
+#' will have to be called #' directly via `:::`, i.e.
+#' `DiscreteFDR:::match.pvals()`.
 #' 
 #' @details
 #' Well computed raw p-values should already belong to their respective CDF
@@ -41,6 +40,7 @@
 #' A vector where each raw p-value has been replaced by its nearest neighbor, if
 #' necessary.
 #'
+#' @export
 match.pvals <- function(pCDFlist, raw.pvalues, pCDFlist.indices = NULL){
   m <- length(raw.pvalues)
   if(!is.null(pCDFlist.indices)){

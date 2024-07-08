@@ -31,8 +31,6 @@
         automatically extracted from these objects.
 -   New functions `generate.pvalues()` and `direct.discrete.BH()` as more
     flexible replacements for `fisher.pvalues.support()` and `fast.discrete()`.
--   `match.pvals()` is now an internal function. If users wish to employ it,
-    they have to use `DiscreteFDR:::match.pvals()`.
 -   Step function evaluation in C++ code has been replaced by closely optimized
     inline functions which offer performance gains of 10-50%.
     
