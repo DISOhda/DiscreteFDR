@@ -22,12 +22,13 @@ Description: Implementations of the multiple testing procedures for discrete
     along with a wrapper allowing to apply discrete procedures directly to data.
 License: GPL-3
 Language: en-US
+LazyData: true
 Encoding: UTF-8
-Depends: R (>= 3.00), DiscreteDatasets
+Depends: R (>= 3.00)
 RoxygenNote: 7.3.2
 Suggests: rmarkdown, knitr, R.rsp, kableExtra
 VignetteBuilder: knitr, R.rsp
-Imports: Rcpp (>= 1.0.12), DiscreteTests, lifecycle, checkmate
+Imports: Rcpp (>= 1.0.12), DiscreteTests, lifecycle, checkmate, DiscreteDatasets
 LinkingTo: Rcpp, RcppArmadillo
 URL: https://github.com/DISOhda/DiscreteFDR
 BugReports: https://github.com/DISOhda/DiscreteFDR/issues

@@ -3,14 +3,16 @@
 #' @title
 #' Matching Raw P-Values with Supports 
 #' 
-#' @description#' 
+#' @description
+#' `r lifecycle::badge('deprecated')`
+#' 
 #' Constructs the observed p-values from the raw observed p-values, by rounding
 #' them to their nearest neighbor matching with the supports of their
 #' respective CDFs (as in function `p.discrete.adjust()` of package
 #' `discreteMTP`, which is no longer available on CRAN).
 #' 
 #' **Note**: In the next version, this is to become an internal function and
-#' will have to be called #' directly via `:::`, i.e.
+#' will have to be called directly via `:::`, i.e.
 #' `DiscreteFDR:::match.pvals()`.
 #' 
 #' @details
@@ -40,8 +42,15 @@
 #' A vector where each raw p-value has been replaced by its nearest neighbor, if
 #' necessary.
 #'
+#' @importFrom lifecycle deprecate_soft
 #' @export
 match.pvals <- function(pCDFlist, raw.pvalues, pCDFlist.indices = NULL){
+  deprecate_soft("2.0.0", "match.pvals()", 
+                 details = paste0("This will become a purely internal",
+                                  "function. Please call it directly via",
+                                  "'DiscreteFDR:::match.pvals()'.")
+                 )
+  
   m <- length(raw.pvalues)
   if(!is.null(pCDFlist.indices)){
     idx <- unlist(pCDFlist.indices)

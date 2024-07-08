@@ -11,7 +11,7 @@
 0 errors | 0 warnings | 0 notes
 
 ### win-builder
-0 errors | 0 warnings | 1 note
+0 errors | 0 warnings | 0 notes
 
 ### mac-builder
 0 errors | 0 warnings | 0 notes

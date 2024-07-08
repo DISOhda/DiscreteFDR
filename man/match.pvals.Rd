@@ -18,14 +18,15 @@ A vector where each raw p-value has been replaced by its nearest neighbor, if
 necessary.
 }
 \description{
-#'
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+
 Constructs the observed p-values from the raw observed p-values, by rounding
 them to their nearest neighbor matching with the supports of their
 respective CDFs (as in function \code{p.discrete.adjust()} of package
 \code{discreteMTP}, which is no longer available on CRAN).
 
 \strong{Note}: In the next version, this is to become an internal function and
-will have to be called #' directly via \code{:::}, i.e.
+will have to be called directly via \code{:::}, i.e.
 \code{DiscreteFDR:::match.pvals()}.
 }
 \details{
