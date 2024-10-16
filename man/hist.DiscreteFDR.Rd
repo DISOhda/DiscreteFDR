@@ -44,6 +44,7 @@ test.result <- generate.pvalues(df, "fisher")
 raw.pvalues <- test.result$get_pvalues()
 pCDFlist <- test.result$get_pvalue_supports()
 
+# DBH (SU)
 DBH <- DBH(raw.pvalues, pCDFlist)
 hist(DBH)
 

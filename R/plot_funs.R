@@ -23,7 +23,8 @@
 #' An object of class `histogram`.
 #'
 #' @template exampleGPV
-#' @examples 
+#' @examples
+#' # DBH (SU)
 #' DBH <- DBH(raw.pvalues, pCDFlist)
 #' hist(DBH)
 #'
