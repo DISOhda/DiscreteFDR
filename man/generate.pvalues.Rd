@@ -53,7 +53,7 @@ pCDFlist <- test.result$get_pvalue_supports()
 df2 <- data.frame(X1, N1, X2, N2)
 generate.pvalues(
   dat = df2,
-  test.fun = "fisher.test.pv",
+  test.fun = "fisher_test_pv",
   preprocess.fun = function(tab) {
     for(col in c(2, 4)) tab[, col] <- tab[, col] - tab[, col - 1]
     return(tab)
@@ -63,7 +63,7 @@ generate.pvalues(
 # Compute p-values and their supports of a binomial test with pre-processing
 generate.pvalues(
   dat = rbind(c(5, 2, 7), c(3, 4, 0)), 
-  test.fun = "binom.test.pv",
+  test.fun = "binom_test_pv",
   test.args = list(n = c(9, 8, 11), p = 0.6, alternative = "two.sided"),
   preprocess.fun = colSums
 )
