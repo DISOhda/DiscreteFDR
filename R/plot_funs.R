@@ -9,8 +9,6 @@
 #' @param x          an object of class `DiscreteFDR`.
 #' @param breaks     as in [`hist`]; here, the Friedman-Diaconis algorithm
 #'                   (`"FD"`) is used as default.
-#' @param plot       a boolean; if `TRUE` (the default), a histogram is plotted,
-#'                   otherwise a list of breaks and counts is returned.
 #' @param ...        further arguments to [`hist`] or [`plot.histogram`],
 #'                   respectively.
 #' 
@@ -27,7 +25,11 @@
 #'
 #' @importFrom graphics hist
 #' @export
-hist.DiscreteFDR <- function(x, breaks = "FD", plot = TRUE, ...){
+hist.DiscreteFDR <- function(
+    x,
+    breaks = "FD",
+    ...
+) {
   if(!("DiscreteFDR" %in% class(x)))
     stop("'x' must be an object of class DiscreteFDR")
   
@@ -41,13 +43,14 @@ hist.DiscreteFDR <- function(x, breaks = "FD", plot = TRUE, ...){
   
   # add 'breaks' and 'plot' to 'lst' for 'do.call'
   lst$breaks <- breaks
-  lst$plot <- plot
   lst$x <- x$Data$Raw.pvalues
   
   # call 'hist'
   r <- do.call(hist, lst)
   
   r$xname <- deparse(substitute(x))
+  
+  plot <- if(exists('plot', lst)) lst$plot else TRUE
   
   if(plot) return(invisible(r)) else return(r)
 }
