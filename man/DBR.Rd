@@ -47,22 +47,22 @@ DBR(test.results, ...)
 }
 \value{
 A \code{DiscreteFDR} S3 class object whose elements are:
-\item{Rejected}{rejected raw p-values.}
+\item{Rejected}{rejected raw \eqn{p}-values.}
 \item{Indices}{indices of rejected hypotheses.}
 \item{Num.rejected}{number of rejections.}
-\item{Adjusted}{adjusted p-values.}
+\item{Adjusted}{adjusted \eqn{p}-values.}
 \item{Critical.constants}{critical values (only exists if computations where performed with \code{ret.crit.consts = TRUE}).}
 \item{Select}{list with data related to \eqn{p}-value selection; only exists if \code{select.threshold < 1}.}
-\item{Select$Threshold}{p-value selection threshold (\code{select.threshold}).}
-\item{Select$Effective.Thresholds}{results of each p-value CDF evaluated at the selection threshold.}
-\item{Select$Pvalues}{selected p-values that are \eqn{\leq} selection threshold.}
-\item{Select$Indices}{indices of p-values \eqn{\leq} selection threshold.}
-\item{Select$Scaled}{scaled selected p-values.}
-\item{Select$Number}{number of selected p-values \eqn{\leq} selection threshold.}
+\item{Select$Threshold}{\eqn{p}-value selection threshold (\code{select.threshold}).}
+\item{Select$Effective.Thresholds}{results of each \eqn{p}-value CDF evaluated at the selection threshold.}
+\item{Select$Pvalues}{selected \eqn{p}-values that are \eqn{\leq} selection threshold.}
+\item{Select$Indices}{indices of \eqn{p}-values \eqn{\leq} selection threshold.}
+\item{Select$Scaled}{scaled selected \eqn{p}-values.}
+\item{Select$Number}{number of selected \eqn{p}-values \eqn{\leq} selection threshold.}
 \item{Data}{list with input data.}
 \item{Data$Method}{character string describing the used algorithm, e.g. 'Discrete Benjamini-Hochberg procedure (step-up)'}
-\item{Data$Raw.pvalues}{observed p-values.}
-\item{Data$pCDFlist}{list of the p-value supports.}
+\item{Data$Raw.pvalues}{observed \eqn{p}-values.}
+\item{Data$pCDFlist}{list of the \eqn{p}-value supports.}
 \item{Data$FDR.level}{FDR level \code{alpha}.}
 \item{Data$Data.name}{the respective variable names of the input data.}
 \item{DBR.Tuning}{value of the tuning parameter \code{lambda}.}
