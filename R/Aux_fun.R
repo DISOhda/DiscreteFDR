@@ -46,9 +46,9 @@
 #' @export
 match.pvals <- function(pCDFlist, raw.pvalues, pCDFlist.indices = NULL){
   deprecate_soft("2.0.0", "match.pvals()", 
-                 details = paste0("This will become a purely internal",
-                                  "function. Please call it directly via",
-                                  "'DiscreteFDR:::match.pvals()'.")
+                 details = paste("This will become a purely internal",
+                                 "function. Please call it directly via",
+                                 "'DiscreteFDR:::match.pvals()'.")
                  )
   
   m <- length(raw.pvalues)
