@@ -94,7 +94,7 @@
 #' @import DiscreteTests
 #' @export
 fisher.pvalues.support <- function(counts, alternative = "greater", input = "noassoc"){
-  deprecate_soft("1.3.7", "fisher.pvalues.support()", "generate.pvalues()")
+  deprecate_soft("2.0.0", "fisher.pvalues.support()", "generate.pvalues()")
   
   # 'counts' must be a non-empty data frame or a non-empty matrix 
   qassert(x = counts, rules = c("M+", "D+"))
@@ -166,7 +166,7 @@ fisher.pvalues.support <- function(counts, alternative = "greater", input = "noa
 #' df2 <- data.frame(X1, N1, X2, N2)
 #' generate.pvalues(
 #'   dat = df2,
-#'   test.fun = "fisher.test.pv",
+#'   test.fun = "fisher_test_pv",
 #'   preprocess.fun = function(tab) {
 #'     for(col in c(2, 4)) tab[, col] <- tab[, col] - tab[, col - 1]
 #'     return(tab)
@@ -176,7 +176,7 @@ fisher.pvalues.support <- function(counts, alternative = "greater", input = "noa
 #' # Compute p-values and their supports of a binomial test with pre-processing
 #' generate.pvalues(
 #'   dat = rbind(c(5, 2, 7), c(3, 4, 0)), 
-#'   test.fun = "binom.test.pv",
+#'   test.fun = "binom_test_pv",
 #'   test.args = list(n = c(9, 8, 11), p = 0.6, alternative = "two.sided"),
 #'   preprocess.fun = colSums
 #' )
@@ -200,7 +200,7 @@ generate.pvalues <- function(
   ## get all functions from package 'DiscreteTests'
   funs <- ls(asNamespace("DiscreteTests"))
   ## extract available test functions
-  funs <- funs[endsWith(funs, ".test.pv")]
+  funs <- funs[endsWith(funs, "_test_pv")]
   ## make sure input 'test.fun' matches an available test function
   if(is.character(test.fun)) {
     ### match input 'test.fun' string to available test functions
@@ -217,7 +217,7 @@ generate.pvalues <- function(
         break;
       }
     }
-    if(!OK) stop(paste("'test.fun' must be one of the '*.test.pv' functions of",
+    if(!OK) stop(paste("'test.fun' must be one of the '*_test_pv' functions of",
                        "package 'DiscreteTests'."))
   }
   
