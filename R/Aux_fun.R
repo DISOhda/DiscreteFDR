@@ -6,8 +6,6 @@
 #' Matching Raw P-Values with Supports 
 #' 
 #' @description
-#' `r lifecycle::badge('deprecated')`
-#' 
 #' Constructs the observed p-values from the raw observed p-values, by rounding
 #' them to their nearest neighbor matching with the supports of their
 #' respective CDFs (as in function `p.discrete.adjust()` of package
@@ -43,7 +41,6 @@
 #' A vector where each raw p-value has been replaced by its nearest neighbor, if
 #' necessary.
 #'
-#' @export
 match.pvals <- function(test.results, pCDFlist, pCDFlist.indices = NULL) {
   m <- length(test.results)
   if(!is.null(pCDFlist.indices)) {
