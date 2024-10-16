@@ -42,7 +42,7 @@ hist.DiscreteFDR <- function(x, breaks = "FD", plot = TRUE, ...){
   # add 'breaks' and 'plot' to 'lst' for 'do.call'
   lst$breaks <- breaks
   lst$plot <- plot
-  lst$x <- x$Data$raw.pvalues
+  lst$x <- x$Data$Raw.pvalues
   
   # call 'hist'
   r <- do.call(hist, lst)
@@ -148,7 +148,7 @@ plot.DiscreteFDR <- function(
   )
   
   # determine number of tests, selections and rejections
-  n <- length(x$Data$raw.pvalues)
+  n <- length(x$Data$Raw.pvalues)
   select <- exists('Select', x)
   m <- if(select) x$Select$Number else n
   
@@ -182,7 +182,7 @@ plot.DiscreteFDR <- function(
   }
   
   # start plotting with empty area
-  lst$x <- if(select) x$Select$Scaled else x$Data$raw.pvalues
+  lst$x <- if(select) x$Select$Scaled else x$Data$Raw.pvalues
   lst$col <- "NA"
   do.call(plot, lst)
   
@@ -196,7 +196,7 @@ plot.DiscreteFDR <- function(
   } else {
     idx <- setdiff(1:n, x$Indices)
     if(length(idx)) {
-      y_acc <- sort(x$Data$raw.pvalues[idx])
+      y_acc <- sort(x$Data$Raw.pvalues[idx])
       x_acc <- setdiff(seq_len(n), seq_len(x$Num.rejected))
     }
   }
