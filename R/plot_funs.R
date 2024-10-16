@@ -31,6 +31,7 @@
 #' @export
 hist.DiscreteFDR <- function(
     x,
+    mode = c("raw", "selected"),
     breaks = "FD",
     ...
 ) {
