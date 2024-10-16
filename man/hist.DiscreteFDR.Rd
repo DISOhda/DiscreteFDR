@@ -4,19 +4,20 @@
 \alias{hist.DiscreteFDR}
 \title{Histogram of Raw P-Values}
 \usage{
-\method{hist}{DiscreteFDR}(x, breaks = "FD", plot = TRUE, ...)
+\method{hist}{DiscreteFDR}(x, breaks = "FD", ...)
 }
 \arguments{
 \item{x}{an object of class \code{DiscreteFDR}.}
 
-\item{breaks}{as in \code{\link{hist}}; here, the Friedman-Diaconis algorithm
-(\code{"FD"}) is used as default.}
+\item{breaks}{as in \code{\link[graphics:hist]{graphics::hist()}}; here, the Friedman-Diaconis
+algorith (\code{"FD"}) is used as default.}
 
-\item{plot}{a boolean; if \code{TRUE} (the default), a histogram is plotted,
-otherwise a list of breaks and counts is returned.}
+\item{...}{further arguments to \code{\link[graphics:hist]{graphics::hist()}} or
+\code{\link[graphics:plothistogram]{graphics::plot.histogram()}}, respectively.}
 
-\item{...}{further arguments to \code{\link{hist}} or \code{\link{plot.histogram}},
-respectively.}
+\item{mode}{single character string specifying for which $p$-values the
+histogram is to be generated; must either be \code{"raw"} or
+\code{"selected"}.}
 }
 \value{
 An object of class \code{histogram}.
@@ -25,7 +26,8 @@ An object of class \code{histogram}.
 Computes a histogram of the raw p-values of a \code{DiscreteFDR} object.
 }
 \details{
-This method simply calls \code{\link{hist}} and passes the raw p-values of the object.
+If \code{x} does not contain results of a selection approach, a warning is issued
+and a histogram of the raw p-values is drawn.
 }
 \examples{
 X1 <- c(4, 2, 2, 14, 6, 9, 4, 0, 1)
