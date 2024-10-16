@@ -4,9 +4,12 @@ Title: FDR Based Multiple Testing Procedures with Adaptation for Discrete Tests
 Version: 2.0.0
 Date: 2024-07-08
 Authors@R: c(
-    person("Sebastian", "Döhler", role = c("aut", "ctb")),
+    person("Sebastian", "Döhler", role = c("aut", "ctb"),
+           email = "sebastian.doehler@h-da.de",
+           comment = c(ORCID = "0000-0002-0321-6355")),
     person("Florian", "Junge", role = c("aut", "ctb", "cre"), 
-           email = "diso.fbmn@h-da.de"),
+           email = "diso.fbmn@h-da.de",
+           comment = c(ORCID = "0000-0002-0321-6355")),
     person("Guillermo", "Durand", role = c("aut", "ctb")),
     person("Etienne", "Roquain", role = "ctb"),
     person("Christina", "Kihn", role = "ctb")
@@ -25,11 +28,11 @@ Language: en-US
 LazyData: true
 Encoding: UTF-8
 Depends: R (>= 3.00)
-RoxygenNote: 7.3.2
-Suggests: rmarkdown, knitr, R.rsp, kableExtra
-VignetteBuilder: knitr, R.rsp
 Imports: Rcpp (>= 1.0.12), DiscreteTests, lifecycle, checkmate, DiscreteDatasets
 LinkingTo: Rcpp, RcppArmadillo
+Suggests: rmarkdown, knitr, R.rsp, kableExtra
+VignetteBuilder: knitr, R.rsp
 URL: https://github.com/DISOhda/DiscreteFDR
 BugReports: https://github.com/DISOhda/DiscreteFDR/issues
+RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
