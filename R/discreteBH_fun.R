@@ -183,7 +183,7 @@ discrete.BH.default <- function(
   #----------------------------------------------------
   #       check and prepare p-values for processing
   #----------------------------------------------------
-  pvec <- match.pvals(pCDFlist, test.results, pCDFlist.indices)
+  pvec <- match.pvals(test.results, pCDFlist, pCDFlist.indices)
   
   #----------------------------------------------------
   #       execute computations
