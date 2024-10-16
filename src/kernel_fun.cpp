@@ -21,24 +21,35 @@
 //' parameters (including their names, order, etc.) may be changed without
 //' notice!
 //' 
+//' @templateVar pCDFlist TRUE
+//' @template param
+//' 
+//' @param pvalues      numeric vector, sorted in increasing order, that either
+//'                     must contain the entirety of all observable values of
+//'                     the p-value supports (when computing critical constants)
+//'                     or only the sorted raw p-values.
+//' @param stepUp       boolean specifying whether to conduct the step-up
+//'                     (`TRUE`) or step-down (`FALSE`; the default)
+//'                     procedure.
+//' @param alpha        single real number strictly between 0 and 1 indicating
+//'                     the target FDR level; for `*.fast` kernels, it is only
+//'                     needed, if `stepUp = TRUE`.
+//' @param support      numeric vector, sorted in increasing order, that
+//'                     contains the entirety of all observable values of the
+//'                     p-value supports; for `*.fast` kernels, it is ignored if
+//'                     `stepUp = FALSE`.
+//' @param pCDFcounts   integer vector of counts that indicates to how many
+//'                     p-values each **unique** p-value distributions belongs.
+//' @param sorted_pv    numeric vector containing the raw p-values, sorted in
+//'                     increasing order.
+//' @param lambda       real number strictly between 0 and 1 specifying the DBR
+//'                     tuning parameter.
+//' 
 //' @details
 //' When computing critical constants under step-down, that is, when using
 //' `kernel_DBH_crit`, `kernel_ADBH_crit` or `kernel_DBR_crit` with
 //' `stepUp = FALSE` (i.e. the step-down case), we still need to get transformed
 //' p-values to compute the adjusted p-values.
-//' 
-//' @seealso
-//' [`discrete.BH`], [`fast.Discrete`], [`DBR`]
-//' 
-//' @templateVar pCDFlist TRUE
-//' @templateVar pvalues TRUE
-//' @templateVar stepUp TRUE
-//' @templateVar alpha2 TRUE
-//' @templateVar support TRUE
-//' @templateVar sorted_pv TRUE
-//' @templateVar lambda2 TRUE
-//' @templateVar pCDFcounts TRUE
-//' @template param 
 //' 
 //' @return
 //' For `kernel.DBH.fast`, `kernel.ADBH.fast` and `kernel.DBR.fast`, a vector
@@ -46,6 +57,9 @@
 //' `kernel.DBR.crit` return a list with critical constants (`$crit.consts`)
 //' and transformed p-values (`$pval.transf`), but if `stepUp = FALSE`, there
 //' are critical values only.
+//' 
+//' @seealso
+//' [`discrete.BH`], [`fast.Discrete`], [`DBR`]
 //' 
 //' @examples \dontrun{
 //' X1 <- c(4, 2, 2, 14, 6, 9, 4, 0, 1)

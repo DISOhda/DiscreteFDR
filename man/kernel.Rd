@@ -60,19 +60,32 @@ kernel_DBR_crit(
 \arguments{
 \item{pCDFlist}{list of the supports of the CDFs of the p-values; each list item must be a numeric vector, which is sorted in increasing order and whose last element equals 1.}
 
-\item{pvalues}{numeric vector, sorted in increasing order, that either must contain the entirety of all observable values of the p-value supports (when computing critical constants) or only the sorted raw p-values.}
+\item{pvalues}{numeric vector, sorted in increasing order, that either
+must contain the entirety of all observable values of
+the p-value supports (when computing critical constants)
+or only the sorted raw p-values.}
 
-\item{stepUp}{boolean specifying whether to conduct the step-up (\code{TRUE}) or step-down (\code{FALSE}; the default) procedure.}
+\item{stepUp}{boolean specifying whether to conduct the step-up
+(\code{TRUE}) or step-down (\code{FALSE}; the default)
+procedure.}
 
-\item{alpha}{single real number strictly between 0 and 1 indicating the target FDR level; for \verb{*.fast} kernels, it is only needed, if \code{stepUp = TRUE}.}
+\item{alpha}{single real number strictly between 0 and 1 indicating
+the target FDR level; for \verb{*.fast} kernels, it is only
+needed, if \code{stepUp = TRUE}.}
 
-\item{support}{numeric vector, sorted in increasing order, that contains the entirety of all observable values of the p-value supports; for \verb{*.fast} kernels, it is ignored if \code{stepUp = FALSE}.}
+\item{support}{numeric vector, sorted in increasing order, that
+contains the entirety of all observable values of the
+p-value supports; for \verb{*.fast} kernels, it is ignored if
+\code{stepUp = FALSE}.}
 
-\item{pCDFcounts}{integer vector of counts that indicates to how many p-values each \strong{unique} p-value distributions belongs.}
+\item{pCDFcounts}{integer vector of counts that indicates to how many
+p-values each \strong{unique} p-value distributions belongs.}
 
-\item{sorted_pv}{numeric vector containing the raw p-values, sorted in increasing order.}
+\item{sorted_pv}{numeric vector containing the raw p-values, sorted in
+increasing order.}
 
-\item{lambda}{real number strictly between 0 and 1 specifying the DBR tuning parameter.}
+\item{lambda}{real number strictly between 0 and 1 specifying the DBR
+tuning parameter.}
 }
 \value{
 For \code{kernel.DBH.fast}, \code{kernel.ADBH.fast} and \code{kernel.DBR.fast}, a vector
