@@ -52,13 +52,13 @@ A \code{DiscreteFDR} S3 class object whose elements are:
 \item{Num.rejected}{number of rejections.}
 \item{Adjusted}{adjusted p-values.}
 \item{Critical.constants}{critical values (only exists if computations where performed with \code{ret.crit.consts = TRUE}).}
-\item{Select}{list with data related to \eqn{p}-value selection; only exists if \code{threshold < 1}.}
-\item{Select$Threshold}{p-value selection \code{threshold}.}
+\item{Select}{list with data related to \eqn{p}-value selection; only exists if \code{select.threshold < 1}.}
+\item{Select$Threshold}{p-value selection threshold (\code{select.threshold}).}
 \item{Select$Effective.Thresholds}{results of each p-value CDF evaluated at the selection threshold.}
-\item{Select$Pvalues}{selected p-values that are \eqn{\leq} selection \code{threshold}.}
-\item{Select$Indices}{indices of p-values \eqn{\leq} selection \code{threshold}.}
+\item{Select$Pvalues}{selected p-values that are \eqn{\leq} selection threshold.}
+\item{Select$Indices}{indices of p-values \eqn{\leq} selection threshold.}
 \item{Select$Scaled}{scaled selected p-values.}
-\item{Select$Number}{number of selected p-values \eqn{\leq} \code{threshold}.}
+\item{Select$Number}{number of selected p-values \eqn{\leq} selection threshold.}
 \item{Data}{list with input data.}
 \item{Data$Method}{character string describing the used algorithm, e.g. 'Discrete Benjamini-Hochberg procedure (step-up)'}
 \item{Data$Raw.pvalues}{observed p-values.}
