@@ -83,9 +83,9 @@
 #' 
 #' # If not searching for critical constants, we use only the observed p-values
 #' sorted.pvals   <- sort(raw.pvalues)
-#' y.DBH.sd.fast  <- kernel_DBH_fast(pCDFlist, sorted.pvals)
-#' y.ADBH.sd.fast <- kernel_ADBH_fast(pCDFlist, sorted.pvals)
-#' y.DBR.fast     <- kernel_DBR_fast(pCDFlist, sorted.pvals)
+#' y.DBH.sd.fast  <- DiscreteFDR:::kernel_DBH_fast(pCDFlist, sorted.pvals)
+#' y.ADBH.sd.fast <- DiscreteFDR:::kernel_ADBH_fast(pCDFlist, sorted.pvals)
+#' y.DBR.fast     <- DiscreteFDR:::kernel_DBR_fast(pCDFlist, sorted.pvals)
 #' # transformed values
 #' y.DBH.sd.fast
 #' y.ADBH.sd.fast
@@ -93,9 +93,9 @@
 #' 
 #' # compute transformed support
 #' pv.list        <- sort(unique(unlist(pCDFlist)))
-#' y.DBH.sd.crit  <- kernel_DBH_crit(pCDFlist, pv.list, sorted.pvals)
-#' y.ADBH.sd.crit <- kernel_ADBH_crit(pCDFlist, pv.list, sorted.pvals)
-#' y.DBR.crit     <- kernel_DBR_crit(pCDFlist, pv.list, sorted.pvals)
+#' y.DBH.sd.crit  <- DiscreteFDR:::kernel_DBH_crit(pCDFlist, pv.list, sorted.pvals)
+#' y.ADBH.sd.crit <- DiscreteFDR:::kernel_ADBH_crit(pCDFlist, pv.list, sorted.pvals)
+#' y.DBR.crit     <- DiscreteFDR:::kernel_DBR_crit(pCDFlist, pv.list, sorted.pvals)
 #' # critical constants
 #' y.DBH.sd.crit$crit.consts
 #' y.ADBH.sd.crit$crit.consts
