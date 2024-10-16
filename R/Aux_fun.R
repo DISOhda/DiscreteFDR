@@ -55,7 +55,7 @@ match.pvals <- function(test.results, pCDFlist, pCDFlist.indices = NULL) {
   if(m > 0 && m == n) {
     pvec <- test.results
     in.CDF <- numeric(m)
-    for(k in seql_len(m)) {
+    for(k in seq_len(m)) {
       in.CDF[k] <- match(pvec[k], pCDFlist[[k]])
       if(is.na(in.CDF[k])) {
         in.CDF[k] <- which.min(abs(pCDFlist[[k]] - pvec[k]))

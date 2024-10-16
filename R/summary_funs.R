@@ -46,16 +46,16 @@ summary.DiscreteFDR <- function(object, ...){
   if(select) m <- object$Select$Number
   
   # number of tests
-  n <- length(object$Data$raw.pvalues)
+  n <- length(object$Data$Raw.pvalues)
   # determine order of raw p-values
-  o <- order(object$Data$raw.pvalues)
+  o <- order(object$Data$Raw.pvalues)
   # ordered indices
   i <- 1:n
   # determine for each p-value if its corresponding null hypothesis is rejected
   r <- i %in% object$Indices #if(!select) o %in% object$Indices else o %in% object$Select.Indices[object$Indices]
   
   # create output object with summary table; include all data of object (DiscreteFDR)
-  out <- c(object, list(Table = data.frame('Index' = i, 'P.value' = object$Data$raw.pvalues)))
+  out <- c(object, list(Table = data.frame('Index' = i, 'P.value' = object$Data$Raw.pvalues)))
   if(select){
     out$Table$Selected <- i %in% object$Select$Indices #rep(c(TRUE, FALSE), c(m, n - m))
     out$Table$Scaled <- NA

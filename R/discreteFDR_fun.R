@@ -25,7 +25,7 @@ discrete.fdr.int <- function(
       "Discrete Blanchard-Roquain procedure (lambda = ", method.parameter, ")"
     )
   }
-  input.data$raw.pvalues <- pvec
+  input.data$Raw.pvalues <- pvec
   if(length(pCDFlist) == n) {
     input.data$pCDFlist <- pCDFlist
   } else {
@@ -151,7 +151,7 @@ discrete.fdr.int <- function(
       m.rej <- if(method == "DBR") k else max(idx.rej)
       # determine significant (observed) p-values in sorted.pvals
       idx.rej <- which(pvec <= sorted.pvals[m.rej]) 
-      pvec.rej <- input.data$raw.pvalues[select][idx.rej]
+      pvec.rej <- input.data$Raw.pvalues[select][idx.rej]
     } else {
       m.rej <- 0
       idx.rej <- integer(0)
@@ -163,7 +163,7 @@ discrete.fdr.int <- function(
       if(m.rej){
         # determine significant (observed) p-values in sorted.pvals
         idx.rej <- which(pvec <= sorted.pvals[m.rej])
-        pvec.rej <- input.data$raw.pvalues[select][idx.rej]
+        pvec.rej <- input.data$Raw.pvalues[select][idx.rej]
       } else {
         idx.rej <- numeric(0)
         pvec.rej <- numeric(0)
@@ -171,7 +171,7 @@ discrete.fdr.int <- function(
     } else {
       m.rej <- m
       idx.rej <- 1:m
-      pvec.rej <- input.data$raw.pvalues[select]
+      pvec.rej <- input.data$Raw.pvalues[select]
     }
   }
   
@@ -211,7 +211,7 @@ discrete.fdr.int <- function(
     output$Select <- list()
     output$Select$Threshold <- threshold
     output$Select$Effective.Thresholds <- F.thresh
-    output$Select$Pvalues <- input.data$raw.pvalues[select]
+    output$Select$Pvalues <- input.data$Raw.pvalues[select]
     output$Select$Indices <- select
     output$Select$Scaled <- pvec
     output$Select$Number <- m

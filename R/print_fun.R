@@ -25,9 +25,9 @@ print.DiscreteFDR <- function(x, ...){
   if(!any(c("DiscreteFDR", "summary.DiscreteFDR") %in% class(x)))
     return(print(x))
   
-  n <- length(x$Data$raw.pvalues)
+  n <- length(x$Data$Raw.pvalues)
   k <- x$Num.rejected
-  BH <- p.adjust(x$Data$raw.pvalues, "BH")
+  BH <- p.adjust(x$Data$Raw.pvalues, "BH")
   
   # print title (i.e. algorithm)
   cat("\n")
