@@ -148,7 +148,6 @@ fisher.pvalues.support <- function(counts, alternative = "greater", input = "noa
 #' function that generates p-values and supports and 2.) an optional function
 #' that pre-processes (i.e. transforms) the input data (if necessary) before it
 #' can be used for p-value calculations. The respective arguments are provided
-#' by named lists.
 #' 
 #' @templateVar dat TRUE
 #' @templateVar test.fun TRUE

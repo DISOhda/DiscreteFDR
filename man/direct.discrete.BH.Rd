@@ -22,7 +22,7 @@ direct.discrete.BH(
 
 \item{test.fun}{function \strong{from package \code{\link[DiscreteTests:DiscreteTests-package]{DiscreteTests}}}, i.e. one whose name ends with \verb{*.test.pv} and which performs hypothesis tests and provides an object with p-values and their support sets; can be specified by a single character string (which is automatically checked for being a suitable function \strong{from that package} and may be abbreviated) or a single function object.}
 
-\item{test.args}{optional named list with arguments for \code{test.fun}; the names of the list fields must match the test function's parameter names. The first parameter of the test function MUST NOT be included!}
+\item{test.args}{optional named list with arguments for \code{test.fun}; the names of the list fields must match the test function's parameter names. The first parameter of the test function (i.e. the data) MUST NOT be included!}
 
 \item{alpha}{single real number strictly between 0 and 1 indicating the target FDR level.}
 
@@ -36,7 +36,7 @@ direct.discrete.BH(
 
 \item{preprocess.fun}{optional function for pre-processing the input \code{data}; its result must be suitable for the first parameter of the \code{test.fun} function.}
 
-\item{preprocess.args}{optional named list with arguments for \code{preprocess.fun}; the names of the list fields must match the pre-processing function's parameter names. The first parameter of the test function MUST NOT be included!}
+\item{preprocess.args}{optional named list with arguments for \code{preprocess.fun}; the names of the list fields must match the pre-processing function's parameter names. The first parameter of the test function (i.e. the data) MUST NOT be included!}
 }
 \description{
 Apply the [HSU], [HSD], [AHSU] or [AHSD] procedure, with or without
