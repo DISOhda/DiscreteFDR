@@ -43,7 +43,6 @@
 #' A vector where each raw p-value has been replaced by its nearest neighbor, if
 #' necessary.
 #'
-#' @importFrom lifecycle deprecate_soft
 #' @export
 match.pvals <- function(test.results, pCDFlist, pCDFlist.indices = NULL) {
   m <- length(test.results)
