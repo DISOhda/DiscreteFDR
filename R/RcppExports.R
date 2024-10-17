@@ -105,7 +105,7 @@
 #' y.ADBH.sd.crit$pval.transf
 #' y.DBR.crit$pval.transf
 #' }
-#' 
+#'
 NULL
 
 #' @rdname kernel
