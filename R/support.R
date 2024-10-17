@@ -123,7 +123,7 @@ fisher.pvalues.support <- function(counts, alternative = "greater", input = "noa
   counts <- switch(
     EXPR = input,
     HG2011 = reconstruct_two(counts),
-    marginal = reconstruct_four(counts),
+    marginal = reconstruct_four(counts, c(2, 4)),
     counts
   )
   
