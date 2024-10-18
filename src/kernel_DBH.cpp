@@ -19,21 +19,25 @@ NumericVector kernel_DBH_fast(const List &pCDFlist, const NumericVector &pvalues
   NumericVector pval_transf;
   // p-values to be processed
   NumericVector pv_list;
+  // lengths of the CDF vectors
+  int* lens = new int[numCDF];
   // extract p-value CDF vectors
   NumericVector* sfuns = new NumericVector[(unsigned int)numCDF];
-  for(int i = 0; i < numCDF; i++) sfuns[i] = as<NumericVector>(pCDFlist[i]);
+  for(int i = 0; i < numCDF; i++) {
+    sfuns[i] = as<NumericVector>(pCDFlist[i]);
+    lens[i] = sfuns[i].length();
+  }
   // tau_m for SU case
   tau_m_results tau_m;
   
   if(stepUp){
     // SU case, see (10)
     // get tau_m
-    tau_m = DBH_tau_m(sfuns, CDFcounts, numCDF, support, numTests, alpha);
+    tau_m = DBH_tau_m(sfuns, CDFcounts, numCDF, lens, support, numTests, alpha);
     // restrict attention to values <= tau_m, because tau_k needs to be <= tau_m
-    int j = numValues - 1;
-    while(j > 0 && pvalues[j] > tau_m.value) j--;
-    pv_list = pvalues[Range(0, j)];
-    numValues = j + 1;
+    pv_list = pvalues[Range(0, binary_search(pvalues, tau_m.value, numValues))];
+    // update number of relevant p-values
+    numValues = pv_list.length();
   }else
     // SD case, see (11)
     pv_list = pvalues;
@@ -57,6 +61,7 @@ NumericVector kernel_DBH_fast(const List &pCDFlist, const NumericVector &pvalues
   
   // garbage collection
   delete[] sfuns;
+  delete[] lens;
   
   return pval_transf;
 }
@@ -79,19 +84,27 @@ List kernel_DBH_crit(const List &pCDFlist, const NumericVector &support, const N
   NumericVector pval_transf;
   // vector to store critical values indices
   NumericVector crit(numTests);
+  // lengths of the CDF vectors
+  int* lens = new int[numCDF];
   // extract p-value CDF vectors
   NumericVector* sfuns = new NumericVector[(unsigned int)numCDF];
-  for(int i = 0; i < numCDF; i++) sfuns[i] = as<NumericVector>(pCDFlist[i]);
+  for(int i = 0; i < numCDF; i++) {
+    sfuns[i] = as<NumericVector>(pCDFlist[i]);
+    lens[i] = sfuns[i].length();
+  }
+  
+  // get tau_m
+  tau_m_results tau_m = DBH_tau_m(sfuns, CDFcounts, numCDF, lens, support, numTests, alpha);
+  // set last critical value
+  crit[numTests - 1] = tau_m.value;
   
   if(!stepUp){
     // SD case
-    // get tau_m
-    tau_m_results tau_m = DBH_tau_m(sfuns, CDFcounts, numCDF, support, numTests, alpha);
-    crit[numTests - 1] = tau_m.value;
     // apply the shortcut drawn from Lemma 2, that is
     // c.1 >= the effective critical value associated to alpha / (m + alpha)
-    int i = numValues - 1;
-    while(i > 0 && support[i] >= alpha / (numTests + alpha)) i--;
+    //int i = numValues - 1;
+    //while(i > 0 && support[i] >= alpha / (numTests + alpha)) i--;
+    int i = binary_search(support, alpha / (numTests + alpha), numValues);
     // then re-add the observed p-values (needed to compute the adjusted
     // p-values), because we may have removed some of them by the shortcut
     pv_list = sort_combine(sorted_pv, support[Range(i, tau_m.index)]);
@@ -100,13 +113,11 @@ List kernel_DBH_crit(const List &pCDFlist, const NumericVector &support, const N
   }
   else{
     // SU case
-    // get tau_m
-    tau_m_results tau_m = DBH_tau_m(sfuns, CDFcounts, numCDF, support, numTests, alpha);
-    crit[numTests - 1] = tau_m.value;
     // apply the shortcut drawn from Lemma 2, that is tau_1 >= the effective
     // critical value associated to (alpha / numTests) / (1 + alpha)
-    int i = numValues - 1;
-    while(i > 0 && support[i] > alpha / (numTests + numTests * alpha)) i--;
+    //int i = numValues - 1;
+    //while(i > 0 && support[i] > alpha / (numTests + numTests * alpha)) i--;
+    int i = binary_search(support, alpha / (numTests + numTests * alpha), numValues);
     // then re-add the observed p-values (needed to compute the adjusted
     // p-values), because we may have removed some of them by the shortcut
     pv_list = sort_combine(sorted_pv, support[Range(i, tau_m.index)]);
@@ -126,6 +137,7 @@ List kernel_DBH_crit(const List &pCDFlist, const NumericVector &support, const N
   
   // garbage collection
   delete[] sfuns;
+  delete[] lens;
   
   if(!stepUp){
     // SD case

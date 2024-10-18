@@ -16,9 +16,14 @@ NumericVector kernel_ADBH_fast(const List &pCDFlist, const NumericVector &sorted
   NumericVector pval_transf;
   // vector to store F_i(tau_m) for SU case only
   std::vector<double> f_denom;
-  // vector to store F_i
+  // lengths of the CDF vectors
+  int* lens = new int[numCDF];
+  // extract p-value CDF vectors and their lengths
   NumericVector* sfuns = new NumericVector[(unsigned int)numCDF];
-  for(int i = 0; i < numCDF; i++) sfuns[i] = as<NumericVector>(pCDFlist[i]);
+  for(int i = 0; i < numCDF; i++) {
+    sfuns[i] = as<NumericVector>(pCDFlist[i]);
+    lens[i] = sfuns[i].length();
+  }
   
   if(!stepUp){
     // SD case
@@ -28,11 +33,11 @@ NumericVector kernel_ADBH_fast(const List &pCDFlist, const NumericVector &sorted
   else{
     // SU case
     // get tau_m
-    tau_m_results tau_m = DBH_tau_m(sfuns, CDFcounts, numCDF, support, numTests, alpha);
+    tau_m_results tau_m = DBH_tau_m(sfuns, CDFcounts, numCDF, lens, support, numTests, alpha);
     // restrict attention to these values, because tau_k needs to be <= tau_m
-    int i = numTests - 1;
-    while(i > 0 && sorted_pv[i] > tau_m.value) i--;
-    pv_list = sorted_pv[Range(0, i)];
+    //int i = numTests - 1;
+    //while(i > 0 && sorted_pv[i] > tau_m.value) i--;
+    pv_list = sorted_pv[Range(0, binary_search(sorted_pv, tau_m.value, numTests))];
     // get pre-computed F_i(tau_m)
     f_denom = tau_m.eval;
   }
@@ -60,9 +65,8 @@ NumericVector kernel_ADBH_fast(const List &pCDFlist, const NumericVector &sorted
     NumericMatrix mat(numCDF, numPV);
     // compute columns \sum_{j=1}^numTests F_j(pv)/(1 - F_j(pv))
     for(int j = 0; j < numCDF; j++){
-      int len = sfuns[j].length();
       for(int k = 0; k < numPV; k++)
-        eval_pv(mat(j, k), pv[k], sfuns[j], len, pos[j]);
+        eval_pv(mat(j, k), pv[k], sfuns[j], lens[j], pos[j]);
       
       if(stepUp) // SU case, see (10)
         mat(j, _) = mat(j, _) / (1 - f_denom[j]);
@@ -100,6 +104,7 @@ NumericVector kernel_ADBH_fast(const List &pCDFlist, const NumericVector &sorted
   // garbage collection
   delete[] pos;
   delete[] sfuns;
+  delete[] lens;
   
   return pval_transf;
 }
@@ -120,16 +125,22 @@ List kernel_ADBH_crit(const List &pCDFlist, const NumericVector &support, const 
   NumericVector pv_list;
   // vector to store F_i(tau_m) for SU case only
   std::vector<double> f_denom;
-  // vector to store F_i
-  NumericVector *sfuns = new NumericVector[(unsigned int)numCDF];
-  for(int i = 0; i < numCDF; i++) sfuns[i] = as<NumericVector>(pCDFlist[i]);
+  // lengths of the CDF vectors
+  int* lens = new int[numCDF];
+  // extract p-value CDF vectors and their lengths
+  NumericVector* sfuns = new NumericVector[(unsigned int)numCDF];
+  for(int i = 0; i < numCDF; i++) {
+    sfuns[i] = as<NumericVector>(pCDFlist[i]);
+    lens[i] = sfuns[i].length();
+  }
   
   if(!stepUp){
     // SD case
     // apply the shortcut drawn from Lemma 3, that is
     // c.1 >= the effective critical value associated to alpha / (numTests + alpha)
-    int i = numValues - 1;
-    while(i > 0 && support[i] >= alpha / (numTests + alpha)) i--;
+    //int i = numValues - 1;
+    //while(i > 0 && support[i] >= alpha / (numTests + alpha)) i--;
+    int i = binary_search(support, alpha / (numTests + alpha), numValues);
     pv_list = support[Range(i, numValues - 1)];
     // then re-add the observed p-values (needed to compute the adjusted p-values),
     // because we may have removed some of them by the shortcut
@@ -138,16 +149,16 @@ List kernel_ADBH_crit(const List &pCDFlist, const NumericVector &support, const 
   else{
     // SU case
     // get tau_m
-    tau_m_results tau_m = DBH_tau_m(sfuns, CDFcounts, numCDF, support, numTests, alpha);
+    tau_m_results tau_m = DBH_tau_m(sfuns, CDFcounts, numCDF, lens, support, numTests, alpha);
     // get pre-computed F_i(tau_m)
     f_denom = tau_m.eval;
     // restrict attention p-values <= tau_m, because tau_k needs to be <= tau_m
     pv_list = support[Range(0, tau_m.index)];
     // apply the shortcut drawn from Lemma 4, that is
     // c.1 >= the effective critical value associated to min((1 - tau_m) * alpha/numTests, tau_m)
-    int i = tau_m.index;
-    while(i > 0 && pv_list[i] >= std::min<double>(tau_m.value, (1 - tau_m.value) * alpha / numTests)) i--;
-    pv_list = rev(pv_list[Range(i, tau_m.index)]);
+    //int i = tau_m.index;
+    //while(i > 0 && pv_list[i] >= std::min<double>(tau_m.value, (1 - tau_m.value) * alpha / numTests)) i--;
+    int i = binary_search(pv_list[Range(0, tau_m.index)], std::min<double>(tau_m.value, (1 - tau_m.value) * alpha / numTests), tau_m.index + 1);    pv_list = rev(pv_list[Range(i, tau_m.index)]);
   }
   
   // number of p-values to be transformed
@@ -169,7 +180,7 @@ List kernel_ADBH_crit(const List &pCDFlist, const NumericVector &support, const 
   
   // last positions in step function evaluations
   int *pos = new int[numCDF];
-  for(int i = 0; i < numCDF; i++) pos[i] = sfuns[i].length() - 1;
+  for(int i = 0; i < numCDF; i++) pos[i] = lens[i] - 1;
   // compute critical values (and transformed raw p-values for step-down)
   for(int i = 0; i < chunks; i++){
     // the min( , numValues) is here for the last chunk
@@ -253,6 +264,7 @@ List kernel_ADBH_crit(const List &pCDFlist, const NumericVector &support, const 
   // garbage collection
   delete[] pos;
   delete[] sfuns;
+  delete[] lens;
   
   // output
   if(!stepUp)
