@@ -38,6 +38,7 @@ inline void eval_pv_rev(double &eval, double val, const NumericVector &vec, int 
   //} else eval = 1;
 }
 
+// computes the index of the largest element of a vector which is <= a given value
 inline int binary_search(const NumericVector &vec, const double value, const int len) {
   int pos_left = 0, pos_right = len - 1, pos_mid = len - 1;
   bool stop = false;
