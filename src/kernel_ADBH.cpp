@@ -259,7 +259,7 @@ List kernel_ADBH_crit(const List &pCDFlist, const NumericVector &support, const 
   // fill remaing critical values (if any)
   while(idx_crit >= 0) {
     crit[idx_crit] = crit[idx_crit + 1];
-    idx_crit--
+    idx_crit--;
   }
   
   // garbage collection
