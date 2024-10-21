@@ -25,7 +25,7 @@ NumericVector kernel_DBR_fast(const List &pCDFlist, const NumericVector &sorted_
   // order of current p-value chunk
   IntegerVector ord;
   
-  for(int i = 0; i < chunks; i++){
+  for(int i = 0; i < chunks; i++) {
     checkUserInterrupt();
     // the min( , numTests) is here for the last chunk
     NumericVector pv = sorted_pv[Range(i * size, std::min<int>((i + 1) * size, numTests) - 1)];
@@ -35,14 +35,14 @@ NumericVector kernel_DBR_fast(const List &pCDFlist, const NumericVector &sorted_
     // columns: p-values
     NumericMatrix mat(numCDF, numPV);
     // compute columns \sum_{j=1}^numTests F_j(pv)
-    for(int j = 0; j < numCDF; j++){
+    for(int j = 0; j < numCDF; j++) {
       int len = sfuns[j].length();
       for(int k = 0; k < numPV; k++)
         eval_pv(mat(j, k), pv[k], sfuns[j], len, pos[j]);
     }
     
     int j;
-    for(j = 0; j < numPV; j++){
+    for(j = 0; j < numPV; j++) {
       checkUserInterrupt();
       // index of current value in 'sorted_pv'
       // is also the number of values to be *left out* of the current sum!
@@ -51,18 +51,18 @@ NumericVector kernel_DBR_fast(const List &pCDFlist, const NumericVector &sorted_
       // (re-use variable "pv"; previous values are no longer needed)
       pv = NumericVector(mat(_, j));
       // get order
-      if(pCDFcounts.isNull()){
+      if(pCDFcounts.isNull()) {
         std::sort(pv.begin(), pv.end(), std::greater<double>());
         ord = IntegerVector(Range(0, numCDF - 1));
       } else ord = order(pv, true);
       // this p-value must satisfy condition; else stop computations
-      if(pv(ord[0]) <= lambda){
+      if(pv(ord[0]) <= lambda) {
         // number of remaining needed values
         int rem = numTests - idx_pval;
         // compute sum
         int k = 0;
         pval_transf[idx_pval] = 0;
-        while(k < numCDF && CDFcounts[ord[k]] < rem){
+        while(k < numCDF && CDFcounts[ord[k]] < rem) {
           pval_transf[idx_pval] += CDFcounts[ord[k]] * pv[ord[k]];
           rem -= CDFcounts[ord[k]];
           k++;
@@ -99,8 +99,9 @@ List kernel_DBR_crit(const List &pCDFlist, const NumericVector &support, const N
   int numValues = support.length();
   // apply the shortcut drawn from Corollary 3, that is
   // c.1 >= the effective critical value associated to min((1 - lambda) * alpha/numTests , lambda)
-  int i = numValues - 1;
-  while(i > 0 && support[i] >= std::min<double>(lambda, (1 - lambda) * alpha / numTests)) i--;
+  //int i = numValues - 1;
+  //while(i > 0 && support[i] >= std::min<double>(lambda, (1 - lambda) * alpha / numTests)) i--;
+  int i = binary_search(support, std::min<double>(lambda, (1 - lambda) * alpha / numTests), numValues);
   NumericVector pv_list = support[Range(i, numValues - 1)];
   pv_list = sort_combine(pv_list, sorted_pv);
   
@@ -128,7 +129,7 @@ List kernel_DBR_crit(const List &pCDFlist, const NumericVector &support, const N
   // order of current p-value chunk
   IntegerVector ord;
   
-  for(int i = 0; i < chunks; i++){
+  for(int i = 0; i < chunks; i++) {
     checkUserInterrupt();
     // the min( , numValues) is here for the last chunk
     NumericVector pv = pv_list[Range(i * size, std::min<int>((i + 1) * size, numValues) - 1)];
@@ -138,7 +139,7 @@ List kernel_DBR_crit(const List &pCDFlist, const NumericVector &support, const N
     // columns: p-values
     NumericMatrix mat(numCDF, numPV);
     // compute columns \sum_{j=1}^numTests F_j(pv)
-    for(int j = 0; j < numCDF; j++){
+    for(int j = 0; j < numCDF; j++) {
       int len = sfuns[j].length();
       for(int k = 0; k < numPV; k++)
         eval_pv(mat(j, k), pv[k], sfuns[j], len, pos[j]);
@@ -146,7 +147,7 @@ List kernel_DBR_crit(const List &pCDFlist, const NumericVector &support, const N
     
     // loop variable
     int j = 0;
-    while(j < numPV && idx_crit < numTests){
+    while(j < numPV && idx_crit < numTests) {
       checkUserInterrupt();
       // index of current value in 'pv_list'
       // is also the number of values to be *left out* of the current sum!
@@ -155,19 +156,19 @@ List kernel_DBR_crit(const List &pCDFlist, const NumericVector &support, const N
       // (re-use variable "pv"; previous values are no longer needed)
       NumericVector temp = NumericVector(mat(_, j));
       // get order
-      if(pCDFcounts.isNull()){
+      if(pCDFcounts.isNull()) {
         std::sort(temp.begin(), temp.end(), std::greater<double>());
         ord = IntegerVector(Range(0, numCDF - 1));
       } else ord = order(temp, true);
       // this p-value must satisfy condition; else stop computations
-      if(temp(ord[0]) <= lambda){
+      if(temp(ord[0]) <= lambda) {
         // number of remaining needed values
         int rem = numTests - idx_crit;
         // sum for transformations
         double s = 0;
         // compute sum
         int k = 0;
-        while(k < numCDF && CDFcounts[ord[k]] < rem){
+        while(k < numCDF && CDFcounts[ord[k]] < rem) {
           s += CDFcounts[ord[k]] * temp[ord[k]];
           rem -= CDFcounts[ord[k]];
           k++;
@@ -175,13 +176,13 @@ List kernel_DBR_crit(const List &pCDFlist, const NumericVector &support, const N
         s += rem * temp[ord[k]];
         s /= (1 - lambda) * (idx_crit + 1);
         
-        if(idx_crit < numTests && s <= alpha){
+        if(idx_crit < numTests && s <= alpha) {
           while(idx_transf < numTests && pv[j] > sorted_pv[idx_transf]) idx_transf++;
-          while(idx_transf < numTests && pv[j] == sorted_pv[idx_transf]){
+          while(idx_transf < numTests && pv[j] == sorted_pv[idx_transf]) {
             pval_transf[idx_transf] = 0;
             rem = numTests - idx_transf;
             int k = 0;
-            while(k < numCDF && CDFcounts[ord[k]] < rem){
+            while(k < numCDF && CDFcounts[ord[k]] < rem) {
               pval_transf[idx_transf] += CDFcounts[ord[k]] * temp[ord[k]];
               rem -= CDFcounts[ord[k]];
               k++;
@@ -201,7 +202,7 @@ List kernel_DBR_crit(const List &pCDFlist, const NumericVector &support, const N
       } else break;
     }
     // no more p-values will satisfy condition => stop computations
-    if(j < numPV && max(mat(_, j)) > lambda){
+    if(j < numPV && max(mat(_, j)) > lambda) {
       while(idx_crit < numTests) crit[idx_crit++] = pv_list[idx_pval - 1];
       break;
     }
