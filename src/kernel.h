@@ -118,7 +118,7 @@ struct tau_m_results {
 
 tau_m_results DBH_tau_m(const NumericVector* sfuns, const NumericVector& CDFcounts, const int numCDF, const int* lens, const NumericVector& support, const int numTests, const double alpha);
 
-tau_m_results DBH_tau_m2(const NumericVector *sfuns, const NumericVector &CDFcounts, const int numCDF, const NumericVector &support, const int numTests, const double alpha, bool adaptive = false);
+//tau_m_results DBH_tau_m2(const NumericVector *sfuns, const NumericVector &CDFcounts, const int numCDF, const NumericVector &support, const int numTests, const double alpha, bool adaptive = false);
 
 ///' @export
 //' @rdname kernel

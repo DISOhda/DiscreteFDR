@@ -91,7 +91,7 @@ tau_m_results DBH_tau_m(const NumericVector* sfuns, const NumericVector& CDFcoun
   return {tau_m, idx_tau, tau_m_eval};
 }
 
-tau_m_results DBH_tau_m2(const NumericVector *sfuns, const NumericVector &CDFcounts, const int numCDF, const NumericVector &support, const int numTests, const double alpha, bool adaptive) {
+/*tau_m_results DBH_tau_m2(const NumericVector *sfuns, const NumericVector &CDFcounts, const int numCDF, const NumericVector &support, const int numTests, const double alpha, bool adaptive) {
   // size of the p-value support
   int len = support.length();
   
@@ -126,4 +126,4 @@ tau_m_results DBH_tau_m2(const NumericVector *sfuns, const NumericVector &CDFcou
   delete[] pos;
   
   return {tau_m, idx_tau, tau_m_eval};
-}
+}*/
