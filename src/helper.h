@@ -40,26 +40,31 @@ inline void eval_pv_rev(double &eval, double val, const NumericVector &vec, int 
 
 // computes the index of the largest element of a vector which is <= a given value
 inline int binary_search(const NumericVector &vec, const double value, const int len) {
-  int pos_left = 0, pos_right = len - 1, pos_mid = len - 1;
+  int idx_left = 0, idx_right = len - 1, idx_mid = len - 1;
   bool stop = false;
+  
   while(!stop) {
-    if(vec[pos_mid] > value) {
-      if(pos_mid == 0) {
+    if(vec[idx_mid] > value) {
+      if(idx_mid == 0) {
         stop = true;
+      } else if(idx_mid - idx_left == 1) {
+        stop = true;
+        idx_mid = idx_left;
       } else {
-        pos_right = pos_mid;
-        pos_mid = pos_left + (pos_right - pos_left) / 2;
+        idx_right = idx_mid;
+        idx_mid = idx_left + (idx_right - idx_left) / 2;
       }
-    } else if(vec[pos_mid] <= value) {
-      if(vec[pos_mid] == value || pos_mid == len - 1 || pos_right - pos_mid == 1) {
+    } else if(vec[idx_mid] <= value) {
+      if(vec[idx_mid] == value || idx_mid == len - 1 || idx_right - idx_mid == 1) {
         stop = true;
       } else {
-        pos_left = pos_mid;
-        pos_mid = pos_left + (pos_right - pos_left) / 2;
+        idx_left = idx_mid;
+        idx_mid = idx_left + (idx_right - idx_left + 1) / 2;
       }
     }
   }
-  return pos_mid;
+  
+  return idx_mid;
 }
 
 // function that binds two vectors, sorts it and eliminates duplications 
