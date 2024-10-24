@@ -36,7 +36,7 @@ is now deprecated and should not be used anymore. It has been replaced by
 The same applies for the function \code{\link[=fast.Discrete]{fast.Discrete()}}, which is a wrapper for
 \code{\link[=fisher.pvalues.support]{fisher.pvalues.support()}} and \code{\link[=discrete.BH]{discrete.BH()}} and allows to apply
 discrete procedures directly to a data set of contingency tables and perform
-data pre-processing before p-values are computed. It is also now deprecated
+data preprocessing before p-values are computed. It is also now deprecated
 and has been replaced by \code{\link[=direct.discrete.BH]{direct.discrete.BH()}}, but for more flexibility,
 users may employ pipes, e.g.\cr
 \verb{data |>}\cr
@@ -62,7 +62,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Florian Junge \email{diso.fbmn@h-da.de} (\href{https://orcid.org/0000-0002-0321-6355}{ORCID}) [contributor]
+\strong{Maintainer}: Florian Junge \email{diso.fbmn@h-da.de} (\href{https://orcid.org/0009-0001-6856-6938}{ORCID}) [contributor]
 
 Authors:
 \itemize{
