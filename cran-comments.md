@@ -1,5 +1,5 @@
 ## Test environments
-* local Manjaro Linux 24.0.2 install, R 4.4.1
+* local Manjaro Linux 24.1.1 install, R 4.4.1
 * win-builder (release, oldrelease, devel)
 * mac-builder
 * R-hub (configurations: linux, macos, macos-arm64, windows, valgrind)

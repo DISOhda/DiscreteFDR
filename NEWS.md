@@ -1,3 +1,13 @@
+# DiscreteFDR 2.0.1
+
+-   Introduction of `mode` parameter for `hist()` function to adapt construction
+    of histograms in case of conditional p-value selection.
+-   Remove `amnesia` dataset (moved to `DiscreteDatasets` package).
+-   Function `match.pvals()` is no longer exported.
+-   Performance improvement for step-up procedures, especially for large numbers
+    of tests.
+
+
 # DiscreteFDR 2.0.0
 
 -   New features:
