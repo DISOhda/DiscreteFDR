@@ -28,9 +28,9 @@ A \link[DiscreteTests:DiscreteTestResults]{DiscreteTestResults} R6 class object.
 }
 \description{
 Simple wrapper for generating p-values of discrete tests and their supports
-after pre-processing the input data. The user only has to provide 1.) a
+after preprocessing the input data. The user only has to provide 1.) a
 function that generates p-values and supports and 2.) an optional function
-that pre-processes (i.e. transforms) the input data (if necessary) before it
+that preprocesses (i.e. transforms) the input data (if necessary) before it
 can be used for p-value calculations. The respective arguments are provided
 }
 \examples{
@@ -48,7 +48,7 @@ test.result <- generate.pvalues(df, "fisher")
 raw.pvalues <- test.result$get_pvalues()
 pCDFlist <- test.result$get_pvalue_supports()
 
-# Compute p-values and their supports of Fisher's exact test with pre-processing
+# Compute p-values and their supports of Fisher's exact test with preprocessing
 df2 <- data.frame(X1, N1, X2, N2)
 generate.pvalues(
   dat = df2,
@@ -59,7 +59,7 @@ generate.pvalues(
   }
 )
 
-# Compute p-values and their supports of a binomial test with pre-processing
+# Compute p-values and their supports of a binomial test with preprocessing
 generate.pvalues(
   dat = rbind(c(5, 2, 7), c(3, 4, 0)), 
   test.fun = "binom_test_pv",

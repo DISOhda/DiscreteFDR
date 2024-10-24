@@ -8,7 +8,7 @@
 #' 
 #' @param x          an object of class `DiscreteFDR`.
 #' @param breaks     as in [`graphics::hist()`]; here, the Friedman-Diaconis
-#'                   algorith (`"FD"`) is used as default.
+#'                   algorithm (`"FD"`) is used as default.
 #' @param mode       single character string specifying for which $p$-values the
 #'                   histogram is to be generated; must either be `"raw"` or
 #'                   `"selected"`.

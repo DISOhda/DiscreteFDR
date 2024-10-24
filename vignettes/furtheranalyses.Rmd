@@ -15,7 +15,7 @@ vignette: >
 
 To illustrate how the procedures in **DiscreteFDR** can be used for real data, we revisit the analysis of the pharmacovigilance data from [Heller and Gur (2011)](https://arxiv.org/abs/1112.4627v2) performed in [[DDR]](https://doi.org/10.1214/18-EJS1441). This data set is obtained from a database for reporting, investigating and monitoring adverse drug reactions due to the Medicines and Healthcare products Regulatory Agency in the United Kingdom. It contains the number of reported cases of amnesia as well as the total number of adverse events reported for each of the $m = 2446$ drugs in the database. For more details we refer to [Heller and Gur (2011)](https://arxiv.org/abs/1112.4627v2) and to the accompanying R-package **discreteMTP** ([Heller et al. (2012)](https://CRAN.R-project.org/package=discreteMTP)) (no longer available on CRAN), which also contains the data. [Heller and Gur (2011)](https://arxiv.org/abs/1112.4627v2) investigate the association between reports of amnesia and suspected drugs by performing for each drug a Fisher's exact test (one-sided) for testing association between the drug and amnesia while adjusting for multiplicity by using several (discrete) FDR procedures. In what follows we present code that reproduces parts of Figure 2 and Table 1 in [[DDR]](https://doi.org/10.1214/18-EJS1441).
 
-We proceed as in the example in Section 1. Since we need to access the critical values, we first determine the $p$-values and their support for the data set `amnesia` contained for convenience in the package **DiscreteFDR**. For this, we use `generate.pvalues` in conjunction with the pre-processing function `reconstruct_two` from package `DiscreteDatasets`, which rebuilds $2 \times 2$ tables from single columns or rows by using additional knowledge of the marginals.
+We proceed as in the example in Section 1. Since we need to access the critical values, we first determine the $p$-values and their support for the data set `amnesia` contained for convenience in the package **DiscreteFDR**. For this, we use `generate.pvalues` in conjunction with the preprocessing function `reconstruct_two` from package `DiscreteDatasets`, which rebuilds $2 \times 2$ tables from single columns or rows by using additional knowledge of the marginals.
 
 ```{r format-am}
 library(DiscreteFDR)
@@ -44,7 +44,7 @@ ADBH.sd <- ADBH(amnesia.formatted, direction = "sd", ret.crit.consts = TRUE)
 DBR     <-  DBR(amnesia.formatted, ret.crit.consts = TRUE)
 ```
 
-It is helpful to have a histogram of the observed $p$-pvalues. For this, this package provides a `hist` method for `DiscreteFDR` class objects, too.
+It is helpful to have a histogram of the observed $p$-values. For this, this package provides a `hist` method for `DiscreteFDR` class objects, too.
 
 ```{r Hist-Pharmaco}
 hist(DBH.sd)
@@ -93,7 +93,7 @@ The (continuous) BH rejects only 24 hypotheses whereas all the discrete procedur
 
 In this section we sketch how \pkg{DiscreteFDR} can be used to analyze arbitrary multiple discrete tests. [Jiménez-Otero et al. (2018)](https://doi.org/10.1002/bimj.201700284) used **DiscreteFDR** to detect disorder in NGS experiments based on one-sample tests of the Poisson mean. Rather than reproducing their analysis in detail, we illustrate the general approach by using a toy example similar to the one in Section 1 and show how the test of the Poisson mean can be accommodated by **DiscreteFDR**.
 
-To fix ideas, suppose we observe $m = 9$ independent Poisson distributed counts $N_1, \ldots, N_9$  ([Jiménez-Otero et al. (2018)](https://doi.org/10.1002/bimj.201700284) used this to model the read counts of different DNA bases). We assume that $N_i \sim \text{Pois}(\lambda_i)$ and the goal is to identify cases where $\lambda_i$ is larger than some pre-specified value $\lambda^0_i$, i.e., we have the (one-sided) multiple testing problem
+To fix ideas, suppose we observe $m = 9$ independent Poisson distributed counts $N_1, \ldots, N_9$  ([Jiménez-Otero et al. (2018)](https://doi.org/10.1002/bimj.201700284) used this to model the read counts of different DNA bases). We assume that $N_i \sim \text{Pois}(\lambda_i)$ and the goal is to identify cases where $\lambda_i$ is larger than some prespecified value $\lambda^0_i$, i.e., we have the (one-sided) multiple testing problem
 $$H_{0i}: \lambda_i = \lambda^0_i \qquad \text{vs.} \qquad H_{1i}: \lambda_i > \lambda^0_i.$$
 As in Section 1, the goal is to adjust for multiple testing by using the [DBH-SD] procedure at FDR-level $\alpha = 5\%$. In our example the observations $n_1,\ldots, n_9$ and parameters $\lambda^0_1, \ldots, \lambda^0_9$ are given as follows:
 
@@ -208,7 +208,7 @@ points(1:9, 0.05 * (1:9) / 9, col = "green", pch = 19, cex = 1.3)
 mtext("Figure 3", 1, outer = TRUE, line = -2)
 ```
 
-Panel (a) depicts the distribution functions $F_1, \ldots, F_9$ in various colors, (b) is a graph of the transformation function $\xi_{\text{SD}}$. The uniform distribution function is shown in light grey in (a) and (b). Panel (c) shows the [BH] critical values (green dots), the DBH step-down critical values (red dots) and the sorted raw $p$-values (asterisks).
+Panel (a) depicts the distribution functions $F_1, \ldots, F_9$ in various colors, (b) is a graph of the transformation function $\xi_{\text{SD}}$. The uniform distribution function is shown in light gray in (a) and (b). Panel (c) shows the [BH] critical values (green dots), the DBH step-down critical values (red dots) and the sorted raw $p$-values (asterisks).
 
 <!-- # Ab hier gibt es keine Texte mehr -->
 <!--

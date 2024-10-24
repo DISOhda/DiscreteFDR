@@ -14,7 +14,7 @@ histogram is to be generated; must either be \code{"raw"} or
 \code{"selected"}.}
 
 \item{breaks}{as in \code{\link[graphics:hist]{graphics::hist()}}; here, the Friedman-Diaconis
-algorith (\code{"FD"}) is used as default.}
+algorithm (\code{"FD"}) is used as default.}
 
 \item{...}{further arguments to \code{\link[graphics:hist]{graphics::hist()}} or
 \code{\link[graphics:plothistogram]{graphics::plot.histogram()}}, respectively.}

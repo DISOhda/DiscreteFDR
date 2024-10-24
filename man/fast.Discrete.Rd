@@ -64,7 +64,7 @@ A \code{DiscreteFDR} S3 class object whose elements are:
 
 Apply the [HSU], [HSD], [AHSU] or [AHSD] procedure,
 without computing the critical constants, to a data set of 2x2 contingency
-tables which may have to be pre-processed in order to have the correct
+tables which may have to be preprocessed in order to have the correct
 structure for computing p-values using Fisher's exact test.
 
 \strong{Note}: This function is deprecated and will be removed in a future

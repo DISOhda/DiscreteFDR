@@ -12,7 +12,7 @@ vignette: >
 
 To give a first impression of how  **DiscreteFDR** works, we consider an  artificial toy example. A more realistic example involving pharmacovigilance data is given in Section 2.
 
-Suppose we would like to compare two treatments in nine different populations. For each population we do this by evaluating the responders and non-responders for each treatment. This leads to categorical data which can be  represented, for each population $i = 1, \ldots, 9$ in the following 2 $\times$ 2 table:
+Suppose we would like to compare two treatments in nine different populations. For each population we do this by evaluating the responders and non-responders for each treatment. This leads to categorical data which can be represented, for each population $i = 1, \ldots, 9$ in the following 2 $\times$ 2 table:
 
 |              |     Responders      |    Non-responders   |                         |
 |:------------ |:-------------------:|:-------------------:|:-----------------------:|
@@ -176,7 +176,7 @@ points(1:9, 0.05 * (1:9) / 9, col = "green", pch = 19, cex = 1.3)
 
 mtext("Figure 1", 1, outer = TRUE, line = -2)
 ```
-Panel (a) depicts the distribution functions $F_1, \ldots, F_9$ in various colors, (b) is a graph of the transformation $\xi_{\text{SD}}$. The uniform distribution function is shown in light grey in (a) and (b). Panel (c) shows the [BH] critical values (green dots), the DBH step-down critical values (red dots) and the sorted raw $p$-values (asterisks).
+Panel (a) depicts the distribution functions $F_1, \ldots, F_9$ in various colors, (b) is a graph of the transformation $\xi_{\text{SD}}$. The uniform distribution function is shown in light gray in (a) and (b). Panel (c) shows the [BH] critical values (green dots), the DBH step-down critical values (red dots) and the sorted raw $p$-values (asterisks).
 
 
 ***
