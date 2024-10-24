@@ -31,12 +31,17 @@
 //' @param stepUp       boolean specifying whether to conduct the step-up
 //'                     (`TRUE`) or step-down (`FALSE`; the default)
 //'                     procedure.
+//' @param tau_max      single real number strictly between 0 and 1 indicating
+//'                     the largest critical value for step-up procedures; if
+//'                     `NULL` (the default), it is computed automatically,
+//'                     otherwise it needs to be computed manually by the user;
+//'                     ignored if `stepUp = FALSE`.
 //' @param alpha        single real number strictly between 0 and 1 indicating
-//'                     the target FDR level; for `*.fast` kernels, it is only
+//'                     the target FDR level; for `*_fast` kernels, it is only
 //'                     needed, if `stepUp = TRUE`.
 //' @param support      numeric vector, sorted in increasing order, that
 //'                     contains the entirety of all observable values of the
-//'                     p-value supports; for `*.fast` kernels, it is ignored if
+//'                     p-value supports; for `*_fast` kernels, it is ignored if
 //'                     `stepUp = FALSE`.
 //' @param pCDFcounts   integer vector of counts that indicates to how many
 //'                     p-values each **unique** p-value distributions belongs.
@@ -52,14 +57,14 @@
 //' p-values to compute the adjusted p-values.
 //' 
 //' @return
-//' For `kernel.DBH.fast`, `kernel.ADBH.fast` and `kernel.DBR.fast`, a vector
-//' of transformed p-values is returned. `kernel.DBH.crit`, `kernel.ADBH.crit`
-//' `kernel.DBR.crit` return a list with critical constants (`$crit.consts`)
-//' and transformed p-values (`$pval.transf`), but if `stepUp = FALSE`, there
-//' are critical values only.
+//' For `kernel_DBH_fast()`, `kernel_ADBH_fast()` and `kernel_DBR_fast()`, a
+//' vector of transformed p-values is returned. `kernel_DBH_crit`,
+//' `kernel_ADBH_crit` and `kernel_DBR_crit` return a list with critical
+//' constants (`$crit.consts`) and transformed p-values (`$pval.transf`), but if
+//' `stepUp = FALSE`, there are critical values only.
 //' 
 //' @seealso
-//' [`discrete.BH`], [`fast.Discrete`], [`DBR`]
+//' [`discrete.BH()`], [`direct.discrete.BH()`], [`DBR()`]
 //' 
 //' @examples \dontrun{
 //' X1 <- c(4, 2, 2, 14, 6, 9, 4, 0, 1)
@@ -118,7 +123,7 @@ tau_m_results DBH_tau_m2(const NumericVector *sfuns, const NumericVector &CDFcou
 ///' @export
 //' @rdname kernel
 // [[Rcpp::export]]
-NumericVector kernel_DBH_fast(const List &pCDFlist, const NumericVector &pvalues, const bool stepUp = false, const double &alpha = 0.05, const NumericVector &support = NumericVector(), const Nullable<NumericVector> &pCDFcounts = R_NilValue);
+NumericVector kernel_DBH_fast(const List &pCDFlist, const NumericVector &pvalues, const bool stepUp = false, const Nullable<NumericVector> tau_max = R_NilValue, const double &alpha = 0.05, const NumericVector &support = NumericVector(), const Nullable<NumericVector> &pCDFcounts = R_NilValue);
 
 ///' @export
 //' @rdname kernel

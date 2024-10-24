@@ -14,6 +14,7 @@ kernel_DBH_fast(
   pCDFlist,
   pvalues,
   stepUp = FALSE,
+  tau_max = NULL,
   alpha = 0.05,
   support = numeric(),
   pCDFcounts = NULL
@@ -69,13 +70,19 @@ or only the sorted raw p-values.}
 (\code{TRUE}) or step-down (\code{FALSE}; the default)
 procedure.}
 
+\item{tau_max}{single real number strictly between 0 and 1 indicating
+the largest critical value for step-up procedures; if
+\code{NULL} (the default), it is computed automatically,
+otherwise it needs to be computed manually by the user;
+ignored if \code{stepUp = FALSE}.}
+
 \item{alpha}{single real number strictly between 0 and 1 indicating
-the target FDR level; for \verb{*.fast} kernels, it is only
+the target FDR level; for \verb{*_fast} kernels, it is only
 needed, if \code{stepUp = TRUE}.}
 
 \item{support}{numeric vector, sorted in increasing order, that
 contains the entirety of all observable values of the
-p-value supports; for \verb{*.fast} kernels, it is ignored if
+p-value supports; for \verb{*_fast} kernels, it is ignored if
 \code{stepUp = FALSE}.}
 
 \item{pCDFcounts}{integer vector of counts that indicates to how many
@@ -88,11 +95,11 @@ increasing order.}
 tuning parameter.}
 }
 \value{
-For \code{kernel.DBH.fast}, \code{kernel.ADBH.fast} and \code{kernel.DBR.fast}, a vector
-of transformed p-values is returned. \code{kernel.DBH.crit}, \code{kernel.ADBH.crit}
-\code{kernel.DBR.crit} return a list with critical constants (\verb{$crit.consts})
-and transformed p-values (\verb{$pval.transf}), but if \code{stepUp = FALSE}, there
-are critical values only.
+For \code{kernel_DBH_fast()}, \code{kernel_ADBH_fast()} and \code{kernel_DBR_fast()}, a
+vector of transformed p-values is returned. \code{kernel_DBH_crit},
+\code{kernel_ADBH_crit} and \code{kernel_DBR_crit} return a list with critical
+constants (\verb{$crit.consts}) and transformed p-values (\verb{$pval.transf}), but if
+\code{stepUp = FALSE}, there are critical values only.
 }
 \description{
 Kernel functions that transform observed p-values or their support according
@@ -161,5 +168,5 @@ y.DBR.crit$pval.transf
 
 }
 \seealso{
-\code{\link{discrete.BH}}, \code{\link{fast.Discrete}}, \code{\link{DBR}}
+\code{\link[=discrete.BH]{discrete.BH()}}, \code{\link[=direct.discrete.BH]{direct.discrete.BH()}}, \code{\link[=DBR]{DBR()}}
 }

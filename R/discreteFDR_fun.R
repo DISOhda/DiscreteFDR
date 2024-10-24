@@ -132,7 +132,7 @@ discrete.fdr.int <- function(
             which(res > seq_along(res) * alpha)
       },
       DBH = {
-        res <- kernel_DBH_fast(pCDFlist, sorted.pvals, method.parameter, alpha, support, pCDFlist.counts)
+        res <- kernel_DBH_fast(pCDFlist, sorted.pvals, method.parameter, NULL, alpha, support, pCDFlist.counts)
         idx.rej <- if(method.parameter) 
           which(res <= seq_along(res) * alpha) else 
             which(res > seq_along(res) * alpha)

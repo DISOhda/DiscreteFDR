@@ -12,18 +12,19 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // kernel_DBH_fast
-NumericVector kernel_DBH_fast(const List& pCDFlist, const NumericVector& pvalues, const bool stepUp, const double& alpha, const NumericVector& support, const Nullable<NumericVector>& pCDFcounts);
-RcppExport SEXP _DiscreteFDR_kernel_DBH_fast(SEXP pCDFlistSEXP, SEXP pvaluesSEXP, SEXP stepUpSEXP, SEXP alphaSEXP, SEXP supportSEXP, SEXP pCDFcountsSEXP) {
+NumericVector kernel_DBH_fast(const List& pCDFlist, const NumericVector& pvalues, const bool stepUp, const Nullable<NumericVector> tau_max, const double& alpha, const NumericVector& support, const Nullable<NumericVector>& pCDFcounts);
+RcppExport SEXP _DiscreteFDR_kernel_DBH_fast(SEXP pCDFlistSEXP, SEXP pvaluesSEXP, SEXP stepUpSEXP, SEXP tau_maxSEXP, SEXP alphaSEXP, SEXP supportSEXP, SEXP pCDFcountsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const List& >::type pCDFlist(pCDFlistSEXP);
     Rcpp::traits::input_parameter< const NumericVector& >::type pvalues(pvaluesSEXP);
     Rcpp::traits::input_parameter< const bool >::type stepUp(stepUpSEXP);
+    Rcpp::traits::input_parameter< const Nullable<NumericVector> >::type tau_max(tau_maxSEXP);
     Rcpp::traits::input_parameter< const double& >::type alpha(alphaSEXP);
     Rcpp::traits::input_parameter< const NumericVector& >::type support(supportSEXP);
     Rcpp::traits::input_parameter< const Nullable<NumericVector>& >::type pCDFcounts(pCDFcountsSEXP);
-    rcpp_result_gen = Rcpp::wrap(kernel_DBH_fast(pCDFlist, pvalues, stepUp, alpha, support, pCDFcounts));
+    rcpp_result_gen = Rcpp::wrap(kernel_DBH_fast(pCDFlist, pvalues, stepUp, tau_max, alpha, support, pCDFcounts));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -107,7 +108,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_DiscreteFDR_kernel_DBH_fast", (DL_FUNC) &_DiscreteFDR_kernel_DBH_fast, 6},
+    {"_DiscreteFDR_kernel_DBH_fast", (DL_FUNC) &_DiscreteFDR_kernel_DBH_fast, 7},
     {"_DiscreteFDR_kernel_DBH_crit", (DL_FUNC) &_DiscreteFDR_kernel_DBH_crit, 6},
     {"_DiscreteFDR_kernel_ADBH_fast", (DL_FUNC) &_DiscreteFDR_kernel_ADBH_fast, 6},
     {"_DiscreteFDR_kernel_ADBH_crit", (DL_FUNC) &_DiscreteFDR_kernel_ADBH_crit, 6},

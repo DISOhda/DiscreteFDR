@@ -1,6 +1,6 @@
 #include "kernel.h"
 
-NumericVector kernel_DBH_fast(const List &pCDFlist, const NumericVector &pvalues, const bool stepUp, const double &alpha, const NumericVector &support, const Nullable<NumericVector> &pCDFcounts) {
+NumericVector kernel_DBH_fast(const List &pCDFlist, const NumericVector &pvalues, const bool stepUp, const Nullable<NumericVector> tau_max, const double &alpha, const NumericVector &support, const Nullable<NumericVector> &pCDFcounts) {
   // Number of p-values
   int numValues = pvalues.length();
   // number of unique p-value distributions
@@ -33,7 +33,17 @@ NumericVector kernel_DBH_fast(const List &pCDFlist, const NumericVector &pvalues
   if(stepUp) {
     // SU case, see (10)
     // get tau_m
-    tau_m = DBH_tau_m(sfuns, CDFcounts, numCDF, lens, support, numTests, alpha);
+    if(tau_max.isNull()) {
+      tau_m = DBH_tau_m(sfuns, CDFcounts, numCDF, lens, support, numTests, alpha);
+    } else {
+      tau_m.value = NumericVector(tau_max)[0];
+      tau_m.eval = std::vector<double>(numCDF);
+      for(int i = 0; i < numCDF; i++) {
+        int pos = 0;
+        eval_pv(tau_m.eval[i], tau_m.value, sfuns[i], lens[i], pos);
+      }
+    }
+    
     // restrict attention to values <= tau_m, because tau_k needs to be <= tau_m
     pv_list = pvalues[Range(0, binary_search(pvalues, tau_m.value, numValues))];
     // update number of relevant p-values
@@ -100,16 +110,16 @@ List kernel_DBH_crit(const List &pCDFlist, const NumericVector &support, const N
   
   if(!stepUp) {
     // SD case
-    // apply the shortcut drawn from Lemma 2, that is
-    // c.1 >= the effective critical value associated to alpha / (m + alpha)
+    // apply the shortcut drawn from Lemma 2, that is tau_1 >= the effective
+    // critical value associated to alpha / (m + alpha)
     //int i = numValues - 1;
     //while(i > 0 && support[i] >= alpha / (numTests + alpha)) i--;
-    int i = binary_search(support, alpha / (numTests + alpha), numValues);
+    int i = binary_search(support, alpha / (numTests + alpha), tau_m.index + 1);
     // then re-add the observed p-values (needed to compute the adjusted
     // p-values), because we may have removed some of them by the shortcut
     pv_list = sort_combine(sorted_pv, support[Range(i, tau_m.index)]);
     // get the transformations of the observed p-values inside pv_list
-    pval_transf = kernel_DBH_fast(pCDFlist, pv_list, false, alpha, NumericVector(), pCDFcounts);
+    pval_transf = kernel_DBH_fast(pCDFlist, pv_list, false, R_NilValue, alpha, NumericVector(), pCDFcounts);
   } else { 
     // SU case
     // apply the shortcut drawn from Lemma 2, that is tau_1 >= the effective
@@ -121,7 +131,8 @@ List kernel_DBH_crit(const List &pCDFlist, const NumericVector &support, const N
     // p-values), because we may have removed some of them by the shortcut
     pv_list = sort_combine(sorted_pv, support[Range(i, tau_m.index)]);
     // get the transformations of the observed p-values inside pv_list
-    pval_transf = kernel_DBH_fast(pCDFlist, pv_list, true, alpha, pv_list, pCDFcounts);
+    pval_transf = kernel_DBH_fast(pCDFlist, pv_list, true, NumericVector(1, tau_m.value), alpha, pv_list, pCDFcounts);
+    //pval_transf = kernel_DBH_fast(pCDFlist, pv_list, true, R_NilValue, alpha, pv_list, pCDFcounts);
   }
   
   // get number of transformed p-values
