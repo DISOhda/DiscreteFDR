@@ -37,7 +37,7 @@
 #' The same applies for the function [`fast.Discrete()`], which is a wrapper for
 #' [`fisher.pvalues.support()`] and [`discrete.BH()`] and allows to apply
 #' discrete procedures directly to a data set of contingency tables and perform
-#' data pre-processing before p-values are computed. It is also now deprecated
+#' data preprocessing before p-values are computed. It is also now deprecated
 #' and has been replaced by [`direct.discrete.BH()`], but for more flexibility,
 #' users may employ pipes, e.g.\cr
 #' `data |>`\cr
