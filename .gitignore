@@ -10,3 +10,4 @@ CRAN-SUBMISSION
 /Meta/
 cran-comments.md
 .gitignore
+/revdep/
