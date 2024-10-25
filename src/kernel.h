@@ -138,14 +138,24 @@ NumericVector kernel_ADBH_fast(const List &pCDFlist, const NumericVector &sorted
 /// '@export
 //' @rdname kernel
 // [[Rcpp::export]]
-List kernel_ADBH_crit(const List &pCDFlist, const NumericVector &support, const NumericVector &sorted_pv, const bool stepUp = false, const double alpha = 0.05, const Nullable<NumericVector> pCDFcounts = R_NilValue);
+List kernel_ADBH_crit(const List &pCDFlist, const NumericVector &support, const NumericVector &sorted_pv, const bool stepUp = false, const double alpha = 0.05, const Nullable<NumericVector> &pCDFcounts = R_NilValue);
 
 ///' @export
 //' @rdname kernel
 // [[Rcpp::export]]
-NumericVector kernel_DBR_fast(const List &pCDFlist, const NumericVector &sorted_pv, const double lambda = 0.05, const Nullable<NumericVector> pCDFcounts = R_NilValue);
+NumericVector kernel_DBR_fast(const List &pCDFlist, const NumericVector &sorted_pv, const double lambda = 0.05, const Nullable<NumericVector> &pCDFcounts = R_NilValue);
 
 ///' @export
 //' @rdname kernel
 // [[Rcpp::export]]
-List kernel_DBR_crit(const List &pCDFlist, const NumericVector &support, const NumericVector &sorted_pv, const double lambda = 0.05, const double alpha = 0.05, const Nullable<NumericVector> pCDFcounts = R_NilValue);
+List kernel_DBR_crit(const List &pCDFlist, const NumericVector &support, const NumericVector &sorted_pv, const double lambda = 0.05, const double alpha = 0.05, const Nullable<NumericVector> &pCDFcounts = R_NilValue);
+
+///' @export
+//' @rdname kernel
+// [[Rcpp::export]]
+NumericVector kernel_DBY_fast(const List &pCDFlist, const NumericVector &pvalues, const Nullable<NumericVector> &pCDFcounts = R_NilValue);
+
+///' @export
+//' @rdname kernel
+// [[Rcpp::export]]
+List kernel_DBY_crit(const List &pCDFlist, const NumericVector &support, const NumericVector &sorted_pv, const double alpha = 0.05, const Nullable<NumericVector> &pCDFcounts = R_NilValue);

@@ -54,6 +54,10 @@
 #'   under independence and dependence. *Journal of Machine Learning Research*,
 #'   *10*, pp. 2837-2871. \doi{10.48550/arXiv.0707.0536}
 #'   
+#' Döhler, S. (2018). A discrete modification of the Benjamini–Yekutieli
+#'   procedure. *Econometrics and Statistics*, *5*, pp. 137-147.
+#'    \doi{10.1016/j.ecosta.2016.12.002}
+#'   
 "_PACKAGE"
 
 ## usethis namespace: start

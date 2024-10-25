@@ -143,3 +143,13 @@ kernel_DBR_crit <- function(pCDFlist, support, sorted_pv, lambda = 0.05, alpha =
     .Call('_DiscreteFDR_kernel_DBR_crit', PACKAGE = 'DiscreteFDR', pCDFlist, support, sorted_pv, lambda, alpha, pCDFcounts)
 }
 
+#' @rdname kernel
+kernel_DBY_fast <- function(pCDFlist, pvalues, pCDFcounts = NULL) {
+    .Call('_DiscreteFDR_kernel_DBY_fast', PACKAGE = 'DiscreteFDR', pCDFlist, pvalues, pCDFcounts)
+}
+
+#' @rdname kernel
+kernel_DBY_crit <- function(pCDFlist, support, sorted_pv, alpha = 0.05, pCDFcounts = NULL) {
+    .Call('_DiscreteFDR_kernel_DBY_crit', PACKAGE = 'DiscreteFDR', pCDFlist, support, sorted_pv, alpha, pCDFcounts)
+}
+

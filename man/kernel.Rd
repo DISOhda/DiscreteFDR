@@ -8,6 +8,8 @@
 \alias{kernel_ADBH_crit}
 \alias{kernel_DBR_fast}
 \alias{kernel_DBR_crit}
+\alias{kernel_DBY_fast}
+\alias{kernel_DBY_crit}
 \title{Kernel Functions}
 \usage{
 kernel_DBH_fast(
@@ -57,6 +59,10 @@ kernel_DBR_crit(
   alpha = 0.05,
   pCDFcounts = NULL
 )
+
+kernel_DBY_fast(pCDFlist, pvalues, pCDFcounts = NULL)
+
+kernel_DBY_crit(pCDFlist, support, sorted_pv, alpha = 0.05, pCDFcounts = NULL)
 }
 \arguments{
 \item{pCDFlist}{list of the supports of the CDFs of the p-values; each list item must be a numeric vector, which is sorted in increasing order and whose last element equals 1.}

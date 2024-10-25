@@ -2,7 +2,7 @@ discrete.fdr.int <- function(
   pvec,
   pCDFlist,
   pCDFlist.indices,
-  method = c("ADBH", "DBH", "DBR"),
+  method = c("ADBH", "DBH", "DBR", "DBY"),
   alpha = 0.05,
   method.parameter = NULL,
   crit.consts = FALSE,
@@ -16,15 +16,22 @@ discrete.fdr.int <- function(
   #       prepare output object
   #--------------------------------------------
   input.data <- list()
-  if(method != "DBR") {
-    alg <- "Discrete Benjamini-Hochberg procedure"
-    alg <- ifelse(method == "ADBH", paste("Adaptive", alg), alg)
-    input.data$Method <- paste(alg, ifelse(method.parameter, "(step-up)", "(step-down)"))
-  } else {
-    input.data$Method <- paste0(
-      "Discrete Blanchard-Roquain procedure (lambda = ", method.parameter, ")"
-    )
-  }
+  switch(
+    EXPR = substr(method, nchar(method) - 2, nchar(method)),
+    DBH = {
+      alg <- "Discrete Benjamini-Hochberg procedure"
+      alg <- ifelse(method == "ADBH", paste("Adaptive", alg), alg)
+      input.data$Method <- paste(alg, ifelse(method.parameter, "(step-up)", "(step-down)"))
+    },
+    DBR = {
+      input.data$Method <- paste0(
+        "Discrete Blanchard-Roquain procedure (lambda = ", method.parameter, ")"
+      )
+    },
+    DBY = {
+      input.data$Method <- "Discrete Benjamini-Yekutieli procedure"
+    }
+  )
   input.data$Raw.pvalues <- pvec
   if(length(pCDFlist) == n) {
     input.data$pCDFlist <- pCDFlist
@@ -68,7 +75,7 @@ discrete.fdr.int <- function(
     }
     pCDFlist.idx <- order(unlist(pCDFlist.indices))
     # rescale pCDFs
-    F.thresh <- sapply(pCDFlist, function(X){t <- which(X <= threshold); if(length(t)) X[max(t)] else 0})
+    F.thresh <- sapply(pCDFlist, function(X) {t <- which(X <= threshold); if(length(t)) X[max(t)] else 0})
     pCDFlist <- sapply(seq_along(pCDFlist), function(k) pCDFlist[[k]] / F.thresh[k])
     # rescale selected p-values
     pvec <- pvec[select] / rep(F.thresh, pCDFlist.counts)[pCDFlist.idx]
@@ -77,7 +84,7 @@ discrete.fdr.int <- function(
     select <- seq_len(n)
     m <- n
     # use original counts (or 1 for all, if all pCDFs are unique)
-    pCDFlist.counts <- if(is.null(pCDFlist.indices)){
+    pCDFlist.counts <- if(is.null(pCDFlist.indices)) {
       rep(1, m)
     } else sapply(pCDFlist.indices, length)
     # F_i(1) = 1 for all i = 1, ..., n
@@ -120,6 +127,11 @@ discrete.fdr.int <- function(
         res <- kernel_DBR_crit(pCDFlist, support, sorted.pvals, method.parameter, alpha, pCDFlist.counts)
         crit.constants <- res$crit.consts
         idx.rej <- which(sorted.pvals <= crit.constants)
+      },
+      DBY = {
+        res <- kernel_DBY_crit(pCDFlist, support, sorted.pvals, method.parameter, pCDFlist.counts)
+        crit.constants <- res$crit.consts
+        idx.rej <- which(sorted.pvals <= crit.constants)
       }
     )
   } else {
@@ -140,13 +152,17 @@ discrete.fdr.int <- function(
       DBR = {
         res <- kernel_DBR_fast(pCDFlist, sorted.pvals, method.parameter, pCDFlist.counts)
         idx.rej <- which(res <= alpha)
+      },
+      DBY = {
+        res <- kernel_DBY_fast(pCDFlist, sorted.pvals, method.parameter, pCDFlist.counts)
+        idx.rej <- which(res <= seq_along(res) * alpha)
       }
     )
   }
   
   k <- length(idx.rej)
   
-  if(method == "DBR" || (method != "DBR" && method.parameter)) {
+  if(method %in% c("DBR", "DBY") || (!(method %in% c("DBR", "DBY")) && method.parameter)) {
     if(k > 0) {
       m.rej <- if(method == "DBR") k else max(idx.rej)
       # determine significant (observed) p-values in sorted.pvals
@@ -160,7 +176,7 @@ discrete.fdr.int <- function(
   } else {
     if(k > 0) {
       m.rej <- min(idx.rej) - 1
-      if(m.rej){
+      if(m.rej) {
         # determine significant (observed) p-values in sorted.pvals
         idx.rej <- which(pvec <= sorted.pvals[m.rej])
         pvec.rej <- input.data$Raw.pvalues[select][idx.rej]
@@ -170,7 +186,7 @@ discrete.fdr.int <- function(
       }
     } else {
       m.rej <- m
-      idx.rej <- 1:m
+      idx.rej <- seq_len(m)
       pvec.rej <- input.data$Raw.pvalues[select]
     }
   }
@@ -186,16 +202,17 @@ discrete.fdr.int <- function(
   )
   
   # adjusted p-values
-  if(method == "DBR" || (method != "DBR" && !method.parameter)){
-    if(crit.consts){
+  if(method %in% c("DBR", "DBY") || (!(method %in% c("DBR", "DBY")) && !method.parameter)) {
+    if(crit.consts) {
       res <- res$pval.transf
     }
     # compute adjusted p-values
     pv.adj <- switch(
       EXPR = method,
-      DBH  = cummax(pmin(res / 1:m, 1)),
-      ADBH = cummax(pmin(res / 1:m, 1)),
-      DBR  = rev(cummin(rev(pmin(res, 1))))
+      DBH  = cummax(pmin(res / seq_len(m), 1)),
+      ADBH = cummax(pmin(res / seq_len(m), 1)),
+      DBR  = rev(cummin(rev(pmin(res, 1)))),
+      DBY  = rev(cummin(rev(pmin(res / seq_len(m), 1))))
     ) 
     # add adjusted p-values to output list
     ro <- order(o)
@@ -207,7 +224,7 @@ discrete.fdr.int <- function(
   if(crit.consts) output$Critical.values <- c(crit.constants, rep(NA, n - m))
   
   # include selection data, if selection was applied
-  if(threshold < 1){
+  if(threshold < 1) {
     output$Select <- list()
     output$Select$Threshold <- threshold
     output$Select$Effective.Thresholds <- F.thresh

@@ -51,7 +51,11 @@ pp. 1867-1900. \doi{10.1214/18-EJS1441}
 
 G. Blanchard and E. Roquain (2009). Adaptive false discovery rate control
 under independence and dependence. \emph{Journal of Machine Learning Research},
-\emph{10}, pp. 2837-2871.
+\emph{10}, pp. 2837-2871. \doi{10.48550/arXiv.0707.0536}
+
+Döhler, S. (2018). A discrete modification of the Benjamini–Yekutieli
+procedure. \emph{Econometrics and Statistics}, \emph{5}, pp. 137-147.
+\doi{10.1016/j.ecosta.2016.12.002}
 }
 \seealso{
 Useful links:
