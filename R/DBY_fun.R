@@ -1,18 +1,13 @@
-#' @name DBR
+#' @name DBY
 #' 
 #' @title
-#' The Discrete Blanchard-Roquain Procedure
+#' The Discrete Benjamini-Yekutieli Procedure
 #' 
 #' @description
 #' Applies the Discrete Benjamini-Yekutieli procedure, with or without computing
 #' the critical constants, to a set of \eqn{p}-values and their respective
 #' discrete supports.
 #' 
-#' @details
-#' \[DBR-\eqn{\lambda}\] is the discrete version of the 
-#' \[Blanchard-Roquain-\eqn{\lambda}\] procedure (see References). The authors
-#' of the latter suggest to take `lambda = alpha` (see their Proposition 17),
-#' which explains the choice of the default value here.
 #' @template details_crit 
 #' 
 #' @references
@@ -27,14 +22,12 @@
 #' @templateVar pCDFlist TRUE
 #' @templateVar test.results TRUE
 #' @templateVar alpha TRUE
-#' @templateVar lambda TRUE
 #' @templateVar ret.crit.consts TRUE
 #' @templateVar select.threshold TRUE
 #' @templateVar pCDFlist.indices TRUE
 #' @templateVar triple.dots TRUE
 #' @template param
 #' 
-#' @templateVar BR TRUE
 #' @template return
 #' 
 #' @template exampleGPV
@@ -50,7 +43,7 @@
 #' @export
 DBY <- function(test.results, ...) UseMethod("DBY")
 
-#' @rdname DBR
+#' @rdname DBY
 #' @importFrom checkmate assert_character assert_integerish assert_list assert_numeric qassert
 #' @export
 DBY.default <- function(
@@ -167,7 +160,7 @@ DBY.default <- function(
   return(output)
 }
 
-#' @rdname DBR
+#' @rdname DBY
 #' @importFrom checkmate assert_character assert_r6 qassert
 #' @export
 DBY.DiscreteTestResults <- function(
