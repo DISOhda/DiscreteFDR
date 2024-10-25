@@ -18,7 +18,7 @@
 #' @section References:
 #' G. Blanchard and E. Roquain (2009). Adaptive false discovery rate control
 #'   under independence and dependence. *Journal of Machine Learning Research*,
-#'   *10*, pp. 2837-2871.
+#'   *10*, pp. 2837-2871. \doi{10.48550/arXiv.0707.0536}
 #'
 #' @seealso
 #' [`discrete.BH()`], [`DBH()`], [`ADBH()`]
