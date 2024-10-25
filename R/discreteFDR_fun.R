@@ -129,7 +129,7 @@ discrete.fdr.int <- function(
         idx.rej <- which(sorted.pvals <= crit.constants)
       },
       DBY = {
-        res <- kernel_DBY_crit(pCDFlist, support, sorted.pvals, method.parameter, pCDFlist.counts)
+        res <- kernel_DBY_crit(pCDFlist, support, sorted.pvals, alpha, pCDFlist.counts)
         crit.constants <- res$crit.consts
         idx.rej <- which(sorted.pvals <= crit.constants)
       }
@@ -154,7 +154,7 @@ discrete.fdr.int <- function(
         idx.rej <- which(res <= alpha)
       },
       DBY = {
-        res <- kernel_DBY_fast(pCDFlist, sorted.pvals, method.parameter, pCDFlist.counts)
+        res <- kernel_DBY_fast(pCDFlist, sorted.pvals, pCDFlist.counts)
         idx.rej <- which(res <= seq_along(res) * alpha)
       }
     )
