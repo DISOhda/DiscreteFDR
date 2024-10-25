@@ -1,6 +1,6 @@
 #include "kernel.h"
 
-NumericVector kernel_DBR_fast(const List &pCDFlist, const NumericVector &sorted_pv, const double lambda, const Nullable<NumericVector> pCDFcounts) {
+NumericVector kernel_DBR_fast(const List &pCDFlist, const NumericVector &sorted_pv, const double lambda, const Nullable<NumericVector> &pCDFcounts) {
   // number of tests
   int numTests = sorted_pv.length();
   // number of unique p-value distributions
@@ -82,7 +82,7 @@ NumericVector kernel_DBR_fast(const List &pCDFlist, const NumericVector &sorted_
   return pval_transf;
 }
 
-List kernel_DBR_crit(const List &pCDFlist, const NumericVector &support, const NumericVector &sorted_pv, const double lambda, const double alpha, const Nullable<NumericVector> pCDFcounts) {
+List kernel_DBR_crit(const List &pCDFlist, const NumericVector &support, const NumericVector &sorted_pv, const double lambda, const double alpha, const Nullable<NumericVector> &pCDFcounts) {
   // number of tests
   int numTests = sorted_pv.length();
   // number of unique p-value distributions

@@ -108,7 +108,7 @@ NumericVector kernel_ADBH_fast(const List &pCDFlist, const NumericVector &sorted
   return pval_transf;
 }
 
-List kernel_ADBH_crit(const List &pCDFlist, const NumericVector &support, const NumericVector &sorted_pv, const bool stepUp, const double alpha, const Nullable<NumericVector> pCDFcounts) {
+List kernel_ADBH_crit(const List &pCDFlist, const NumericVector &support, const NumericVector &sorted_pv, const bool stepUp, const double alpha, const Nullable<NumericVector> &pCDFcounts) {
   // number of tests
   int numTests = sorted_pv.length();
   // number of unique p-value distributions

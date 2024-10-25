@@ -57,9 +57,8 @@ NumericVector kernel_DBH_fast(const List &pCDFlist, const NumericVector &pvalues
   for(int i = 0; i < numCDF; i++) {
     checkUserInterrupt();
     int pos = 0;
-    int len = sfuns[i].length();
     for(int j = 0; j < numValues; j++) {
-      eval_pv(f_eval[j], pv_list[j], sfuns[i], len, pos);
+      eval_pv(f_eval[j], pv_list[j], sfuns[i], lens[i], pos);
     }
     
     if(!stepUp) // SD case, see (11)
@@ -119,7 +118,7 @@ List kernel_DBH_crit(const List &pCDFlist, const NumericVector &support, const N
     // p-values), because we may have removed some of them by the shortcut
     pv_list = sort_combine(sorted_pv, support[Range(i, tau_m.index)]);
     // get the transformations of the observed p-values inside pv_list
-    pval_transf = kernel_DBH_fast(pCDFlist, pv_list, false, R_NilValue, alpha, NumericVector(), pCDFcounts);
+    pval_transf = kernel_DBH_fast(pCDFlist, pv_list, false, R_NilValue, alpha, NumericVector(), CDFcounts);
   } else { 
     // SU case
     // apply the shortcut drawn from Lemma 2, that is tau_1 >= the effective
@@ -131,7 +130,7 @@ List kernel_DBH_crit(const List &pCDFlist, const NumericVector &support, const N
     // p-values), because we may have removed some of them by the shortcut
     pv_list = sort_combine(sorted_pv, support[Range(i, tau_m.index)]);
     // get the transformations of the observed p-values inside pv_list
-    pval_transf = kernel_DBH_fast(pCDFlist, pv_list, true, NumericVector(1, tau_m.value), alpha, pv_list, pCDFcounts);
+    pval_transf = kernel_DBH_fast(pCDFlist, pv_list, true, NumericVector(1, tau_m.value), alpha, pv_list, CDFcounts);
     //pval_transf = kernel_DBH_fast(pCDFlist, pv_list, true, R_NilValue, alpha, pv_list, pCDFcounts);
   }
   
