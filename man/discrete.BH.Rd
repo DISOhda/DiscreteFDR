@@ -101,35 +101,35 @@ test.result <- generate.pvalues(df, "fisher")
 raw.pvalues <- test.result$get_pvalues()
 pCDFlist <- test.result$get_pvalue_supports()
 
-# DBH (SU) without critical values; using extracted p-values and supports
-DBH.su.fast <- discrete.BH(raw.pvalues, pCDFlist)
+# DBH (step-up) without critical values; using test results object
+DBH.su.fast <- discrete.BH(test.result)
 summary(DBH.su.fast)
 
-# DBH (SD) without critical values; using extracted p-values and supports
+# DBH (step-down) without critical values; using extracted p-values and supports
 DBH.sd.fast <- discrete.BH(raw.pvalues, pCDFlist, direction = "sd")
 summary(DBH.sd.fast)
 
-# DBH (SU) with critical values; using test results
-DBH.su.crit <- discrete.BH(test.result, ret.crit.consts = TRUE)
+# DBH (step-up) with critical values; using extracted p-values and supports
+DBH.su.crit <- discrete.BH(raw.pvalues, pCDFlist, ret.crit.consts = TRUE)
 summary(DBH.su.crit)
 
-# DBH (SD) with critical values; using test results
+# DBH (step-down) with critical values; using test results object
 DBH.sd.crit <- discrete.BH(test.result, direction = "sd", ret.crit.consts = TRUE)
 summary(DBH.sd.crit)
 
-# ADBH (SU) without critical values; using extracted p-values and supports
-ADBH.su.fast <- discrete.BH(raw.pvalues, pCDFlist, adaptive = TRUE)
+# ADBH (step-up) without critical values; using test results object
+ADBH.su.fast <- discrete.BH(test.result, adaptive = TRUE)
 summary(ADBH.su.fast)
 
-# ADBH (SD) without critical values; using extracted p-values and supports
+# ADBH (step-down) without critical values; using extracted p-values and supports
 ADBH.sd.fast <- discrete.BH(raw.pvalues, pCDFlist, direction = "sd", adaptive = TRUE)
 summary(ADBH.sd.fast)
 
-# ADBH (SU) with critical values; using test results
-ADBH.su.crit <- discrete.BH(test.result, adaptive = TRUE, ret.crit.consts = TRUE)
+# ADBH (step-up) with critical values; using extracted p-values and supports
+ADBH.su.crit <- discrete.BH(raw.pvalues, pCDFlist, adaptive = TRUE, ret.crit.consts = TRUE)
 summary(ADBH.su.crit)
 
-# ADBH (SD) with critical values; using test results
+# ADBH (step-down) with critical values; using test results object
 ADBH.sd.crit <- discrete.BH(test.result, direction = "sd", adaptive = TRUE, ret.crit.consts = TRUE)
 summary(ADBH.sd.crit)
 
@@ -140,5 +140,5 @@ and heterogeneous tests. \emph{Electronic Journal of Statistics}, \emph{12}(1),
 pp. 1867-1900. \doi{10.1214/18-EJS1441}
 }
 \seealso{
-\code{\link[=DBH]{DBH()}}, \code{\link[=ADBH]{ADBH()}}, \code{\link[=DBR]{DBR()}}
+\code{\link[=DBH]{DBH()}}, \code{\link[=ADBH]{ADBH()}}, \code{\link[=DBR]{DBR()}}, \code{\link[=DBY]{DBY()}}
 }

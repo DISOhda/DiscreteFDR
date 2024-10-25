@@ -21,7 +21,7 @@
 #'   *10*, pp. 2837-2871. \doi{10.48550/arXiv.0707.0536}
 #'
 #' @seealso
-#' [`discrete.BH()`], [`DBH()`], [`ADBH()`]
+#' [`discrete.BH()`], [`DBH()`], [`ADBH()`], [`DBY()`]
 #' 
 #' @templateVar test.results TRUE
 #' @templateVar pCDFlist TRUE
@@ -39,12 +39,12 @@
 #' 
 #' @template exampleGPV
 #' @examples
-#' # DBR without critical values; using extracted p-values and supports
-#' DBR.fast <- DBR(raw.pvalues, pCDFlist)
+#' # DBR without critical values; using test results object
+#' DBR.fast <- DBR(test.result)
 #' summary(DBR.fast)
 #' 
-#' # DBR with critical values; using test results
-#' DBR.crit <- DBR(test.result, ret.crit.consts = TRUE)
+#' # DBR with critical values; using extracted p-values and supports
+#' DBR.crit <- DBR(raw.pvalues, pCDFlist, ret.crit.consts = TRUE)
 #' summary(DBR.crit)
 #' 
 #' @export
@@ -80,7 +80,7 @@ DBR.default <- function(
     max.len = n
   )
   # individual p-value distributions
-  for(i in seq_along(pCDFlist)){
+  for(i in seq_along(pCDFlist)) {
     assert_numeric(
       x = pCDFlist[[i]],
       lower = 0,
@@ -98,10 +98,10 @@ DBR.default <- function(
   qassert(x = alpha, rules = "N1(0, 1]")
   
   # lambda
-  if(is.null(lambda) || is.na(lambda)){
+  if(is.null(lambda) || is.na(lambda)) {
     # if lambda is not provided, set lambda = alpha
     lambda <- alpha
-  }else qassert(x = lambda, rules = "N1[0, 1]")
+  } else qassert(x = lambda, rules = "N1[0, 1]")
   
   # compute and return critical values?
   qassert(ret.crit.consts, "B1")
@@ -119,7 +119,7 @@ DBR.default <- function(
     null.ok = TRUE
   )
   # individual index vectors (if not NULL)
-  if(is.null(pCDFlist.indices)){
+  if(is.null(pCDFlist.indices)) {
     if(n != m) {
       stop(
         paste(
@@ -128,11 +128,11 @@ DBR.default <- function(
         )
       )
     }
-    pCDFlist.indices <- as.list(1:n)
+    pCDFlist.indices <- as.list(seq_len(n))
     pCDFlist.counts <- rep(1, n)
   } else {
-    set <- 1L:n
-    for(i in seq_along(pCDFlist.indices)){
+    set <- seq_len(n)
+    for(i in seq_along(pCDFlist.indices)) {
       pCDFlist.indices[[i]] <- assert_integerish(
         x = pCDFlist.indices[[i]],
         lower = 1,
@@ -168,7 +168,11 @@ DBR.default <- function(
     method.parameter = lambda,
     crit.consts      = ret.crit.consts,
     threshold        = select.threshold,
-    data.name        = paste(deparse(substitute(test.results)), "and", deparse(substitute(pCDFlist)))
+    data.name        = paste(
+                         deparse(substitute(test.results)),
+                         "and",
+                         deparse(substitute(pCDFlist))
+                       )
   )
   
   return(output)

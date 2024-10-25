@@ -15,7 +15,7 @@
 #' @template details_crit
 #' 
 #' @seealso
-#' [`DBH()`], [`ADBH()`], [`DBR()`]
+#' [`DBH()`], [`ADBH()`], [`DBR()`], [`DBY()`]
 #' 
 #' @templateVar test.results TRUE
 #' @templateVar pCDFlist TRUE
@@ -38,35 +38,35 @@
 #'   
 #' @template exampleGPV
 #' @examples
-#' # DBH (SU) without critical values; using extracted p-values and supports
-#' DBH.su.fast <- discrete.BH(raw.pvalues, pCDFlist)
+#' # DBH (step-up) without critical values; using test results object
+#' DBH.su.fast <- discrete.BH(test.result)
 #' summary(DBH.su.fast)
 #' 
-#' # DBH (SD) without critical values; using extracted p-values and supports
+#' # DBH (step-down) without critical values; using extracted p-values and supports
 #' DBH.sd.fast <- discrete.BH(raw.pvalues, pCDFlist, direction = "sd")
 #' summary(DBH.sd.fast)
 #' 
-#' # DBH (SU) with critical values; using test results
-#' DBH.su.crit <- discrete.BH(test.result, ret.crit.consts = TRUE)
+#' # DBH (step-up) with critical values; using extracted p-values and supports
+#' DBH.su.crit <- discrete.BH(raw.pvalues, pCDFlist, ret.crit.consts = TRUE)
 #' summary(DBH.su.crit)
 #' 
-#' # DBH (SD) with critical values; using test results
+#' # DBH (step-down) with critical values; using test results object
 #' DBH.sd.crit <- discrete.BH(test.result, direction = "sd", ret.crit.consts = TRUE)
 #' summary(DBH.sd.crit)
 #' 
-#' # ADBH (SU) without critical values; using extracted p-values and supports
-#' ADBH.su.fast <- discrete.BH(raw.pvalues, pCDFlist, adaptive = TRUE)
+#' # ADBH (step-up) without critical values; using test results object
+#' ADBH.su.fast <- discrete.BH(test.result, adaptive = TRUE)
 #' summary(ADBH.su.fast)
 #' 
-#' # ADBH (SD) without critical values; using extracted p-values and supports
+#' # ADBH (step-down) without critical values; using extracted p-values and supports
 #' ADBH.sd.fast <- discrete.BH(raw.pvalues, pCDFlist, direction = "sd", adaptive = TRUE)
 #' summary(ADBH.sd.fast)
-#'
-#' # ADBH (SU) with critical values; using test results
-#' ADBH.su.crit <- discrete.BH(test.result, adaptive = TRUE, ret.crit.consts = TRUE)
+#' 
+#' # ADBH (step-up) with critical values; using extracted p-values and supports
+#' ADBH.su.crit <- discrete.BH(raw.pvalues, pCDFlist, adaptive = TRUE, ret.crit.consts = TRUE)
 #' summary(ADBH.su.crit)
 #' 
-#' # ADBH (SD) with critical values; using test results
+#' # ADBH (step-down) with critical values; using test results object
 #' ADBH.sd.crit <- discrete.BH(test.result, direction = "sd", adaptive = TRUE, ret.crit.consts = TRUE)
 #' summary(ADBH.sd.crit)
 #' 
@@ -148,7 +148,7 @@ discrete.BH.default <- function(
     null.ok = TRUE
   )
   # individual index vectors (if not NULL)
-  if(is.null(pCDFlist.indices)){
+  if(is.null(pCDFlist.indices)) {
     if(n != m){
       stop(
         paste(
@@ -157,10 +157,10 @@ discrete.BH.default <- function(
         )
       )
     }
-    pCDFlist.indices <- as.list(1:n)
+    pCDFlist.indices <- as.list(seq_len(n))
     pCDFlist.counts <- rep(1, n)
   } else {
-    set <- 1L:n
+    set <- seq_len(n)
     for(i in seq_along(pCDFlist.indices)){
       pCDFlist.indices[[i]] <- assert_integerish(
         x = pCDFlist.indices[[i]],
@@ -197,7 +197,11 @@ discrete.BH.default <- function(
     method.parameter = (direction == "su"),
     crit.consts      = ret.crit.consts,
     threshold        = select.threshold,
-    data.name        = paste(deparse(substitute(test.results)), "and", deparse(substitute(pCDFlist)))
+    data.name        = paste(
+                         deparse(substitute(test.results)),
+                         "and",
+                         deparse(substitute(pCDFlist))
+                       )
   )
   
   return(output)

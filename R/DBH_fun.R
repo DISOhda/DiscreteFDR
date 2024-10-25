@@ -12,7 +12,7 @@
 #' @template details_crit
 #' 
 #' @seealso
-#' [`discrete.BH()`], [`ADBH()`], [`DBR()`]
+#' [`discrete.BH()`], [`ADBH()`], [`DBR()`], [`DBY()`]
 #' 
 #' @templateVar test.results TRUE
 #' @templateVar pCDFlist TRUE
@@ -35,19 +35,19 @@
 #'   
 #' @template exampleGPV
 #' @examples
-#' # DBH (SU) without critical values; using extracted p-values and supports
-#' DBH.su.fast <- DBH(raw.pvalues, pCDFlist)
+#' # DBH (step-up) without critical values; using test results object
+#' DBH.su.fast <- DBH(test.result)
 #' summary(DBH.su.fast)
 #' 
-#' # DBH (SD) without critical values; using extracted p-values and supports
+#' # DBH (step-down) without critical values; using extracted p-values and supports
 #' DBH.sd.fast <- DBH(raw.pvalues, pCDFlist, direction = "sd")
 #' summary(DBH.sd.fast)
 #' 
-#' # DBH (SU) with critical values; using test results
-#' DBH.su.crit <- DBH(test.result, ret.crit.consts = TRUE)
+#' # DBH (step-up) with critical values; using extracted p-values and supports
+#' DBH.su.crit <- DBH(raw.pvalues, pCDFlist, ret.crit.consts = TRUE)
 #' summary(DBH.su.crit)
 #' 
-#' # DBH (SD) with critical values; using test results
+#' # DBH (step-down) with critical values; using test results object
 #' DBH.sd.crit <- DBH(test.result, direction = "sd", ret.crit.consts = TRUE)
 #' summary(DBH.sd.crit)
 #' 

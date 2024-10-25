@@ -93,19 +93,19 @@ test.result <- generate.pvalues(df, "fisher")
 raw.pvalues <- test.result$get_pvalues()
 pCDFlist <- test.result$get_pvalue_supports()
 
-# DBH (SU) without critical values; using extracted p-values and supports
-DBH.su.fast <- DBH(raw.pvalues, pCDFlist)
+# DBH (step-up) without critical values; using test results object
+DBH.su.fast <- DBH(test.result)
 summary(DBH.su.fast)
 
-# DBH (SD) without critical values; using extracted p-values and supports
+# DBH (step-down) without critical values; using extracted p-values and supports
 DBH.sd.fast <- DBH(raw.pvalues, pCDFlist, direction = "sd")
 summary(DBH.sd.fast)
 
-# DBH (SU) with critical values; using test results
-DBH.su.crit <- DBH(test.result, ret.crit.consts = TRUE)
+# DBH (step-up) with critical values; using extracted p-values and supports
+DBH.su.crit <- DBH(raw.pvalues, pCDFlist, ret.crit.consts = TRUE)
 summary(DBH.su.crit)
 
-# DBH (SD) with critical values; using test results
+# DBH (step-down) with critical values; using test results object
 DBH.sd.crit <- DBH(test.result, direction = "sd", ret.crit.consts = TRUE)
 summary(DBH.sd.crit)
 
@@ -116,5 +116,5 @@ and heterogeneous tests. \emph{Electronic Journal of Statistics}, \emph{12}(1),
 pp. 1867-1900. \doi{10.1214/18-EJS1441}
 }
 \seealso{
-\code{\link[=discrete.BH]{discrete.BH()}}, \code{\link[=ADBH]{ADBH()}}, \code{\link[=DBR]{DBR()}}
+\code{\link[=discrete.BH]{discrete.BH()}}, \code{\link[=ADBH]{ADBH()}}, \code{\link[=DBR]{DBR()}}, \code{\link[=DBY]{DBY()}}
 }
