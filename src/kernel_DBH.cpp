@@ -1,6 +1,6 @@
 #include "kernel.h"
 
-NumericVector kernel_DBH_fast(const List &pCDFlist, const NumericVector &pvalues, const bool stepUp, const Nullable<NumericVector> tau_max, const double &alpha, const NumericVector &support, const Nullable<NumericVector> &pCDFcounts) {
+NumericVector kernel_DBH_fast(const List &pCDFlist, const NumericVector &pvalues, const bool stepUp, const Nullable<NumericVector> tau_max, const double alpha, const NumericVector &support, const Nullable<NumericVector> &pCDFcounts) {
   // Number of p-values
   int numValues = pvalues.length();
   // number of unique p-value distributions
@@ -76,7 +76,7 @@ NumericVector kernel_DBH_fast(const List &pCDFlist, const NumericVector &pvalues
   return pval_transf;
 }
 
-List kernel_DBH_crit(const List &pCDFlist, const NumericVector &support, const NumericVector &sorted_pv, const bool stepUp, const double &alpha, const Nullable<NumericVector> &pCDFcounts) {
+List kernel_DBH_crit(const List &pCDFlist, const NumericVector &support, const NumericVector &sorted_pv, const bool stepUp, const double alpha, const Nullable<NumericVector> &pCDFcounts) {
   // number of tests
   int numTests = sorted_pv.length();
   // number of unique p-value distributions

@@ -123,12 +123,12 @@ tau_m_results DBH_tau_m(const NumericVector* sfuns, const NumericVector& CDFcoun
 ///' @export
 //' @rdname kernel
 // [[Rcpp::export]]
-NumericVector kernel_DBH_fast(const List &pCDFlist, const NumericVector &pvalues, const bool stepUp = false, const Nullable<NumericVector> tau_max = R_NilValue, const double &alpha = 0.05, const NumericVector &support = NumericVector(), const Nullable<NumericVector> &pCDFcounts = R_NilValue);
+NumericVector kernel_DBH_fast(const List &pCDFlist, const NumericVector &pvalues, const bool stepUp = false, const Nullable<NumericVector> tau_max = R_NilValue, const double alpha = 0.05, const NumericVector &support = NumericVector(), const Nullable<NumericVector> &pCDFcounts = R_NilValue);
 
 ///' @export
 //' @rdname kernel
 // [[Rcpp::export]]
-List kernel_DBH_crit(const List &pCDFlist, const NumericVector &support, const NumericVector &sorted_pv, const bool stepUp = false, const double &alpha = 0.05, const Nullable<NumericVector> &pCDFcounts = R_NilValue);
+List kernel_DBH_crit(const List &pCDFlist, const NumericVector &support, const NumericVector &sorted_pv, const bool stepUp = false, const double alpha = 0.05, const Nullable<NumericVector> &pCDFcounts = R_NilValue);
 
 ///' @export
 //' @rdname kernel
@@ -143,9 +143,9 @@ List kernel_ADBH_crit(const List &pCDFlist, const NumericVector &support, const 
 ///' @export
 //' @rdname kernel
 // [[Rcpp::export]]
-NumericVector kernel_DBR_fast(const List &pCDFlist, const NumericVector &sorted_pv, const double &lambda = 0.05, const Nullable<NumericVector> pCDFcounts = R_NilValue);
+NumericVector kernel_DBR_fast(const List &pCDFlist, const NumericVector &sorted_pv, const double lambda = 0.05, const Nullable<NumericVector> pCDFcounts = R_NilValue);
 
 ///' @export
 //' @rdname kernel
 // [[Rcpp::export]]
-List kernel_DBR_crit(const List &pCDFlist, const NumericVector &support, const NumericVector &sorted_pv, const double &lambda = 0.05, const double &alpha = 0.05, const Nullable<NumericVector> pCDFcounts = R_NilValue);
+List kernel_DBR_crit(const List &pCDFlist, const NumericVector &support, const NumericVector &sorted_pv, const double lambda = 0.05, const double alpha = 0.05, const Nullable<NumericVector> pCDFcounts = R_NilValue);
