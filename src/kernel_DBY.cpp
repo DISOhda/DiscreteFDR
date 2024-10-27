@@ -68,7 +68,7 @@ List kernel_DBY_crit(const List &pCDFlist, const NumericVector &support, const N
   
   // get indices of critical values
   int idx_pval = 0;
-  for(int i = 0; i < numTests - 1; i++) {
+  for(int i = 0; i < numTests; i++) {
     checkUserInterrupt();
     while(idx_pval < numValues && support_transf[idx_pval] <= (i + 1) * alpha) idx_pval++;
     crit[i] = support[idx_pval - 1];
