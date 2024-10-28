@@ -50,32 +50,34 @@ summary.DiscreteFDR <- function(object, ...){
   # determine order of raw p-values
   o <- order(object$Data$Raw.pvalues)
   # ordered indices
-  i <- 1:n
+  i <- seq_len(n)
   # determine for each p-value if its corresponding null hypothesis is rejected
   r <- i %in% object$Indices #if(!select) o %in% object$Indices else o %in% object$Select.Indices[object$Indices]
   
-  # create output object with summary table; include all data of object (DiscreteFDR)
-  out <- c(object, list(Table = data.frame('Index' = i, 'P.value' = object$Data$Raw.pvalues)))
-  if(select){
-    out$Table$Selected <- i %in% object$Select$Indices #rep(c(TRUE, FALSE), c(m, n - m))
-    out$Table$Scaled <- NA
-    out$Table$Scaled[out$Table$Selected] <- object$Select$Scaled
+  # create summary table
+  tab <- data.frame('Index' = i, 'P.value' = object$Data$Raw.pvalues)
+  if(select) {
+    tab$Selected <- i %in% object$Select$Indices #rep(c(TRUE, FALSE), c(m, n - m))
+    tab$Scaled <- NA
+    tab$Scaled[tab$Selected] <- object$Select$Scaled
   }
-  out$Table <- out$Table[o, ]
+  tab <- tab[o, ]
   if(exists('Critical.values', object)) {
     if(select) {
-      out$Table$Critical.value <- NA
-      out$Table$Critical.value[1:m] <- object$Critical.values[1:m][order(order(out$Table$Scaled[1:m]))]
-    } else out$Table$Critical.value <- object$Critical.values
+      tab$Critical.value <- NA
+      tab$Critical.value[seq_len(m)] <- object$Critical.values[seq_len(m)][order(order(tab$Scaled[seq_len(m)]))]
+    } else tab$Critical.value <- object$Critical.values
   }
   if(exists('Adjusted', object)){
-    out$Table$Adjusted <- object$Adjusted[o]
+    tab$Adjusted <- object$Adjusted[o]
   }
-  out$Table <- data.frame(out$Table, 'Rejected' = r[o])
-  rownames(out$Table) <- i
+  tab <- data.frame(tab, 'Rejected' = r[o])
+  # if row names are numbers, rearrange them to represent sort order
+  if(all(rownames(tab) == tab$Index)) rownames(tab) <- i
   
   # return output object
-  class(out) <- "summary.DiscreteFDR" # basically a 'DiscreteFDR' object, but with a summary table (just like 'lm' and 'summary.lm' classes)
+  out <- c(object, list(Table = tab))
+  class(out) <- "summary.DiscreteFDR" # basically a 'DiscreteFDR' object, but with an additional summary table (just like 'lm' and 'summary.lm' classes)
   return(out)
 }
 
