@@ -39,14 +39,16 @@ print.DiscreteFDR <- function(x, ...){
   
   # print short results overview
   if(!exists('Select', x))
-    cat("Number of tests =", n, "\n") else{
+    cat("Number of tests =", n, "\n") else {
       cat("Number of selected tests =", x$Select$Number, "out of", n, "\n")
       cat("Selection threshold =", x$Select$Threshold, "\n")
     }
   
   cat("Number of rejections =", k, "at global FDR level", x$Data$FDR.level, "\n")
-  cat("(Original BH rejections = ", sum(BH <= x$Data$FDR.level), ")\n", sep = "")
-  if(k && !exists('Select', x)) cat("Largest rejected p value: ", max(x$Rejected), "\n")
+  cont_fdr <- ifelse(grepl("Yekutieli", x$Data$Method), "BY", "BH")
+  cont_adj <- p.adjust(x$Data$Raw.pvalues, cont_fdr)
+  cat("(Original ", cont_fdr, " rejections = ", sum(cont_adj <= x$Data$FDR.level), ")\n", sep = "")
+  if(k && !exists('Select', x)) cat("Largest rejected p-value: ", max(x$Rejected), "\n")
   
   cat("\n")
   invisible(x)
