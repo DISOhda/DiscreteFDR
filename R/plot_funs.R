@@ -32,8 +32,8 @@
 #' @export
 hist.DiscreteFDR <- function(
     x,
-    mode = c("raw", "selected"),
     breaks = "FD",
+    mode = c("raw", "selected"),
     ...
 ) {
   if(!("DiscreteFDR" %in% class(x)))
