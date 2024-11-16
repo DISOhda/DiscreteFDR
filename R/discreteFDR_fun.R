@@ -62,16 +62,28 @@ discrete.fdr.int <- function(
     m <- length(select)
     # filter pCDFs, indices and counts of selected p-values
     if(is.null(pCDFlist.indices)) {
-      pCDFlist.indices <- as.list(select)
-      pCDFlist.counts  <- rep(1, m)
+      # keep CDFs of selected p-values
       pCDFlist         <- pCDFlist[select]
+      # create indices according to selction
+      pCDFlist_indices <- as.list(seq_len(m))
+      # set counts (each CDF exists exactly once)
+      pCDFlist_counts  <- rep(1, m)
     } else{
-      pCDFlist.indices <- lapply(pCDFlist.indices, setdiff, seq_len(n)[-select])
-      pCDFlist.counts  <- sapply(pCDFlist.indices, length)
-      idx.nonempty     <- which(pCDFlist.counts > 0)
-      pCDFlist         <- pCDFlist[idx.nonempty]
-      pCDFlist.indices <- pCDFlist.indices[idx.nonempty]
-      pCDFlist.counts  <- pCDFlist.counts[idx.nonempty]
+      # remove indices that were not selected
+      pCDFlist_indices <- lapply(pCDFlist_indices, setdiff, seq_len(n)[-select])
+      # determine counts
+      pCDFlist_counts  <- sapply(pCDFlist_indices, length)
+      # determine CDFs with non-zero counts
+      idx_nonempty     <- which(pCDFlist_counts > 0)
+      # keep CDFs with non-zero counts
+      pCDFlist         <- pCDFlist[idx_nonempty]
+      pCDFlist_indices <- pCDFlist_indices[idx_nonempty]
+      pCDFlist_counts  <- pCDFlist_counts[idx_nonempty]
+      # determine new indices (selection changes numbering!)
+      new_idx          <- rep(NA, n)
+      new_idx[select]  <- seq_len(m)
+      # change indices according to selection
+      pCDFlist_indices <- lapply(pCDFlist_indices, function(l) new_idx[l])
     }
     pCDFlist.idx <- order(unlist(pCDFlist.indices))
     # rescale pCDFs
