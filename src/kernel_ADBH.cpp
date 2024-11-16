@@ -215,7 +215,7 @@ List kernel_ADBH_crit(const List &pCDFlist, const NumericVector &support, const 
       int rem = numTests - idx_crit;
       // sum
       double s = 0;
-      // comupte sum
+      // compute sum
       if(idx_crit >= 0) {
         int k = 0;
         while(k < numCDF && CDFcounts[ord[k]] <= rem && s <= alpha * (idx_crit + 1)) {
