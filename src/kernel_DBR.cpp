@@ -173,7 +173,7 @@ List kernel_DBR_crit(const List &pCDFlist, const NumericVector &support, const N
           rem -= CDFcounts[ord[k]];
           k++;
         }
-        s += rem * temp[ord[k]];
+        if(k < numCDF) s += rem * temp[ord[k]];
         s /= (1 - lambda) * (idx_crit + 1);
         
         if(idx_crit < numTests && s <= alpha) {
@@ -194,7 +194,7 @@ List kernel_DBR_crit(const List &pCDFlist, const NumericVector &support, const N
           // go to next p-value in this chunk
           j++;
         } else {
-          // current p-value does not satisfiy condition
+          // current p-value does not satisfy condition
           // => save previous p-value as critical value
           if(idx_pval) crit[idx_crit++] = pv_list[idx_pval - 1];
           else crit[idx_crit++] = 0;
