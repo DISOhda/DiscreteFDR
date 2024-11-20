@@ -65,7 +65,7 @@ kernel_DBY_fast(pCDFlist, pvalues, pCDFcounts = NULL)
 kernel_DBY_crit(pCDFlist, support, sorted_pv, alpha = 0.05, pCDFcounts = NULL)
 }
 \arguments{
-\item{pCDFlist}{list of the supports of the CDFs of the p-values; each list item must be a numeric vector, which is sorted in increasing order and whose last element equals 1.}
+\item{pCDFlist}{list of the supports of the CDFs of the \eqn{p}-values; each list item must be a numeric vector, which is sorted in increasing order and whose last element equals 1.}
 
 \item{pvalues}{numeric vector, sorted in increasing order, that either
 must contain the entirety of all observable values of

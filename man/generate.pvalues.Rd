@@ -15,7 +15,7 @@ generate.pvalues(
 \arguments{
 \item{dat}{input data; must be suitable for the first parameter of the provided \code{preprocess.fun} function or, if \code{preprocess.fun} is \code{NULL}, for the first parameter of the \code{test.fun} function.}
 
-\item{test.fun}{function \strong{from package \code{\link[DiscreteTests:DiscreteTests-package]{DiscreteTests}}}, i.e. one whose name ends with \verb{*.test.pv} and which performs hypothesis tests and provides an object with p-values and their support sets; can be specified by a single character string (which is automatically checked for being a suitable function \strong{from that package} and may be abbreviated) or a single function object.}
+\item{test.fun}{function \strong{from package \code{\link[DiscreteTests:DiscreteTests-package]{DiscreteTests}}}, i.e. one whose name ends with \verb{*_test_pv} and which performs hypothesis tests and provides an object with \eqn{p}-values and their support sets; can be specified by a single character string (which is automatically checked for being a suitable function \strong{from that package} and may be abbreviated) or a single function object.}
 
 \item{test.args}{optional named list with arguments for \code{test.fun}; the names of the list fields must match the test function's parameter names. The first parameter of the test function (i.e. the data) MUST NOT be included!}
 

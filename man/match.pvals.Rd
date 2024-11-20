@@ -7,11 +7,11 @@
 match.pvals(test.results, pCDFlist, pCDFlist.indices = NULL)
 }
 \arguments{
-\item{test.results}{either a numeric vector with p-values or an R6 object of class \code{\link[DiscreteTests]{DiscreteTestResults}} from package \link[DiscreteTests]{DiscreteTests} for which a discrete FDR procedure is to be performed.}
+\item{test.results}{either a numeric vector with \eqn{p}-values or an R6 object of class \code{\link[DiscreteTests]{DiscreteTestResults}} from package \link[DiscreteTests]{DiscreteTests} for which a discrete FDR procedure is to be performed.}
 
-\item{pCDFlist}{list of the supports of the CDFs of the p-values; each list item must be a numeric vector, which is sorted in increasing order and whose last element equals 1.}
+\item{pCDFlist}{list of the supports of the CDFs of the \eqn{p}-values; each list item must be a numeric vector, which is sorted in increasing order and whose last element equals 1.}
 
-\item{pCDFlist.indices}{list of numeric vectors containing the test indices that indicate to which raw p-value each \strong{unique} support in \code{pCDFlist} belongs; ignored if the lengths of \code{test.results} and \code{pCDFlist} are equal.}
+\item{pCDFlist.indices}{list of numeric vectors containing the test indices that indicate to which raw \eqn{p}-value each \strong{unique} support in \code{pCDFlist} belongs; ignored if the lengths of \code{test.results} and \code{pCDFlist} are equal.}
 }
 \value{
 A vector where each raw p-value has been replaced by its nearest neighbor, if

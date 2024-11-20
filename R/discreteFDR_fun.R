@@ -45,12 +45,12 @@ discrete.fdr.int <- function(
   #  input.data$pCDFlist.indices <- pCDFlist.indices
   #}
   input.data$FDR.level   <- alpha
+  if(method == "DBR") input.data$DBR.Tuning <- method.parameter
   input.data$Data.name   <- ifelse(
     !is.null(data.name),
     data.name,
     paste(deparse(substitute(pvec)), "and", deparse(substitute(pCDFlist)))
   )
-  if(method == "DBR") input.data$DBR.Tuning <- method.parameter
   
   #--------------------------------------------
   #       apply p-value selection
@@ -235,6 +235,9 @@ discrete.fdr.int <- function(
   # add critical values to output list
   if(crit.consts) output$Critical.values <- c(crit.constants, rep(NA, n - m))
   
+  # original test data (often included, e.g. when using 'binom.test()')
+  output$Data <- input.data
+  
   # include selection data, if selection was applied
   if(threshold < 1) {
     output$Select <- list()
@@ -245,9 +248,6 @@ discrete.fdr.int <- function(
     output$Select$Scaled <- pvec
     output$Select$Number <- m
   }
-  
-  # original test data (often included, e.g. when using 'binom.test()')
-  output$Data <- input.data
   
   class(output) <- c("DiscreteFDR", class(output))
   return(output)

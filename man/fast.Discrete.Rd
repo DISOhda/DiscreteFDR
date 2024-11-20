@@ -36,7 +36,7 @@ values are \code{"noassoc"} (default), \code{"marginal"} or
 
 \item{adaptive}{single boolean specifying whether to conduct an adaptive procedure or not.}
 
-\item{select.threshold}{single real number strictly between 0 and 1 indicating the largest raw p-value to be considered, i.e. only p-values below this threshold are considered and the procedures are adjusted in order to take this selection effect into account; if \code{threshold = 1} (the default), all raw p-values are selected.}
+\item{select.threshold}{single real number strictly between 0 and 1 indicating the largest raw \eqn{p}-value to be considered, i.e. only \eqn{p}-values below this threshold are considered and the procedures are adjusted in order to take this selection effect into account; if \code{threshold = 1} (the default), all raw \eqn{p}-values are selected.}
 }
 \value{
 A \code{DiscreteFDR} S3 class object whose elements are:
@@ -45,6 +45,13 @@ A \code{DiscreteFDR} S3 class object whose elements are:
 \item{Num.rejected}{number of rejections.}
 \item{Adjusted}{adjusted \eqn{p}-values (only for step-down direction).}
 \item{Critical.constants}{critical values (only exists if computations where performed with \code{ret.crit.consts = TRUE}).}
+\item{Data}{list with input data.}
+\item{Data$Method}{character string describing the used algorithm, e.g. 'Discrete Benjamini-Hochberg procedure (step-up)'}
+\item{Data$Raw.pvalues}{observed \eqn{p}-values.}
+\item{Data$pCDFlist}{list of the \eqn{p}-value supports.}
+\item{Data$FDR.level}{FDR level \code{alpha}.}
+
+\item{Data$Data.name}{the respective variable names of the input data.}
 \item{Select}{list with data related to \eqn{p}-value selection; only exists if \code{select.threshold < 1}.}
 \item{Select$Threshold}{\eqn{p}-value selection threshold (\code{select.threshold}).}
 \item{Select$Effective.Thresholds}{results of each \eqn{p}-value CDF evaluated at the selection threshold.}
@@ -52,12 +59,6 @@ A \code{DiscreteFDR} S3 class object whose elements are:
 \item{Select$Indices}{indices of \eqn{p}-values \eqn{\leq} selection threshold.}
 \item{Select$Scaled}{scaled selected \eqn{p}-values.}
 \item{Select$Number}{number of selected \eqn{p}-values \eqn{\leq} selection threshold.}
-\item{Data}{list with input data.}
-\item{Data$Method}{character string describing the used algorithm, e.g. 'Discrete Benjamini-Hochberg procedure (step-up)'}
-\item{Data$Raw.pvalues}{observed \eqn{p}-values.}
-\item{Data$pCDFlist}{list of the \eqn{p}-value supports.}
-\item{Data$FDR.level}{FDR level \code{alpha}.}
-\item{Data$Data.name}{the respective variable names of the input data.}
 }
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}

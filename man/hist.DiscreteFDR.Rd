@@ -4,17 +4,17 @@
 \alias{hist.DiscreteFDR}
 \title{Histogram of Raw P-Values}
 \usage{
-\method{hist}{DiscreteFDR}(x, mode = c("raw", "selected"), breaks = "FD", ...)
+\method{hist}{DiscreteFDR}(x, breaks = "FD", mode = c("raw", "selected"), ...)
 }
 \arguments{
 \item{x}{an object of class \code{DiscreteFDR}.}
 
+\item{breaks}{as in \code{\link[graphics:hist]{graphics::hist()}}; here, the Friedman-Diaconis
+algorithm (\code{"FD"}) is used as default.}
+
 \item{mode}{single character string specifying for which $p$-values the
 histogram is to be generated; must either be \code{"raw"} or
 \code{"selected"}.}
-
-\item{breaks}{as in \code{\link[graphics:hist]{graphics::hist()}}; here, the Friedman-Diaconis
-algorithm (\code{"FD"}) is used as default.}
 
 \item{...}{further arguments to \code{\link[graphics:hist]{graphics::hist()}} or
 \code{\link[graphics:plothistogram]{graphics::plot.histogram()}}, respectively.}
