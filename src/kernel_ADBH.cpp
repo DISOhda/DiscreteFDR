@@ -143,7 +143,7 @@ List kernel_ADBH_crit(const List &pCDFlist, const NumericVector &support, const 
     pv_list = support[Range(i, numValues - 1)];
     // then re-add the observed p-values (needed to compute the adjusted p-values),
     // because we may have removed some of them by the shortcut
-    pv_list = rev(sort_combine(sorted_pv, pv_list));
+    pv_list = sort_combine(sorted_pv, pv_list);
   } else {
     // SU case
     // get tau_m
@@ -156,9 +156,12 @@ List kernel_ADBH_crit(const List &pCDFlist, const NumericVector &support, const 
     // c.1 >= the effective critical value associated to min((1 - tau_m) * alpha/numTests, tau_m)
     //int i = tau_m.index;
     //while(i > 0 && pv_list[i] >= std::min<double>(tau_m.value, (1 - tau_m.value) * alpha / numTests)) i--;
-    int i = binary_search(pv_list[Range(0, tau_m.index)], std::min<double>(tau_m.value, (1 - tau_m.value) * alpha / numTests), tau_m.index + 1);    pv_list = rev(pv_list[Range(i, tau_m.index)]);
+    int i = binary_search(pv_list[Range(0, tau_m.index)], std::min<double>(tau_m.value, (1 - tau_m.value) * alpha / numTests), tau_m.index + 1);
+    pv_list = pv_list[Range(i, tau_m.index)];
   }
   
+  // revert order of reduced support
+  pv_list = NumericVector(rev(pv_list));
   // number of p-values to be transformed
   numValues = pv_list.length();
   // critical values indices
