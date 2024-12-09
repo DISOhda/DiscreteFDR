@@ -112,8 +112,8 @@ discrete.BH.default <- function(
       min.len = 1,
       sorted = TRUE
     )
-    if(max(pCDFlist[[i]]) != 1)
-      stop("Last value of each vector in 'pCDFlist' must be 1!")
+    #if(max(pCDFlist[[i]]) != 1)
+    #  stop("Last value of each vector in 'pCDFlist' must be 1!")
   }
   m <- length(pCDFlist)
   
