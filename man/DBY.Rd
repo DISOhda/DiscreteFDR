@@ -72,7 +72,7 @@ discrete supports.
 Computing critical constants (\code{ret.crit.consts = TRUE}) requires considerably
 more execution time, especially if the number of unique supports is large.
 We recommend that users should only have them calculated when they need them,
-e.g. for illustrating the rejection area in a plot or other theoretical
+e.g. for illustrating the rejection set in a plot or other theoretical
 reasons.
 }
 \examples{
