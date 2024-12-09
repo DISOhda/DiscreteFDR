@@ -112,7 +112,7 @@ discrete.fdr.int <- function(
   #--------------------------------------------
   #       construct the vector of all values of all supports of the p-values
   #--------------------------------------------
-  support <- sort(unique(pmin(as.numeric(unlist(pCDFlist)), 1.0)))
+  support <- unique(sort(pmin(as.numeric(unlist(pCDFlist)), 1.0)))
   
   #--------------------------------------------
   #        compute significant p-values, their
