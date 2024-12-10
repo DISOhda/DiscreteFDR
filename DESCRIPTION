@@ -1,8 +1,8 @@
 Package: DiscreteFDR
 Type: Package
 Title: FDR Based Multiple Testing Procedures with Adaptation for Discrete Tests
-Version: 2.0.1-241209
-Date: 2024-12-09
+Version: 2.0.1-241210
+Date: 2024-12-10
 Authors@R: c(
     person("Sebastian", "Döhler", role = c("aut", "ctb"),
            email = "sebastian.doehler@h-da.de",
@@ -10,7 +10,8 @@ Authors@R: c(
     person("Florian", "Junge", role = c("aut", "ctb", "cre"), 
            email = "diso.fbmn@h-da.de",
            comment = c(ORCID = "0009-0001-6856-6938")),
-    person("Guillermo", "Durand", role = c("aut", "ctb")),
+    person("Guillermo", "Durand", role = c("aut", "ctb"),
+           comment = c(ORCID = "0000-0003-4056-5631")),
     person("Etienne", "Roquain", role = "ctb"),
     person("Christina", "Kihn", role = "ctb")
   )
