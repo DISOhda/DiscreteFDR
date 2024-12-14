@@ -66,50 +66,6 @@
 #' 
 #' @seealso
 #' [`discrete.BH()`], [`direct.discrete.BH()`], [`DBR()`]
-#' 
-#' @examples \dontrun{
-#' X1 <- c(4, 2, 2, 14, 6, 9, 4, 0, 1)
-#' X2 <- c(0, 0, 1, 3, 2, 1, 2, 2, 2)
-#' N1 <- rep(148, 9)
-#' N2 <- rep(132, 9)
-#' Y1 <- N1 - X1
-#' Y2 <- N2 - X2
-#' df <- data.frame(X1, Y1, X2, Y2)
-#' df
-#' 
-#' # Compute p-values and their supports of Fisher's exact test
-#' test.result <- generate.pvalues(df, "fisher")
-#' raw.pvalues <- test.result$get_pvalues()
-#' pCDFlist <- test.result$get_pvalue_supports()
-#' 
-#' alpha <- 0.05
-#' 
-#' # Compute the step functions from the supports
-#' 
-#' # If not searching for critical constants, we use only the observed p-values
-#' sorted.pvals   <- sort(raw.pvalues)
-#' y.DBH.sd.fast  <- DiscreteFDR:::kernel_DBH_fast(pCDFlist, sorted.pvals)
-#' y.ADBH.sd.fast <- DiscreteFDR:::kernel_ADBH_fast(pCDFlist, sorted.pvals)
-#' y.DBR.fast     <- DiscreteFDR:::kernel_DBR_fast(pCDFlist, sorted.pvals)
-#' # transformed values
-#' y.DBH.sd.fast
-#' y.ADBH.sd.fast
-#' y.DBR.fast
-#' 
-#' # compute transformed support
-#' pv.list        <- sort(unique(unlist(pCDFlist)))
-#' y.DBH.sd.crit  <- DiscreteFDR:::kernel_DBH_crit(pCDFlist, pv.list, sorted.pvals)
-#' y.ADBH.sd.crit <- DiscreteFDR:::kernel_ADBH_crit(pCDFlist, pv.list, sorted.pvals)
-#' y.DBR.crit     <- DiscreteFDR:::kernel_DBR_crit(pCDFlist, pv.list, sorted.pvals)
-#' # critical constants
-#' y.DBH.sd.crit$crit.consts
-#' y.ADBH.sd.crit$crit.consts
-#' y.DBR.crit$crit.consts
-#' # The following exist only for step-down direction or DBR
-#' y.DBH.sd.crit$pval.transf
-#' y.ADBH.sd.crit$pval.transf
-#' y.DBR.crit$pval.transf
-#' }
 #'
 NULL
 
