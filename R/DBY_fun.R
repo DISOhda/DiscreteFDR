@@ -44,7 +44,8 @@
 DBY <- function(test.results, ...) UseMethod("DBY")
 
 #' @rdname DBY
-#' @importFrom checkmate assert_character assert_integerish assert_list assert_numeric qassert
+#' @importFrom checkmate assert_character assert_integerish assert_numeric
+#' @importFrom checkmate assert_list qassert
 #' @export
 DBY.default <- function(
   test.results,
@@ -154,7 +155,11 @@ DBY.default <- function(
     method.parameter = NULL,
     crit.consts      = ret.crit.consts,
     threshold        = select.threshold,
-    data.name        = paste(deparse(substitute(test.results)), "and", deparse(substitute(pCDFlist)))
+    data.name        = paste(
+                         deparse(substitute(test.results)),
+                         "and",
+                         deparse(substitute(pCDFlist))
+                       )
   )
   
   return(output)

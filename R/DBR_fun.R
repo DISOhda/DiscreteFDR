@@ -51,7 +51,8 @@
 DBR <- function(test.results, ...) UseMethod("DBR")
 
 #' @rdname DBR
-#' @importFrom checkmate assert_character assert_integerish assert_list assert_numeric qassert
+#' @importFrom checkmate assert_character assert_integerish assert_numeric
+#' @importFrom checkmate assert_list qassert
 #' @export
 DBR.default <- function(
   test.results,

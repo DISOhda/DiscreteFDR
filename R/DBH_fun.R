@@ -39,7 +39,8 @@
 #' DBH.su.fast <- DBH(test.result)
 #' summary(DBH.su.fast)
 #' 
-#' # DBH (step-down) without critical values; using extracted p-values and supports
+#' # DBH (step-down) without critical values; using extracted p-values 
+#' # and supports
 #' DBH.sd.fast <- DBH(raw.pvalues, pCDFlist, direction = "sd")
 #' summary(DBH.sd.fast)
 #' 
@@ -74,7 +75,8 @@ DBH.default <- function(
     adaptive = FALSE, 
     ret.crit.consts, 
     select.threshold, 
-    pCDFlist.indices
+    pCDFlist.indices,
+    ...
   )
   
   out$Data$Data.name <- paste(
@@ -96,7 +98,15 @@ DBH.DiscreteTestResults <- function(
   select.threshold = 1, 
   ...
 ) {
-  out <- discrete.BH.DiscreteTestResults(test.results, alpha, direction, adaptive = FALSE, ret.crit.consts, select.threshold)
+  out <- discrete.BH.DiscreteTestResults(
+    test.results,
+    alpha,
+    direction,
+    adaptive = FALSE,
+    ret.crit.consts,
+    select.threshold,
+    ...
+  )
   
   out$Data$Data.name <- deparse(substitute(test.results))
   

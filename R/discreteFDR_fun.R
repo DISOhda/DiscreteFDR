@@ -21,7 +21,9 @@ discrete.fdr.int <- function(
     DBH = {
       alg <- "Discrete Benjamini-Hochberg procedure"
       alg <- ifelse(method == "ADBH", paste("Adaptive", alg), alg)
-      input.data$Method <- paste(alg, ifelse(method.parameter, "(step-up)", "(step-down)"))
+      input.data$Method <- paste(
+        alg, ifelse(method.parameter, "(step-up)", "(step-down)")
+      )
     },
     DBR = {
       input.data$Method <- paste0(
@@ -87,8 +89,13 @@ discrete.fdr.int <- function(
     }
     pCDFlist.idx <- order(unlist(pCDFlist.indices))
     # rescale pCDFs
-    F.thresh <- sapply(pCDFlist, function(X) {t <- which(X <= threshold); if(length(t)) X[max(t)] else 0})
-    pCDFlist <- sapply(seq_along(pCDFlist), function(k) pCDFlist[[k]] / F.thresh[k])
+    F.thresh <- sapply(pCDFlist, function(X) {
+      t <- which(X <= threshold)
+      if(length(t)) X[max(t)] else 0
+    })
+    pCDFlist <- sapply(
+      seq_along(pCDFlist), function(k) pCDFlist[[k]] / F.thresh[k]
+    )
     # rescale selected p-values
     pvec <- pvec[select] / rep(F.thresh, pCDFlist.counts)[pCDFlist.idx]
   } else {
@@ -122,26 +129,49 @@ discrete.fdr.int <- function(
     switch(
       EXPR = method,
       ADBH = {
-        res <- kernel_ADBH_crit(pCDFlist, support, sorted.pvals, method.parameter, alpha, pCDFlist.counts)
+        res <- kernel_ADBH_crit(
+          pCDFlist,
+          support,
+          sorted.pvals,
+          method.parameter,
+          alpha,
+          pCDFlist.counts
+        )
         crit.constants <- res$crit.consts
         idx.rej <- if(method.parameter) 
           which(sorted.pvals <= crit.constants) else 
             which(sorted.pvals > crit.constants)
       },
       DBH = {
-        res <- kernel_DBH_crit(pCDFlist, support, sorted.pvals, method.parameter, alpha, pCDFlist.counts)
+        res <- kernel_DBH_crit(
+          pCDFlist,
+          support,
+          sorted.pvals,
+          method.parameter,
+          alpha,
+          pCDFlist.counts
+        )
         crit.constants <- res$crit.consts
         idx.rej <- if(method.parameter) 
           which(sorted.pvals <= crit.constants) else 
             which(sorted.pvals > crit.constants)
       },
       DBR = {
-        res <- kernel_DBR_crit(pCDFlist, support, sorted.pvals, method.parameter, alpha, pCDFlist.counts)
+        res <- kernel_DBR_crit(
+          pCDFlist,
+          support,
+          sorted.pvals,
+          method.parameter,
+          alpha,
+          pCDFlist.counts
+        )
         crit.constants <- res$crit.consts
         idx.rej <- which(sorted.pvals <= crit.constants)
       },
       DBY = {
-        res <- kernel_DBY_crit(pCDFlist, support, sorted.pvals, alpha, pCDFlist.counts)
+        res <- kernel_DBY_crit(
+          pCDFlist, support, sorted.pvals, alpha, pCDFlist.counts
+        )
         crit.constants <- res$crit.consts
         idx.rej <- which(sorted.pvals <= crit.constants)
       }
@@ -150,19 +180,36 @@ discrete.fdr.int <- function(
     switch(
       EXPR = method,
       ADBH = {
-        res <- kernel_ADBH_fast(pCDFlist, sorted.pvals, method.parameter, alpha, support, pCDFlist.counts)
+        res <- kernel_ADBH_fast(
+          pCDFlist,
+          sorted.pvals,
+          method.parameter,
+          alpha,
+          support,
+          pCDFlist.counts
+        )
         idx.rej <- if(method.parameter) 
           which(res <= seq_along(res) * alpha) else 
             which(res > seq_along(res) * alpha)
       },
       DBH = {
-        res <- kernel_DBH_fast(pCDFlist, sorted.pvals, method.parameter, NULL, alpha, support, pCDFlist.counts)
+        res <- kernel_DBH_fast(
+          pCDFlist,
+          sorted.pvals,
+          method.parameter,
+          NULL,
+          alpha,
+          support,
+          pCDFlist.counts
+        )
         idx.rej <- if(method.parameter) 
           which(res <= seq_along(res) * alpha) else 
             which(res > seq_along(res) * alpha)
       },
       DBR = {
-        res <- kernel_DBR_fast(pCDFlist, sorted.pvals, method.parameter, pCDFlist.counts)
+        res <- kernel_DBR_fast(
+          pCDFlist, sorted.pvals, method.parameter, pCDFlist.counts
+        )
         idx.rej <- which(res <= alpha)
       },
       DBY = {
@@ -174,7 +221,9 @@ discrete.fdr.int <- function(
   
   k <- length(idx.rej)
   
-  if(method %in% c("DBR", "DBY") || (!(method %in% c("DBR", "DBY")) && method.parameter)) {
+  if(method %in% c("DBR", "DBY") ||
+     (!(method %in% c("DBR", "DBY")) && method.parameter)
+  ) {
     if(k > 0) {
       m.rej <- if(method == "DBR") k else max(idx.rej)
       # determine significant (observed) p-values in sorted.pvals
@@ -214,7 +263,9 @@ discrete.fdr.int <- function(
   )
   
   # adjusted p-values
-  if(method %in% c("DBR", "DBY") || (!(method %in% c("DBR", "DBY")) && !method.parameter)) {
+  if(method %in% c("DBR", "DBY") ||
+     (!(method %in% c("DBR", "DBY")) && !method.parameter)
+  ) {
     if(crit.consts) {
       res <- res$pval.transf
     }

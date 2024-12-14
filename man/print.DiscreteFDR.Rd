@@ -9,8 +9,8 @@
 \arguments{
 \item{x}{an object of class "\code{DiscreteFDR}".}
 
-\item{...}{further arguments to be passed to or from other methods.
-They are ignored in this function.}
+\item{...}{further arguments to be passed to or from other methods. They
+are ignored in this function.}
 }
 \value{
 The input object \code{x} is invisibly returned via \code{invisible(x)}.
@@ -34,7 +34,8 @@ test.result <- generate.pvalues(df, "fisher")
 raw.pvalues <- test.result$get_pvalues()
 pCDFlist <- test.result$get_pvalue_supports()
 
-DBH.su.crit <- DBH(raw.pvalues, pCDFlist, direction = "su", ret.crit.consts = TRUE)
+DBH.su.crit <- DBH(raw.pvalues, pCDFlist, direction = "su",
+                   ret.crit.consts = TRUE)
 print(DBH.su.crit)
 
 }

@@ -52,23 +52,35 @@
 #' DBH.sd$Adjusted
 #' summary(DBH.sd)
 #' 
-#' ADBH.su <- fast.Discrete(df, input = "noassoc", direction = "su", adaptive = TRUE)
+#' ADBH.su <- fast.Discrete(df, input = "noassoc", direction = "su",
+#'                          adaptive = TRUE)
 #' summary(ADBH.su)
 #' 
-#' ADBH.sd <- fast.Discrete(df, input = "noassoc", direction = "sd", adaptive = TRUE)
+#' ADBH.sd <- fast.Discrete(df, input = "noassoc", direction = "sd",
+#'                          adaptive = TRUE)
 #' ADBH.sd$Adjusted
 #' summary(ADBH.sd)
 #' 
 #' @importFrom lifecycle deprecate_soft
 #' @export
-fast.Discrete <- function(counts, alternative = "greater", input = "noassoc", alpha = 0.05, direction = "su", adaptive = FALSE, select.threshold = 1){
+fast.Discrete <- function(
+  counts,
+  alternative = "greater",
+  input = "noassoc",
+  alpha = 0.05,
+  direction = "su",
+  adaptive = FALSE,
+  select.threshold = 1
+) {
   deprecate_soft("1.3.7", "fast.Discrete()", "direct.discrete.BH()")
   
   data.formatted <- fisher.pvalues.support(counts, alternative, input)
   raw.pvalues <- data.formatted$raw
   pCDFlist <- data.formatted$support
   
-  out <- discrete.BH(raw.pvalues, pCDFlist, alpha, direction, adaptive, FALSE, select.threshold)
+  out <- discrete.BH(
+    raw.pvalues, pCDFlist, alpha, direction, adaptive, FALSE, select.threshold
+  )
   out$Data$data.name <- deparse(substitute(counts)) 
   
   return(out)
@@ -105,10 +117,12 @@ fast.Discrete <- function(counts, alternative = "greater", input = "noassoc", al
 #' DBH.sd$Adjusted
 #' summary(DBH.sd)
 #' 
-#' ADBH.su <- direct.discrete.BH(df, "fisher", direction = "su", adaptive = TRUE)
+#' ADBH.su <- direct.discrete.BH(df, "fisher", direction = "su",
+#'                               adaptive = TRUE)
 #' summary(ADBH.su)
 #' 
-#' ADBH.sd <- direct.discrete.BH(df, "fisher", direction = "sd", adaptive = TRUE)
+#' ADBH.sd <- direct.discrete.BH(df, "fisher", direction = "sd",
+#'                               adaptive = TRUE)
 #' ADBH.sd$Adjusted
 #' summary(ADBH.sd)
 #' 

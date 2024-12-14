@@ -39,7 +39,8 @@
 #' ADBH.su.fast <- ADBH(test.result)
 #' summary(ADBH.su.fast)
 #' 
-#' # ADBH (step-down) without critical values; using extracted p-values and supports
+#' # ADBH (step-down) without critical values; using extracted p-values 
+#' # and supports
 #' ADBH.sd.fast <- ADBH(raw.pvalues, pCDFlist, direction = "sd")
 #' summary(ADBH.sd.fast)
 #' 

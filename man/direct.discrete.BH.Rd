@@ -61,10 +61,12 @@ DBH.sd <- direct.discrete.BH(df, "fisher", direction = "sd")
 DBH.sd$Adjusted
 summary(DBH.sd)
 
-ADBH.su <- direct.discrete.BH(df, "fisher", direction = "su", adaptive = TRUE)
+ADBH.su <- direct.discrete.BH(df, "fisher", direction = "su",
+                              adaptive = TRUE)
 summary(ADBH.su)
 
-ADBH.sd <- direct.discrete.BH(df, "fisher", direction = "sd", adaptive = TRUE)
+ADBH.sd <- direct.discrete.BH(df, "fisher", direction = "sd",
+                              adaptive = TRUE)
 ADBH.sd$Adjusted
 summary(ADBH.sd)
 

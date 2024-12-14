@@ -48,7 +48,8 @@ test.result <- generate.pvalues(df, "fisher")
 raw.pvalues <- test.result$get_pvalues()
 pCDFlist <- test.result$get_pvalue_supports()
 
-# Compute p-values and their supports of Fisher's exact test with preprocessing
+# Compute p-values and their supports of Fisher's exact test 
+# with preprocessing
 df2 <- data.frame(X1, N1, X2, N2)
 generate.pvalues(
   dat = df2,

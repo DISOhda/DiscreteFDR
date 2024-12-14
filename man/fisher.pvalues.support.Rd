@@ -51,7 +51,7 @@ Assume that each contingency tables compares two variables and resumes the
 counts of association or not with a condition. This can be resumed in the
 following table:
 \tabular{lccc}{
-\tab Association \tab No association  \tab      Total      \cr
+\tab   Association   \tab No association  \tab   Total   \cr
 Variable 1  \tab    \eqn{X_1}    \tab    \eqn{Y_1}    \tab \eqn{N_1} \cr
 Variable 2  \tab    \eqn{X_2}    \tab    \eqn{Y_2}    \tab \eqn{N_2} \cr
 Total       \tab \eqn{X_1 + X_2} \tab \eqn{Y_1 + Y_2} \tab \eqn{N_1 + N_2}
@@ -67,12 +67,14 @@ from one variable which is compared to all other variables of the study. That
 is, counts for "second variable" are replaced by the sum of the counts of the
 other variables:
 \tabular{lccc}{
-\tab Association            \tab No association            \tab Total                     \cr
-Variable \eqn{j}       \tab \eqn{X_j}                 \tab \eqn{Y_j}                 \tab \eqn{N_j} \cr
-Variables \eqn{\neq j} \tab \eqn{\sum_{i \neq j} X_i} \tab \eqn{\sum_{i \neq j} Y_i} \tab \eqn{\sum_{i \neq j} N_i} \cr
-Total                  \tab \eqn{\sum X_i}            \tab \eqn{\sum Y_i}            \tab \eqn{\sum N_i}
+\tab Association \tab No association \tab Total \cr
+Variable  \eqn{j}      \tab \eqn{X_j}   \tab \eqn{Y_j} \tab  \eqn{N_j} \cr
+Variables \eqn{\neq j} \tab \eqn{\sum_{i \neq j} X_i}
+\tab \eqn{\sum_{i \neq j} Y_i} \tab \eqn{\sum_{i \neq j} N_i} \cr
+Total \tab \eqn{\sum X_i} \tab \eqn{\sum Y_i} \tab \eqn{\sum N_i}
 }
-Hence \code{counts} needs to have only two columns which respectively contain \eqn{X_j} and \eqn{Y_j}.
+Hence \code{counts} needs to have only two columns which respectively contain
+\eqn{X_j} and \eqn{Y_j}.
 
 The code for the computation of the p-values of Fisher's exact test is
 inspired by the example in the help page of \code{p.discrete.adjust} of package

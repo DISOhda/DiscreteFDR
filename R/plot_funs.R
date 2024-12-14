@@ -136,7 +136,8 @@ hist.DiscreteFDR <- function(
 #'      ylim = c(0, 0.4))
 #' 
 #' @importFrom graphics plot lines points par
-#' @importFrom checkmate assert assert_string check_character check_choice check_numeric
+#' @importFrom checkmate assert check_character check_choice check_numeric
+#' @importFrom checkmate assert_string
 #' @export
 plot.DiscreteFDR <- function(
   x,
@@ -263,11 +264,15 @@ plot.DiscreteFDR <- function(
       if(len == 1){
         x <- legend
         y <- NULL
-      }else{
+      } else {
         x <- legend[1]
         y <- legend[2]
       }
-      legend(x, y, c("Rejected", "Accepted", "Critical values")[idx], col = c(col[idx], "darkgrey"), pch = pch[idx], lty = lt[idx], lwd = lwd[idx])
-    } else warning("Expecting character string or numeric vector of one or two elements for creating a legend")
+      legend(x, y, c("Rejected", "Accepted", "Critical values")[idx],
+             col = c(col[idx], "darkgrey"), pch = pch[idx],
+             lty = lt[idx], lwd = lwd[idx])
+    } else 
+      warning("Expecting character string or numeric vector of one or two ",
+              "elements for creating a legend")
   }
 }

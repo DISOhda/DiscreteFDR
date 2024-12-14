@@ -1,6 +1,10 @@
 #include "kernel.h"
 
-NumericVector kernel_DBY_fast(const List &pCDFlist, const NumericVector &pvalues, const Nullable<NumericVector> &pCDFcounts) {
+NumericVector kernel_DBY_fast(
+  const List& pCDFlist,
+  const NumericVector& pvalues,
+  const Nullable<NumericVector>& pCDFcounts
+) {
   // Number of p-values
   int numValues = pvalues.length();
   // number of unique p-value distributions
@@ -45,7 +49,13 @@ NumericVector kernel_DBY_fast(const List &pCDFlist, const NumericVector &pvalues
   return pval_transf * BY_constant;
 }
 
-List kernel_DBY_crit(const List &pCDFlist, const NumericVector &support, const NumericVector &sorted_pv, const double alpha, const Nullable<NumericVector> &pCDFcounts) {
+List kernel_DBY_crit(
+  const List& pCDFlist,
+  const NumericVector& support,
+  const NumericVector& sorted_pv,
+  const double alpha,
+  const Nullable<NumericVector>& pCDFcounts
+) {
   // number of tests
   int numTests = sorted_pv.length();
   // number of unique p-value distributions
@@ -70,7 +80,8 @@ List kernel_DBY_crit(const List &pCDFlist, const NumericVector &support, const N
   int idx_pval = 0;
   for(int i = 0; i < numTests; i++) {
     checkUserInterrupt();
-    while(idx_pval < numValues && support_transf[idx_pval] <= (i + 1) * alpha) idx_pval++;
+    while(idx_pval < numValues && support_transf[idx_pval] <= (i + 1) * alpha)
+      idx_pval++;
     crit[i] = support[idx_pval - 1];
   }
   
@@ -88,5 +99,6 @@ List kernel_DBY_crit(const List &pCDFlist, const NumericVector &support, const N
   delete[] sfuns;
   
   // return critical values and transformed sorted p-values
-  return List::create(Named("crit.consts") = crit, Named("pval.transf") = pval_transf);
+  return List::create(Named("crit.consts") = crit,
+                      Named("pval.transf") = pval_transf);
 }

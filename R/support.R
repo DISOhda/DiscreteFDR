@@ -23,10 +23,10 @@
 #' counts of association or not with a condition. This can be resumed in the
 #' following table:
 #' \tabular{lccc}{
-#' \tab Association \tab No association  \tab      Total      \cr
-#'      Variable 1  \tab    \eqn{X_1}    \tab    \eqn{Y_1}    \tab \eqn{N_1} \cr
-#'      Variable 2  \tab    \eqn{X_2}    \tab    \eqn{Y_2}    \tab \eqn{N_2} \cr
-#'      Total       \tab \eqn{X_1 + X_2} \tab \eqn{Y_1 + Y_2} \tab \eqn{N_1 + N_2}
+#'               \tab   Association   \tab No association  \tab   Total   \cr
+#'   Variable 1  \tab    \eqn{X_1}    \tab    \eqn{Y_1}    \tab \eqn{N_1} \cr
+#'   Variable 2  \tab    \eqn{X_2}    \tab    \eqn{Y_2}    \tab \eqn{N_2} \cr
+#'   Total       \tab \eqn{X_1 + X_2} \tab \eqn{Y_1 + Y_2} \tab \eqn{N_1 + N_2}
 #' }
 #' If `input="noassoc"`, `counts` has four columns which respectively contain,
 #' \eqn{X_1}, \eqn{Y_1}, \eqn{X_2} and \eqn{Y_2}. If `input="marginal"`,
@@ -39,12 +39,14 @@
 #' is, counts for "second variable" are replaced by the sum of the counts of the
 #' other variables:
 #' \tabular{lccc}{
-#' \tab Association            \tab No association            \tab Total                     \cr
-#'      Variable \eqn{j}       \tab \eqn{X_j}                 \tab \eqn{Y_j}                 \tab \eqn{N_j} \cr
-#'      Variables \eqn{\neq j} \tab \eqn{\sum_{i \neq j} X_i} \tab \eqn{\sum_{i \neq j} Y_i} \tab \eqn{\sum_{i \neq j} N_i} \cr
-#'      Total                  \tab \eqn{\sum X_i}            \tab \eqn{\sum Y_i}            \tab \eqn{\sum N_i}
+#'                          \tab Association \tab No association \tab Total \cr
+#'   Variable  \eqn{j}      \tab \eqn{X_j}   \tab \eqn{Y_j} \tab  \eqn{N_j} \cr
+#'   Variables \eqn{\neq j} \tab \eqn{\sum_{i \neq j} X_i} 
+#'     \tab \eqn{\sum_{i \neq j} Y_i} \tab \eqn{\sum_{i \neq j} N_i} \cr
+#'   Total \tab \eqn{\sum X_i} \tab \eqn{\sum Y_i} \tab \eqn{\sum N_i}
 #' }
-#' Hence `counts` needs to have only two columns which respectively contain \eqn{X_j} and \eqn{Y_j}.
+#' Hence `counts` needs to have only two columns which respectively contain
+#' \eqn{X_j} and \eqn{Y_j}.
 #'
 #' The code for the computation of the p-values of Fisher's exact test is
 #' inspired by the example in the help page of `p.discrete.adjust` of package
@@ -93,7 +95,8 @@
 #' @importFrom DiscreteDatasets reconstruct_four reconstruct_two
 #' @import DiscreteTests
 #' @export
-fisher.pvalues.support <- function(counts, alternative = "greater", input = "noassoc"){
+fisher.pvalues.support <- function(counts, alternative = "greater",
+                                   input = "noassoc"){
   deprecate_soft("2.0.0", "fisher.pvalues.support()", "generate.pvalues()")
   
   # 'counts' must be a non-empty data frame or a non-empty matrix 
@@ -101,7 +104,7 @@ fisher.pvalues.support <- function(counts, alternative = "greater", input = "noa
   # convert to data frame, if it is a matrix
   if(is.matrix(counts))
     counts <- as.data.frame(counts)
-  # check if it contains only integer-like values and between two and four columns
+  # check if it contains only integer-like values and two up to four columns
   assert_data_frame(
     x = counts,
     types = "integerish",
@@ -161,7 +164,8 @@ fisher.pvalues.support <- function(counts, alternative = "greater", input = "noa
 #' 
 #' @template exampleGPV
 #' @examples
-#' # Compute p-values and their supports of Fisher's exact test with preprocessing
+#' # Compute p-values and their supports of Fisher's exact test 
+#' # with preprocessing
 #' df2 <- data.frame(X1, N1, X2, N2)
 #' generate.pvalues(
 #'   dat = df2,
@@ -180,7 +184,8 @@ fisher.pvalues.support <- function(counts, alternative = "greater", input = "noa
 #'   preprocess.fun = colSums
 #' )
 #' 
-#' @importFrom checkmate assert assert_choice assert_list check_function check_string
+#' @importFrom checkmate assert check_function check_string
+#' @importFrom checkmate assert_choice assert_list
 #' @import DiscreteTests
 #' @export
 generate.pvalues <- function(

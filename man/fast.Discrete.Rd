@@ -96,10 +96,12 @@ DBH.sd <- fast.Discrete(df, input = "noassoc", direction = "sd")
 DBH.sd$Adjusted
 summary(DBH.sd)
 
-ADBH.su <- fast.Discrete(df, input = "noassoc", direction = "su", adaptive = TRUE)
+ADBH.su <- fast.Discrete(df, input = "noassoc", direction = "su",
+                         adaptive = TRUE)
 summary(ADBH.su)
 
-ADBH.sd <- fast.Discrete(df, input = "noassoc", direction = "sd", adaptive = TRUE)
+ADBH.sd <- fast.Discrete(df, input = "noassoc", direction = "sd",
+                         adaptive = TRUE)
 ADBH.sd$Adjusted
 summary(ADBH.sd)
 

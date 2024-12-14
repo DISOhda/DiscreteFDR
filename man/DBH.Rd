@@ -98,7 +98,8 @@ pCDFlist <- test.result$get_pvalue_supports()
 DBH.su.fast <- DBH(test.result)
 summary(DBH.su.fast)
 
-# DBH (step-down) without critical values; using extracted p-values and supports
+# DBH (step-down) without critical values; using extracted p-values 
+# and supports
 DBH.sd.fast <- DBH(raw.pvalues, pCDFlist, direction = "sd")
 summary(DBH.sd.fast)
 

@@ -1,6 +1,14 @@
 #include "kernel.h"
 
-NumericVector kernel_DBH_fast(const List &pCDFlist, const NumericVector &pvalues, const bool stepUp, const Nullable<NumericVector> tau_max, const double alpha, const NumericVector &support, const Nullable<NumericVector> &pCDFcounts) {
+NumericVector kernel_DBH_fast(
+  const List& pCDFlist,
+  const NumericVector& pvalues,
+  const bool stepUp,
+  const Nullable<NumericVector> tau_max,
+  const double alpha,
+  const NumericVector& support,
+  const Nullable<NumericVector>& pCDFcounts
+) {
   // Number of p-values
   int numValues = pvalues.length();
   // number of unique p-value distributions
@@ -34,7 +42,9 @@ NumericVector kernel_DBH_fast(const List &pCDFlist, const NumericVector &pvalues
     // SU case, see (10)
     // get tau_m
     if(tau_max.isNull()) {
-      tau_m = DBH_tau_m(sfuns, CDFcounts, numCDF, lens, support, numTests, alpha);
+      tau_m = DBH_tau_m(
+        sfuns, CDFcounts, numCDF, lens, support, numTests, alpha
+      );
     } else {
       tau_m.value = NumericVector(tau_max)[0];
       tau_m.eval = std::vector<double>(numCDF);
@@ -61,10 +71,16 @@ NumericVector kernel_DBH_fast(const List &pCDFlist, const NumericVector &pvalues
       eval_pv(f_eval[j], pv_list[j], sfuns[i], lens[i], pos);
     }
     
-    if(!stepUp) // SD case, see (11)
-      pval_transf += CDFcounts[i] * (f_eval / (1 - f_eval)); // the output is the vector y= \sum_{i=1}^numTests F_i(pvalues)/(1 - F_i(pvalues))
-    else { // SU case, see (10)
-      pval_transf += CDFcounts[i] * (f_eval / (1 - tau_m.eval[i])); // the output is the vector y= \sum_{i=1}^numTests F_i(pvalues)/(1 - F_i(tau.numTests))
+    if(!stepUp) {
+      // SD case, see (11)
+      pval_transf += CDFcounts[i] * (f_eval / (1 - f_eval));
+      // the output is the vector 
+      // y = \sum_{i = 1}^numTests F_i(pvalues)/(1 - F_i(pvalues))
+    } else {
+      // SU case, see (10)
+      pval_transf += CDFcounts[i] * (f_eval / (1 - tau_m.eval[i]));
+      // the output is the vector 
+      // y = \sum_{i = 1}^numTests F_i(pvalues)/(1 - F_i(tau.numTests))
     }
   }
   
@@ -75,7 +91,14 @@ NumericVector kernel_DBH_fast(const List &pCDFlist, const NumericVector &pvalues
   return pval_transf;
 }
 
-List kernel_DBH_crit(const List &pCDFlist, const NumericVector &support, const NumericVector &sorted_pv, const bool stepUp, const double alpha, const Nullable<NumericVector> &pCDFcounts) {
+List kernel_DBH_crit(
+  const List& pCDFlist,
+  const NumericVector& support,
+  const NumericVector& sorted_pv,
+  const bool stepUp,
+  const double alpha,
+  const Nullable<NumericVector>& pCDFcounts
+) {
   // number of tests
   int numTests = sorted_pv.length();
   // number of unique p-value distributions
@@ -103,7 +126,9 @@ List kernel_DBH_crit(const List &pCDFlist, const NumericVector &support, const N
   }
   
   // get tau_m
-  tau_m_results tau_m = DBH_tau_m(sfuns, CDFcounts, numCDF, lens, support, numTests, alpha);
+  tau_m_results tau_m = DBH_tau_m(
+    sfuns, CDFcounts, numCDF, lens, support, numTests, alpha
+  );
   // set last critical value
   crit[numTests - 1] = tau_m.value;
   
@@ -118,20 +143,31 @@ List kernel_DBH_crit(const List &pCDFlist, const NumericVector &support, const N
     // p-values), because we may have removed some of them by the shortcut
     pv_list = sort_combine(sorted_pv, support[Range(i, tau_m.index)]);
     // get the transformations of the observed p-values inside pv_list
-    pval_transf = kernel_DBH_fast(pCDFlist, pv_list, false, R_NilValue, alpha, NumericVector(), CDFcounts);
+    pval_transf = kernel_DBH_fast(
+      pCDFlist, pv_list, false, R_NilValue, alpha, NumericVector(), CDFcounts
+    );
   } else { 
     // SU case
     // apply the shortcut drawn from Lemma 2, that is tau_1 >= the effective
     // critical value associated to (alpha / numTests) / (1 + alpha)
     //int i = numValues - 1;
     //while(i > 0 && support[i] > alpha / (numTests + numTests * alpha)) i--;
-    int i = binary_search(support, alpha / (numTests + numTests * alpha), numValues);
+    int i = binary_search(
+      support, alpha / (numTests + numTests * alpha), numValues
+    );
     // then re-add the observed p-values (needed to compute the adjusted
     // p-values), because we may have removed some of them by the shortcut
     pv_list = sort_combine(sorted_pv, support[Range(i, tau_m.index)]);
     // get the transformations of the observed p-values inside pv_list
-    pval_transf = kernel_DBH_fast(pCDFlist, pv_list, true, NumericVector(1, tau_m.value), alpha, pv_list, CDFcounts);
-    //pval_transf = kernel_DBH_fast(pCDFlist, pv_list, true, R_NilValue, alpha, pv_list, pCDFcounts);
+    pval_transf = kernel_DBH_fast(
+      pCDFlist,
+      pv_list,
+      true,
+      NumericVector(1, tau_m.value),
+      alpha,
+      pv_list,
+      CDFcounts
+    );
   }
   
   // get number of transformed p-values
@@ -140,7 +176,8 @@ List kernel_DBH_crit(const List &pCDFlist, const NumericVector &support, const N
   int idx_pval = 0;
   for(int i = 0; i < numTests - 1; i++) {
     checkUserInterrupt();
-    while(idx_pval < numValues && pval_transf[idx_pval] <= (i + 1) * alpha) idx_pval++;
+    while(idx_pval < numValues && pval_transf[idx_pval] <= (i + 1) * alpha)
+      idx_pval++;
     crit[i] = pv_list[idx_pval - 1];
   }
   
@@ -156,11 +193,13 @@ List kernel_DBH_crit(const List &pCDFlist, const NumericVector &support, const N
     idx_pval = 0;
     for(int i = 0; i < numTests; i++) {
       checkUserInterrupt();
-      while(idx_pval < numValues && pv_list[idx_pval] != sorted_pv[i]) idx_pval++;
+      while(idx_pval < numValues && pv_list[idx_pval] != sorted_pv[i])
+        idx_pval++;
       transf[i] = pval_transf[idx_pval];
     }
     // return critical values and transformed sorted p-values
-    return List::create(Named("crit.consts") = crit, Named("pval.transf") = transf);
+    return List::create(Named("crit.consts") = crit,
+                        Named("pval.transf") = transf);
   } else {
     // SU case
     // return critical values (transformed values are not necessary)

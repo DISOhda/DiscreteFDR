@@ -31,7 +31,8 @@
 #' 
 #' @template exampleGPV
 #' @examples 
-#' DBH.sd.crit <- DBH(raw.pvalues, pCDFlist, direction = "sd", ret.crit.consts = TRUE)
+#' DBH.sd.crit <- DBH(raw.pvalues, pCDFlist, direction = "sd",
+#'                    ret.crit.consts = TRUE)
 #' summary(DBH.sd.crit)
 #' 
 #' @rdname summary.DiscreteFDR
@@ -52,20 +53,21 @@ summary.DiscreteFDR <- function(object, ...){
   # ordered indices
   i <- seq_len(n)
   # determine for each p-value if its corresponding null hypothesis is rejected
-  r <- i %in% object$Indices #if(!select) o %in% object$Indices else o %in% object$Select.Indices[object$Indices]
+  r <- i %in% object$Indices
   
   # create summary table
   tab <- data.frame('Index' = i, 'P.value' = object$Data$Raw.pvalues)
   if(select) {
-    tab$Selected <- i %in% object$Select$Indices #rep(c(TRUE, FALSE), c(m, n - m))
+    tab$Selected <- i %in% object$Select$Indices
     tab$Scaled <- NA
     tab$Scaled[tab$Selected] <- object$Select$Scaled
   }
   tab <- tab[o, ]
   if(exists('Critical.values', object)) {
     if(select) {
+      ro <- order(order(tab$Scaled[seq_len(m)]))
       tab$Critical.value <- NA
-      tab$Critical.value[seq_len(m)] <- object$Critical.values[seq_len(m)][order(order(tab$Scaled[seq_len(m)]))]
+      tab$Critical.value[seq_len(m)] <- object$Critical.values[seq_len(m)][ro]
     } else tab$Critical.value <- object$Critical.values
   }
   if(exists('Adjusted', object)){
@@ -77,7 +79,7 @@ summary.DiscreteFDR <- function(object, ...){
   
   # return output object
   out <- c(object, list(Table = tab))
-  class(out) <- "summary.DiscreteFDR" # basically a 'DiscreteFDR' object, but with an additional summary table (just like 'lm' and 'summary.lm' classes)
+  class(out) <- "summary.DiscreteFDR"
   return(out)
 }
 
