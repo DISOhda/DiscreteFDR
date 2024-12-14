@@ -86,8 +86,8 @@
 #'   discrete tests. arXiv preprint.
 #'   [arXiv:1112.4627v2](https://arxiv.org/abs/1112.4627v2).
 #'
-#' "Fisher's exact test", Wikipedia, The Free Encyclopedia, accessed 2018-03-20,
-#' [link](https://en.wikipedia.org/w/index.php?title=Fisher's_exact_test&oldid=823327889).
+#' "Fisher's exact test", Wikipedia, The Free Encyclopedia, accessed 2024-12-14,
+#' [link](https://en.wikipedia.org/wiki/Fisher%27s_exact_test).
 #' 
 #' @importFrom stats dhyper phyper pbinom
 #' @importFrom lifecycle deprecate_soft

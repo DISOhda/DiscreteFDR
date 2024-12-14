@@ -104,8 +104,8 @@ R. Heller and H. Gur (2011). False discovery rate controlling procedures for
 discrete tests. arXiv preprint.
 \href{https://arxiv.org/abs/1112.4627v2}{arXiv:1112.4627v2}.
 
-"Fisher's exact test", Wikipedia, The Free Encyclopedia, accessed 2018-03-20,
-\href{https://en.wikipedia.org/w/index.php?title=Fisher's_exact_test&oldid=823327889}{link}.
+"Fisher's exact test", Wikipedia, The Free Encyclopedia, accessed 2024-12-14,
+\href{https://en.wikipedia.org/wiki/Fisher\%27s_exact_test}{link}.
 }
 \seealso{
 \code{\link[=fisher.test]{fisher.test()}}
