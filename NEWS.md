@@ -9,6 +9,8 @@
     are used, this was inconsequential, but may have caused problems in the
     future.
 -   Change order of output data: `Data` list is now output before `Select` list.
+-   Fixed issues with `Rcpp`'s `rev()` function in computations of adaptive DBH
+    critical values
 
 
 # DiscreteFDR 2.0.1
@@ -19,6 +21,7 @@
 -   Function `match.pvals()` is no longer exported.
 -   Performance improvement for step-up procedures, especially for large
     numbers of tests.
+
 
 # DiscreteFDR 2.0.0
 
@@ -61,6 +64,7 @@
 -   Step function evaluation in C++ code has been replaced by closely
     optimized inline functions which offer performance gains of 10-50%.
 
+
 # DiscreteFDR 1.3.7
 
 -   Introduction of `lifecycle` mechanisms.
@@ -70,11 +74,13 @@
 -   Removal of links to `discreteMTP` packages, since it was removed
     from CRAN.
 
+
 # DiscreteFDR 1.3.6
 
 -   Fixed a problem with `fisher.pvalues.support` that could cause
     p-values to be wrong or NA (Thanks to Iqraa Meah).
 -   Added GitHub.
+
 
 # DiscreteFDR 1.3.5
 
@@ -82,6 +88,7 @@
     infinite loop when using `alternative = two.sided` (Thanks to Lukas
     Jansen).
 -   Changed version scheme from `x.y-z` to `x.y.z`
+
 
 # DiscreteFDR 1.3-4
 
