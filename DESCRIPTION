@@ -1,8 +1,8 @@
 Package: DiscreteFDR
 Type: Package
 Title: FDR Based Multiple Testing Procedures with Adaptation for Discrete Tests
-Version: 2.1.0
-Date: 2024-12-14
+Version: 2.1.1
+Date: 2026-02-13
 Authors@R: c(
     person("Sebastian", "Döhler", role = c("aut", "ctb"),
            email = "sebastian.doehler@h-da.de",
@@ -35,5 +35,5 @@ Suggests: rmarkdown, knitr, R.rsp, kableExtra
 VignetteBuilder: knitr, R.rsp
 URL: https://github.com/DISOhda/DiscreteFDR
 BugReports: https://github.com/DISOhda/DiscreteFDR/issues
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Roxygen: list(markdown = TRUE)

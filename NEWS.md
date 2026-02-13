@@ -1,3 +1,9 @@
+# DiscreteFDR 2.1.1
+
+-   Replaced deprecated functions used by `fast.Discrete()` and in the
+    vignettes.
+
+
 # DiscreteFDR 2.1.0
 
 -   Added `DBY()` for discrete Benjamini-Yekutieli procedure.
@@ -10,7 +16,7 @@
     future.
 -   Change order of output data: `Data` list is now output before `Select` list.
 -   Fixed issues with `Rcpp`'s `rev()` function in computations of adaptive DBH
-    critical values
+    critical values.
 
 
 # DiscreteFDR 2.0.1
