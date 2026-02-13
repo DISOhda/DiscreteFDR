@@ -31,7 +31,7 @@ library(DiscreteDatasets)
 library(DiscreteTests)
 amnesia.formatted <- amnesia |>
   reconstruct_two() |>
-  fisher.test.pv(alternative = "greater")
+  fisher_test_pv(alternative = "greater")
 ```
 
 Then we perform the FDR analysis with functions `DBH` and `ADBH` (SU and SD) and `DBR` at level $\alpha = 0.05$ including critical values.
@@ -112,7 +112,7 @@ where $\overline{G_i}(x) = P(N_i > x) = 1 - G_i(x)$ denotes the survival functio
 
 ```{r Poisson-RawPValues}
 raw.pvalues <- ppois(observations - 1, lambda.vector, lower.tail = FALSE)
-poisson.p <- poisson.test.pv(observations, lambda.vector, "greater")
+poisson.p <- poisson_test_pv(observations, lambda.vector, "greater")
 raw.pvalues.2 <- poisson.p$get_pvalues()
 print(raw.pvalues.2)
 ```
@@ -137,7 +137,7 @@ s.min <- min(t.min)
 print(s.min)
 ```
 
-The `poisson.test.pv` function from package `DiscreteTests` computes the support with $y^{\tiny \mbox{min}}$ being the smallest observable p-value which can be represented by double precision, i.e. the smallest one that is not rounded to 0.
+The `poisson_test_pv` function from package `DiscreteTests` computes the support with $y^{\tiny \mbox{min}}$ being the smallest observable p-value which can be represented by double precision, i.e. the smallest one that is not rounded to 0.
 
 ```{r}
 sapply(poisson.p$get_pvalue_supports(), min)
@@ -151,7 +151,7 @@ DBH.sd <- DBH(raw.pvalues, supports, direction = "sd", ret.crit.consts = TRUE)
 print(DBH.sd)
 ```
 
-We can also use the results object of `poisson.test.pv`:
+We can also use the results object of `poisson_test_pv`:
 
 ```{r Poisson-Supports-with-object}
 DBH.sd.2 <- DBH(poisson.p, direction = "sd", ret.crit.consts = TRUE)

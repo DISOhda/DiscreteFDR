@@ -55,7 +55,7 @@ summary.table <- DBH.sd.fast.summary$Table
 kable(summary.table, caption = "Summary table")
 ```
 
-Thus we can reject two hypotheses at FDR-level $\alpha = 5\%$. Note, that our `print` method also gives the number of rejections of the usual (continuous) BH procedure. In order to compare its adjusted $p$-values with ours, we have to determine the raw $p$-values first. This would be possible by applying the `fisher.test` function to all nine 2 $\times$ 2 tables. Alternatively, we may use the more convenient function `generate.pvalues`, which is included in our package, for accessing the raw $p$-values. Since it only accept hypothesis test functions from the package `DiscreteTests` (either as a function object or a character string that can be abbreviated), we could also use such a function directly, e.g. `fisher.test.pv`. An even more simple way is to extract them from the `DiscreteFDR` object that we obtained before and contains the results:
+Thus we can reject two hypotheses at FDR-level $\alpha = 5\%$. Note, that our `print` method also gives the number of rejections of the usual (continuous) BH procedure. In order to compare its adjusted $p$-values with ours, we have to determine the raw $p$-values first. This would be possible by applying the `fisher.test` function to all nine 2 $\times$ 2 tables. Alternatively, we may use the more convenient function `generate.pvalues`, which is included in our package, for accessing the raw $p$-values. Since it only accept hypothesis test functions from the package `DiscreteTests` (either as a function object or a character string that can be abbreviated), we could also use such a function directly, e.g. `fisher_test_pv`. An even more simple way is to extract them from the `DiscreteFDR` object that we obtained before and contains the results:
 
 ```{r toy-example-generate-fisher}
 # compute results of Fisher's exact test for each row of 'df'
@@ -65,7 +65,7 @@ raw.pvalues <- fisher.p$get_pvalues()
 
 # or
 library(DiscreteTests)
-fisher.p.2 <- fisher.test.pv(df, "two.sided")
+fisher.p.2 <- fisher_test_pv(df, "two.sided")
 raw.pvalues.2 <- fisher.p.2$get_pvalues()
 
 # or:
@@ -99,7 +99,7 @@ The latter way enables the use of a pipe:
 
 ```{r toy-example-pipe}
 df |>
-  fisher.test.pv(alternative = "two.sided") |>
+  fisher_test_pv(alternative = "two.sided") |>
   DBH(0.05, "sd", TRUE) |>
   with(Critical.values)
 ```

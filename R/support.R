@@ -131,7 +131,7 @@ fisher.pvalues.support <- function(counts, alternative = "greater",
   )
   
   # compute p-values and supports
-  res <- fisher.test.pv(counts, alternative)
+  res <- fisher_test_pv(counts, alternative)
   
   # return list of results
   return(
